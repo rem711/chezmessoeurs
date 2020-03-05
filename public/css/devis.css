@@ -1,0 +1,62 @@
+.devis_list{
+    margin: 0;
+    padding: 0;
+    height: 200px;
+    overflow-y: auto;
+}
+
+.devis_list li{
+    margin: 5px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    transition: all 0.1s;
+
+}
+.devis_list li:hover{
+    color : #ffffff;
+    cursor: pointer;
+}
+
+.devis_list li p{
+    padding: 5px 15px;
+    font-size: 14px;
+}
+
+.devis_list li p{
+    margin: 0;
+}
+.devis_encours li{
+        border : 2px solid #3c3c3c;
+}
+.devis_envoyes li{
+        border : 2px solid #e06128;
+}
+.devis_valides li{
+        border : 2px solid green;
+}
+
+.devis_encours li:hover{
+    background-color:  #3c3c3c;}
+.devis_envoyes li:hover{
+    background-color:  #e06128;
+}
+.devis_valides li:hover{
+    background-color:  green;
+}
+
+
+
+.datedevis{
+    color : #ffffff;
+}
+
+.devis_encours .datedevis{
+    background-color:  #3c3c3c;
+}
+.devis_envoyes .datedevis{
+    background-color:  #e06128;
+}
+.devis_valides .datedevis{
+    background-color:  green;
+}

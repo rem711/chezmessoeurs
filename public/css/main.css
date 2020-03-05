@@ -1,0 +1,236 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "helvetica"
+}
+
+.main-container {
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    box-sizing: content-box;
+    overflow-y: auto;
+
+}
+
+.menu {
+    width: 15vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    margin: 25px 15px 75px 15px;
+}
+
+.logo img {
+    max-width: 100%;
+}
+
+.content {
+    width: 85vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.content_inner {
+
+    display: flex;
+    flex-direction: column;
+}
+
+.menuleft {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.menuleft li {
+    height: 75px;
+    width: 100%;
+    border: 3px solid #e06128;
+    background-color: #ffffff;
+    transition: all 0.1s;
+    margin-top: -4px;
+}
+
+.menuleft li:hover {
+    background-color: #e06128;
+    cursor: pointer;
+}
+
+.menuleft li a {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #e06128;
+}
+
+.menuleft li a:hover {
+    color: #ffffff;
+}
+
+
+h1 {
+    margin: auto;
+    align-self: center;
+    position: absolute;
+    top: 50px;
+    left: 45%;
+    color: #e06128;
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+}
+
+.content_inner {
+    width: 100%;
+    padding: 125px 100px 125px 50px;
+    box-sizing: border-box;
+
+}
+
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+
+}
+
+th {
+    font-size: 12px;
+    text-align: center;
+    background-color: #e06128;
+    color: #fff;
+    padding: 10px 15px;
+}
+
+
+td {
+    font-size: 12px;
+    text-align: center;
+    text-align: center;
+    border-top: 2px solid #e06128;
+    padding: 5px 10px !important;
+    border-bottom: 2px solid #e06128;
+}
+
+tr {
+    border-left: 2px solid #e06128;
+    border-right: 2px solid #e06128;
+    transition: all 0.1s;
+}
+
+tr:hover,
+tr:active,
+tr:focus,
+tr:focus-within {
+    cursor: pointer;
+    color: #ffffff;
+    background-color: #e06128;
+}
+
+.btntopright button {
+    width: 100px;
+    height: 75px;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background: #e06128;
+    color: #ffffff;
+    border: none;
+    font-size: 30px;
+    transition: all 0.2s;
+}
+
+.btntopright button:hover {
+    border: 3px solid #e06128;
+    background-color: #ffffff;
+    color: #e06128;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+.btnbotright {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+}
+
+.btnbotright button {
+    width: 100px;
+    height: 75px;
+
+    background: #e06128;
+    color: #ffffff;
+    border: none;
+    font-size: 20px;
+    transition: all 0.2s;
+}
+
+.btnbotright button:hover {
+    border: 3px solid #e06128;
+    background-color: #ffffff;
+    color: #e06128;
+    cursor: pointer;
+}
+
+
+
+
+input {
+    border: none;
+    border-bottom: 1px solid #000000;
+    transition: all 0.2s;
+
+}
+
+
+input:hover {
+    border-color: #e06128;
+}
+
+
+input:focus {
+    border-bottom: 1px solid #e06128 !important;
+    outline: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*/

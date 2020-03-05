@@ -1,0 +1,120 @@
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="js/main.js">
+<link rel="stylesheet" href="css/devisitem.css">
+
+
+  <!--  MENU -->
+
+<div class="main-container">
+    <div class="menu">
+        <a href="/" class="logo"><img src="img/logo_cmstraiteur.png"></a>
+        <ul class="menuleft">
+            <li>
+                <a href="/agenda">Agenda</a>
+            </li>
+            <li>
+                <a href="/estimations">Estimations</a>
+            </li>
+            <li>
+                <a href="/devis">Devis</a>
+            </li>
+            <li>
+                <a href="/clients">Clients</a>
+            </li>
+            <li>
+                <a href="/factures">Factures</a>
+            </li>
+            <li>
+                <a href="/carte">Carte</a>
+            </li>
+            <li>
+                <a href="/statistiques">Statistiques</a>
+            </li>
+            <li>
+                <a href="/archives">Archives</a>
+            </li>
+
+        </ul>
+
+    </div>
+
+
+
+    <div class="content">
+        
+
+
+
+       
+      
+  <!--  INSERER INCLUDE CONTENT PAGE ICI -->
+
+        {{#if isAgenda}}
+            {{>agenda}}
+        {{/if}}
+
+        {{#if isEstimations}}
+            {{>estimations}}
+        {{/if}}
+
+        {{#if isDevis}}
+            {{>devis}}
+        {{/if}}
+
+        {{#if isClients}}
+            {{>clients}}
+        {{/if}}
+
+        {{#if isFactures}}
+            {{>factures}}
+        {{/if}}
+
+        {{#if isCarte}}
+            {{>carte}}
+        {{/if}}
+
+        {{#if isStatistiques}}
+            {{>statistiques}}
+        {{/if}}
+
+        {{#if isArchives}}
+            {{>archives}}
+        {{/if}}
+
+
+       
+
+
+
+       
+
+       
+      
+
+
+
+
+
+
+
+
+    </div><!--  FIN CONTENT -->
+
+
+
+
+
+
+</div><!--  FIN MAIN CONTAINER -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- !-->

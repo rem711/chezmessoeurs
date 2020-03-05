@@ -1,0 +1,25 @@
+*******
+Stack pour mysql, sequelize et sequelize-auto
+-> npm install sequelize sequelize-auto sequelize-cli mysql mysql2 --save
+
+*******
+Pour générer automatiquement les models, sequelize-auto est utilisé
+-> npx sequelize-cli init
+-> npx sequelize-auto -c "./config/config.json" -o "./models" -d chezmessoeurs_bdd_dev -h localhost -u root -p 3306 -x "" -e mysql
+-> modifier config/config.json avec les infos de la BDD
+-> ajouter le champ field pour chaque définition de colonne si la BDD ne suit pas les règles de sequelize (tous les noms de colonnes sont en minuscules et soit camelCase soit snake_case)
+-> dans les models le premier argument de define est le nom qu'aura l'objet, il est préférable de le mettre en Majuscule pour différencier l'Objet de l'instance; le nom de la table est lui définit dans tableName où il correspond à la valeur dans la BDD
+
+*******
+Les models peuvent être aussi modifiés pour ajouter plus de controls qu'il n'y en a dans la BDD avec des fonctions de validation par exemple ou des enums pour les champs ayant des valeurs prédéfinies
+
+Liens utils :
+Pour sequelize-auto
+-> https://medium.com/@miarirabs/expressjs-connexion-%C3%A0-une-base-de-donn%C3%A9es-avec-sequelize-et-ses-extensions-sequelize-cli-7c6118d12c01
+-> https://github.com/sequelize/sequelize-auto
+Pour sequelize
+-> https://sequelize.org/master/manual/model-basics.html
+-> https://sequelize.readthedocs.io/en/latest/docs/models-definition/#data-types
+Pour mieux comprendre les associations
+-> https://sequelize.readthedocs.io/en/latest/docs/associations/
+-> https://dev.to/neshaz/everything-there-is-to-know-about-associations-in-rails-52ii#:~:text=A%20one%2Dto%2Dmany%20association,to%20only%20one%20model%20A.

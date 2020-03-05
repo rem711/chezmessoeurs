@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Facture</title>
+    <style>
+        html,
+        body {
+            width: 700px;
+            -webkit-print-color-adjust: exact;
+            height: 100%;
+            font-family: sans-serif;
+            font-size: 10px;
+        }
+
+
+
+
+        .maincontenu {
+            page-break-before: always;
+
+        }
+
+        .headercontenu {
+            height: 80px;
+            width: 100%;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+
+        }
+
+        .headercontenu img {
+            max-height: 50px;
+            margin: 15px;
+            box-sizing: border-box;
+        }
+
+        .headercontenu h1{
+            padding: 0 25px;
+        }
+        
+        .footercontenu {
+            height: 55px;
+            padding-top : 5px;
+            width: 100%;
+            background-color: #f4f4f4;
+            justify-content: center;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            align-content: center;
+            align-items: center;
+        }
+
+        .footercontenu p {
+            font-size: 12px;
+            padding: 0px;
+            margin: 0;
+        }
+
+
+        .contenu {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 50px 25px;
+        }
+
+        .infosfacture {
+            margin: 50px 25px;
+            box-sizing: border-box;
+            border: 1px solid #000000;
+            margin: auto;
+            border-collapse: collapse;
+        }
+
+        .infosfacture td {
+            padding: 5px 25px;
+            border: 1px solid #000000;
+            border-collapse: collapse;
+        }
+        
+        .contenufacture{
+            width : 700px;
+            margin: 25px 0!important;
+            box-sizing: border-box;
+            border: 1px solid #000000;
+            margin: auto;
+            border-collapse: collapse;
+        }
+        
+        .contenufacture td {
+            padding: 5px 25px;
+            border: 1px solid #000000;
+            border-collapse: collapse;
+        }
+        .vide{
+            border : none !important;
+        }
+        .designation{
+            border-right: none !important;
+        }
+        .contenufacture tfoot{
+            margin-top : 50px !important;
+        }
+        .rib{
+            max-height: 200px;
+            display: block;
+            margin: auto;
+        }
+        
+        
+        
+
+        .destinataire {
+            padding: 5px 25px;
+            border: 1px solid #000000;
+            border-collapse: collapse;
+        }
+
+
+        .emetteur,
+        .destinataire_ctn {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .emetteur p,
+        .destinataire_ctn p {
+            padding: 5px;
+            margin: 0;
+        }
+
+
+
+        .destinataire {
+            /*            border: 1px solid #000000;*/
+        }
+
+        @media print {
+            .maincontenu {
+                position: relative !important;
+                height: 100% !important;
+            }
+
+            .footercontenu {
+                display: block;
+                position: absolute !important;
+                bottom: 0 !important;
+                left: 0 !important;
+
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+    <!--
+
+    <div class="entete">
+        <h2>NOM SOCIETE / NOM Prénom</h2>
+        <h2>jj/mm/aaaa</h2>
+        <h2>000 personnes</h2>
+    </div>
+    <h1>PROPOSITION POUR <br> EVENEMENT</h1>
+
+    <div class="entete">
+        <img src="../img/logo_cmstraiteur.png">
+        <div class="entete_footer">
+            <p>Anne-Sophie, Anne-Claire & Annabelle GRAPPIN</p>
+            <p>CHEZ MES SOEURS - 18 AVENUE DE LA CONCORDE 21000 DIJON</p>
+        </div>
+    </div>
+-->
+
+    <div class="maincontenu">
+        <div class="headercontenu">
+            <img src="../img/logo_cmstraiteur.png">
+            <h1>FACTURE</h1>
+        </div>
+        <div class="contenu">
+            <div class="emetteur">
+                <p><b>Emetteur</b></p>
+                <p>Chez mes Soeurs</p>
+                <p>18 Avenue de la Concorde</p>
+                <p>21000 DIJON</p>
+                <p>Tel : 06 61 91 80 12</p>
+                <p></p>
+                <p>Email : chezmesoeurs@gmail.com</p>
+            </div>
+
+            <div class="destinataire_ctn">
+                <p><b>Adressée à</b></p>
+                <div class="destinataire">
+                    <p>Nom Société ou particulier</p>
+                    <p>Adresse du client</p>
+                    <p>CP VILLE Du client</p>
+                </div>
+            </div>
+        </div>
+
+
+        <table class="infosfacture">
+            <tbody>
+                <tr>
+                    <td>Référence facture : FA_0123456789_000</td>
+                    <td>Date de facture : 00/00/0000</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="contenufacture">
+           <thead>
+               <tr>
+                   <td class="designation">Désignation</td>
+                    <td class="vide"></td>
+                    <td class="vide"></td>
+                    <td >Prix HT</td>
+                    <td >TVA</td>
+                    <td >Prix TTC</td>
+               </tr>
+           </thead>
+            <tbody>
+                <tr>
+                    <td  colspan="3">Prestation Salée</td>
+                    <td>000.00€</td>
+                    <td >10%</td>
+                    <td >000.00€</td>
+                </tr>
+                <tr>
+                    <td  colspan="3">Prestation Sucrée</td>
+                    <td >000.00€</td>
+                    <td>10%</td>
+                    <td >000.00€</td>
+                </tr>
+                   <tr>
+                    <td  colspan="3">Option</td>
+                    <td>000.00€</td>
+                    <td >10%</td>
+                    <td >000.00€</td>
+                </tr>
+                   <tr>
+                    <td  colspan="3">Option</td>
+                    <td>000.00€</td>
+                    <td >10%</td>
+                    <td >000.00€</td>
+                </tr>
+                   <tr>
+                    <td  colspan="3">Option</td>
+                    <td>000.00€</td>
+                    <td >10%</td>
+                    <td >000.00€</td>
+                </tr>
+  
+                   <tr>
+                    <td  colspan="6"></td>
+                </tr>  
+  
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3">Conditions de règlement</td>
+                    <td colspan="2">Total HT</td>
+                    <td>000,00€</td>
+                </tr>   
+                   
+                   <tr>
+                    <td colspan="3">A reception de facture</td>
+                    <td colspan="2">TVA</td>
+                    <td>000,00€</td>
+                </tr>
+                <tr></tr>
+                
+                <tr>
+                    <td colspan="3"> TVA Sur les encaissements</td>
+                    <td colspan="2">Total à payer TTC</td>
+                    <td>000,00€</td>
+                </tr>
+            </tfoot>
+        </table>
+
+
+        <img src="../img/exemplerib.jpg" class="rib">
+        
+
+
+
+
+        <div class="footercontenu">
+            <p>Chez Mes Soeurs - 18 Avenue de la Concorde - 21000 DIJON</p>
+            <p>06 61 91 80 12 - chezmessoeurs@gmail.com</p>
+            <p>SIRET - 831 826 672</p>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

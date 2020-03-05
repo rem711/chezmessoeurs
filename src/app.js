@@ -1,0 +1,62 @@
+// Chargement des bibliothèques
+const path = require('path')
+const express = require('express')
+const hbs = require('hbs')
+
+// chargement base de données
+const db = require('./models')
+// la base de données est disponible globalement l'instancier qu'une fois et utiliser son pool
+global.db = db 
+
+// chargement des routers
+const agendaRouter = require('./routers/agenda')
+const archivesRouter = require('./routers/archives')
+const carteRouter = require('./routers/carte')
+const clientsRouter = require('./routers/clients')
+const devisRouter = require('./routers/devis')
+const estimationsRouter = require('./routers/estimations')
+const facturesRouter = require('./routers/factures')
+const menuRouter = require('./routers/menu')
+const statistiquesRouter = require('./routers/statistiques')
+
+const app = express()
+const port = 3000
+
+// chemins pour config Express
+const publicDirectoryPath = path.join(__dirname, '../public')
+const viewsPath = path.join(__dirname, '../templates/views')
+const partialsPath = path.join(__dirname, '../templates/partials')
+
+// setup handlebars engine et le chemin des vues
+// lignes 1 et 2 pour utiliser des .html plutôt que .hbs avec handlebars
+app.set('view engine', 'html'); // 1
+app.engine('html', require('hbs').__express); // 2
+// app.set('view engine', 'hbs')
+app.set('views', viewsPath)
+hbs.registerPartials(partialsPath)
+
+// setup chemins des fichiers statics
+app.use(express.static(publicDirectoryPath))
+
+// setup des routers
+app.use(agendaRouter)
+app.use(archivesRouter)
+app.use(carteRouter)
+app.use(clientsRouter)
+app.use(devisRouter)
+app.use(facturesRouter)
+app.use(estimationsRouter)
+app.use(menuRouter)
+app.use(statistiquesRouter)
+
+app
+// entrée
+.get('', (req, res) => {
+    res.render('index', {
+        
+    })
+})
+
+app.listen(port,  () => {
+    console.log('Server up on port ' + port)
+})

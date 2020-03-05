@@ -1,0 +1,54 @@
+ <link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/clients.css">
+
+
+        
+        
+        
+         
+          <h1>Clients</h1>
+        <div class="content_inner">
+            <table>
+                <thead>
+                    <th>Nom Prénom</th>
+                    <th>Adresse</th>
+                    <th>Téléphone</th>
+                    <th>Email</th>
+                    <th>Type</th>
+                    <th>Nb Prestations</th>
+                    <th>Dernier Statut</th>
+                    <th>Paiement(s) en retard</th>
+
+                </thead>
+                <tbody>
+                {{#if infos}}
+                    <tr><td colspan="8">{{infos.error}}{{infos.message}}</td></tr>                    
+                {{else}}
+                    {{#if clients}}
+                        {{#each clients}}
+                            <tr>
+                            <td>{{Nom_Prenom}}</td>
+                            <td>{{Adresse_Facturation}}</td>
+                            <td>{{Telephone}}</td>
+                            <td>{{Email}}</td>
+                            <td>{{Type}}</td>
+                            <td>{{Nombre_Prestations}}</td>
+                            <td>{{Dernier_Statut}}</td>
+                            <td>{{Paiement_En_Retard}}</td>
+                            </tr>
+                        {{/each}}                
+                    {{/if}}
+                    {{#if client}}
+                        {{#each client}}
+                            <p>{{this}}</p>
+                        {{/each}}
+                    {{/if}}
+                {{/if}}                
+                </tbody>
+            </table>
+        </div>
+
+           <div class="btnbotright">
+            <button>0</button> 
+            <button>X</button>
+        </div>

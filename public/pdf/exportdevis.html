@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Devis</title>
+    <style>
+        html, body {
+            max-width: 700px;
+            -webkit-print-color-adjust: exact;
+            height: 100%;
+            font-size: 14px;
+
+
+        }
+
+        .entete {
+            width: 100%;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 25px 0;
+
+        }
+
+        .entete h2 {
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .entete_footer {
+            width: 100%;
+            padding-top: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+
+        }
+
+        h1 {
+            margin: 125px 0;
+            text-align: center;
+        }
+
+        .entete img {
+            padding-top: 50px;
+            max-width: 300px;
+
+        }
+
+
+        .maincontenu {
+            page-break-before: always;
+
+        }
+
+        .headercontenu {
+            height: 80px;
+            width: 100%;
+            background-color: #f4f4f4;
+
+        }
+
+        .headercontenu img {
+            max-height: 100%;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .footercontenu {
+            height: 60px;
+            padding-top: 5px;
+            width: 100%;
+            background-color: #f4f4f4;
+            justify-content: center;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            align-content: center;
+            align-items: center;
+        }
+
+        .footercontenu p {
+            font-size: 12px;
+            padding: 0px;
+            margin: 0;
+        }
+
+
+        .contenu {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 50px 25px;
+        }
+
+        .sale,
+        .colright {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sale p,
+        .sucre p,
+        .options p {
+            padding: 5px;
+            margin: 0;
+        }
+
+        .sucre,
+        .option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+
+        @media print {
+            .maincontenu {
+                position: relative !important;
+                height: 100% !important;
+            }
+
+            .footercontenu {
+                display: block;
+                position: absolute !important;
+                bottom: 0 !important;
+                left: 0 !important;
+
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="entete">
+        <h2>NOM SOCIETE / NOM Prénom</h2>
+        <h2>jj/mm/aaaa</h2>
+        <h2>000 personnes</h2>
+    </div>
+    <h1>PROPOSITION POUR <br> EVENEMENT</h1>
+
+    <div class="entete">
+        <img src="../img/logo_cmstraiteur.png">
+        <div class="entete_footer">
+            <p>Anne-Sophie, Anne-Claire & Annabelle GRAPPIN</p>
+            <p>CHEZ MES SOEURS - 18 AVENUE DE LA CONCORDE 21000 DIJON</p>
+        </div>
+    </div>
+
+    <div class="maincontenu">
+        <div class="headercontenu">
+            <img src="../img/logo_cmstraiteur.png">
+        </div>
+        <div class="contenu">
+            <div class="sale">
+                <h4>Formule mignardises salées</h4>
+                <p><i>00 pièces 00,00HT/Pers</i></p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+                <p>Nom du plat plat nom du plat plat</p>
+            </div>
+
+            <div class="colright">
+                <div class="sucre">
+                    <h4>Formule mignardises salées</h4>
+                    <p><i>00 pièces 00,00HT/Pers</i></p>
+                    <p>Nom du plat plat nom du plat plat</p>
+                    <p>Nom du plat plat nom du plat plat</p>
+                    <p>Nom du plat plat nom du plat plat</p>
+                    <p>Nom du plat plat nom du plat plat</p>
+                    <p>Nom du plat plat nom du plat plat</p>
+                    <p>Nom du plat plat nom du plat plat</p>
+
+                </div>
+                <div class="options">
+                    <h4>Options ajoutées</h4>
+                    <p><i>00,00HT/Pers</i></p>
+                    <p>Nom de l'option</p>
+                    <p>Nom de l'option</p>
+                    <p>Nom de l'option</p>
+                    <p>Nom de l'option</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footercontenu">
+            <p>Chez Mes Soeurs - 18 Avenue de la Concorde - 21000 DIJON</p>
+            <p>06 61 91 80 12 - chezmessoeurs@gmail.com</p>
+            <p>SIRET - 831 826 672</p>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
+
+
+
+
+
+
