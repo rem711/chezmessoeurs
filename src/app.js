@@ -24,8 +24,8 @@ const port = 3000
 
 // chemins pour config Express
 const publicDirectoryPath = path.join(__dirname, '../public')
-const viewsPath = path.join(__dirname, '../templates/views')
-const partialsPath = path.join(__dirname, '../templates/partials')
+const viewsPath = path.join(__dirname, './templates/views')
+const partialsPath = path.join(__dirname, './templates/partials')
 
 // setup handlebars engine et le chemin des vues
 // lignes 1 et 2 pour utiliser des .html plutôt que .hbs avec handlebars
