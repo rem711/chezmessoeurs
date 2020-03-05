@@ -8,6 +8,9 @@
          
           <h1>Clients</h1>
         <div class="content_inner">
+            {{#if client}}
+                <h2>Client créé ou chargé :</h2>
+            {{/if}}
             <table>
                 <thead>
                     <th>Nom Prénom</th>
@@ -26,29 +29,50 @@
                 {{else}}
                     {{#if clients}}
                         {{#each clients}}
-                            <tr>
-                            <td>{{Nom_Prenom}}</td>
-                            <td>{{Adresse_Facturation}}</td>
-                            <td>{{Telephone}}</td>
-                            <td>{{Email}}</td>
-                            <td>{{Type}}</td>
-                            <td>{{Nombre_Prestations}}</td>
-                            <td>{{Dernier_Statut}}</td>
-                            <td>{{Paiement_En_Retard}}</td>
+                            <tr id="client_{{Id_Client}}">
+                                <td>{{Nom_Prenom}}</td>
+                                <td>{{Adresse_Facturation}}</td>
+                                <td>{{Telephone}}</td>
+                                <td>{{Email}}</td>
+                                <td>{{Type}}</td>
+                                <td>{{Nombre_Prestations}}</td>
+                                <td>{{Dernier_Statut}}</td>
+                                <td>{{Paiement_En_Retard}}</td>
                             </tr>
                         {{/each}}                
                     {{/if}}
-                    {{#if client}}
-                        {{#each client}}
-                            <p>{{this}}</p>
-                        {{/each}}
+                    {{#if client}}                        
+                        {{#with client}}
+                            <tr id="client_{{Id_Client}}">
+                                <td>{{Nom_Prenom}}</td>
+                                <td>{{Adresse_Facturation}}</td>
+                                <td>{{Telephone}}</td>
+                                <td>{{Email}}</td>
+                                <td>{{Type}}</td>
+                                <td>{{Nombre_Prestations}}</td>
+                                <td>{{Dernier_Statut}}</td>
+                                <td>{{Paiement_En_Retard}}</td>
+                            </tr>
+                        {{/with}}
                     {{/if}}
                 {{/if}}                
                 </tbody>
             </table>
         </div>
 
+        <div class="modal">
+            <h1>Client</h1>
+            <form action="/clients" method="PATCH">
+
+            </form>
+            <label>Nom Prénom</label>
+        </div>
+
            <div class="btnbotright">
             <button>0</button> 
             <button>X</button>
+            </div>
+
+    
+
         </div>
