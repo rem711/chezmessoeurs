@@ -22,7 +22,7 @@ router
             defaults : {
                 Nom_Prenom : postClient.Nom_Prenom,
                 Adresse_Facturation : postClient.Adresse_Facturation,
-                Telephone : postClient.Telephone,
+                Telephone : postClient.Telephone.trim(),
                 Type : postClient.Type
             }
         })
@@ -41,7 +41,7 @@ router
                 {
                     Nom_Prenom : postClient.Nom_Prenom,
                     Adresse_Facturation : postClient.Adresse_Facturation,
-                    Telephone : postClient.Telephone,
+                    Telephone : postClient.Telephone.trim(),
                     Type : postClient.Type
                 },
                 {
@@ -128,6 +128,8 @@ router
     // récupération des données client
     const postClient = req.query
 
+    console.log('Id_Client', getId_Client)
+    console.log('params', postClient)
     // init valeurs retour
     let infos = undefined
     let client = undefined
@@ -155,7 +157,7 @@ router
                     Nom_Prenom : client.Nom_Prenom,
                     Adresse_Facturation : client.Adresse_Facturation,
                     Email : client.Email,
-                    Telephone : client.Telephone,
+                    Telephone : client.Telephone.trim(),
                     Type : client.Type
                 },
                 {
@@ -178,18 +180,25 @@ router
 
     // on renvoie sur le tableau client si tout s'est bien passé et on affiche que tout s'est bien déroulé
     // ou on affiche la modale avec l'erreur associée
-    res.render('index', {
-        isClients : true,
+    // res.render('index', {
+    //     isClients : true,
+    //     infos,
+    //     client,
+    //     afficheClient
+    // })
+    res.send({
         infos,
-        client,
-        afficheClient
+        client
     })
     
 })
 // supprime clinet
 // utiliser method POST au lieu de DELETE car envoi depuis un formulaire html
 .post('/clients/delete/:Id_Client', (req, res) => {
-
+    console.log('Client à supprimer', req.params.Id_Client)
+    res.send({
+        Id_Client : req.params.Id_Client
+    })
 })
 
 

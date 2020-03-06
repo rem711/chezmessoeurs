@@ -135,7 +135,8 @@ tr {
 tr:hover,
 tr:active,
 tr:focus,
-tr:focus-within {
+tr:focus-within,
+.selectedElmt {
     cursor: pointer;
     color: #ffffff;
     background-color: #e06128;
