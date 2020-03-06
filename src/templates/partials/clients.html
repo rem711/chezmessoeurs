@@ -1,7 +1,5 @@
  <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/clients.css">
-
-
         
         
         
@@ -58,14 +56,29 @@
                 {{/if}}                
                 </tbody>
             </table>
+            <button id="myBtn">Open Modal</button>
         </div>
 
-        <div class="modal">
-            <h1>Client</h1>
-            <form action="/clients" method="PATCH">
-
-            </form>
-            <label>Nom Prénom</label>
+        <div id="modalUpdate" class="modal">
+            <div class="modal-content">
+                <span class="close closespan">&times;</span>
+                <h2>Client</h2>
+                <form action="/clients/patch/Id_ClientAAjouter" method="POST">
+                    <input type="hidden" name="Id_Client" value="ici_insérer_id_client">
+                    <label for="Nom_Prenom">Nom Prénom</label><input type="text" id="Nom_Prenom" name="Nom_Prenom" placeholder="Nom Prénom"><br>
+                    <label for="Adresse_Facturation">Adresse Facturation</label><input type="text" id="Adresse_Facturation" name="Adresse_Facturation" placeholder="18 Avenue de la Concorde, 21000 Dijon"><br>
+                    <label for="Telephone">Téléphone</label><input type="text" id="Telephone" name="Telephone" placeholder="0000000000"><br>
+                    <label for="Email"></label>Email<input type="text" id="Email" name="Email" placeholder="wendy@qualicom-conseil.com"><br>
+                    <label>Type</label><input type="radio" id="Particulier" name="Type" value="Particulier"><label for="Particulier">Particulier</label><input type="radio" id="Professionnel" name="Type" value="Professionnel"><label for="Professionnel">Professionnel</label><br>
+                    <p id="modal-error" class="modal-error"></p>
+                    <div class="">
+                        <button type="submit">V</button>
+                        <button type="button" class="close closebtn"><span>&times;</span></button>
+                    </div>
+                </form>
+                
+            </div>
+            
         </div>
 
            <div class="btnbotright">
