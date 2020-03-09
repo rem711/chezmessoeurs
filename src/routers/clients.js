@@ -121,19 +121,15 @@ router
     })
 })
 // modifie client
-// utiliser method POST au lieu de PATCh car envoi depuis un formulaire html
-.post('/clients/patch/:Id_Client', async (req, res) => {
+.patch('/clients/:Id_Client', async (req, res) => {
     // récupération de l'Id_Client
     const getId_Client = req.params.Id_Client
     // récupération des données client
     const postClient = req.query
 
-    console.log('Id_Client', getId_Client)
-    console.log('params', postClient)
     // init valeurs retour
     let infos = undefined
     let client = undefined
-    let afficheClient = false
 
     try {
         const temp_client = await Clients.findOne({
@@ -170,34 +166,52 @@ router
         }
         else {
             infos = errorHandler('Le client n\'existe pas.')
-            afficheClient = true
         }
     }
     catch(error) {
         infos = errorHandler(error.errors[0].message, undefined)
-        afficheClient = true
     }
 
-    // on renvoie sur le tableau client si tout s'est bien passé et on affiche que tout s'est bien déroulé
-    // ou on affiche la modale avec l'erreur associée
-    // res.render('index', {
-    //     isClients : true,
-    //     infos,
-    //     client,
-    //     afficheClient
-    // })
     res.send({
         infos,
         client
     })
     
 })
-// supprime clinet
+// supprime client
 // utiliser method POST au lieu de DELETE car envoi depuis un formulaire html
-.post('/clients/delete/:Id_Client', (req, res) => {
-    console.log('Client à supprimer', req.params.Id_Client)
+// .post('/clients/delete/:Id_Client', async (req, res) => {
+.delete('/clients/delete/:Id_Client', async (req, res) => {
+    // console.log('Client à supprimer', req.params.Id_Client)
+    // res.send({
+    //     Id_Client : req.params.Id_Client
+    // })
+
+    // récupération de l'Id_Client
+    const getId_Client = req.params.Id_Client
+
+    // init valeurs retour
+    let infos = undefined
+
+    try {
+        await Clients.destroy({
+            where : {
+                Id_Client : getId_Client
+            }
+        })
+        infos = errorHandler(undefined, 'Le client a bien été supprimé')
+    }
+    catch(error) {
+        infos = errorHandler('Le client n\'existe pas.', undefined)
+    }
+
+    // res.render('index', {
+    //     isClients : true,
+    //     infos
+    // })
+
     res.send({
-        Id_Client : req.params.Id_Client
+        infos
     })
 })
 
