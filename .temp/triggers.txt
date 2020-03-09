@@ -1,0 +1,2 @@
+-> voir pour mettre en places des triggers mysql lors des suppressions
+lorsqu'une facture est supprimée, les formules qui lui sont liées doivent être supprimées, ainsi que le devis associé
