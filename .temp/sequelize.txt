@@ -23,3 +23,6 @@ Pour sequelize
 Pour mieux comprendre les associations
 -> https://sequelize.readthedocs.io/en/latest/docs/associations/
 -> https://dev.to/neshaz/everything-there-is-to-know-about-associations-in-rails-52ii#:~:text=A%20one%2Dto%2Dmany%20association,to%20only%20one%20model%20A.
+Pour exemple d'eager loading (charger les objets liés aux FK plutôt que simplement l'ID)
+-> https://gist.github.com/zcaceres/83b554ee08726a734088d90d455bc566
+-> https://sequelize.org/master/manual/eager-loading.html
