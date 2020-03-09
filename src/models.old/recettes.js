@@ -1,7 +1,8 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-    const Recettes = sequelize.define('Recettes', {
-        Id_Recette: {
+/* jshint indent: 1 */
+
+module.exports = function(sequelize, DataTypes) {
+	return sequelize.define('recettes', {
+		Id_Recette: {
 			type: DataTypes.INTEGER(11),
 			allowNull: false,
 			primaryKey: true,
@@ -19,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING(1000),
 			allowNull: true
 		}
-    }, {})
-
-    return Recettes
-}
+	}, {
+		tableName: 'recettes'
+	});
+};

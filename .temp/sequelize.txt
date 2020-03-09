@@ -13,6 +13,13 @@ Pour générer automatiquement les models, sequelize-auto est utilisé
 *******
 Les models peuvent être aussi modifiés pour ajouter plus de controls qu'il n'y en a dans la BDD avec des fonctions de validation par exemple ou des enums pour les champs ayant des valeurs prédéfinies
 
+*******
+Utiliser les migrations gérer les contraintes de clefs étrangères
+Les FK ne peuvent donc pas être créées en BDD mais directement avec sequelize sinon il n'est pas possible de faire d'eager loading
+La colonne peut être créée dès le départ et ensuite on ajoute seulement la contrainte
+-> https://sequelize.org/master/class/lib/query-interface.js~QueryInterface.html#instance-method-addConstraint
+db:migrate --config src/config/config.json --models-path src/models/ --migrations-path src/migrations/
+
 Liens utils :
 Pour sequelize-auto
 -> https://medium.com/@miarirabs/expressjs-connexion-%C3%A0-une-base-de-donn%C3%A9es-avec-sequelize-et-ses-extensions-sequelize-cli-7c6118d12c01

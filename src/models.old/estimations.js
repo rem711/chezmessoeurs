@@ -1,7 +1,8 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const Estimations = sequelize.define('Estimations', {
-    Id_Estimation: {
+/* jshint indent: 1 */
+
+module.exports = function(sequelize, DataTypes) {
+	const Estimations = sequelize.define('Estimations', {
+		Id_Estimation: {
 			field : 'Id_Estimation',
 			type: DataTypes.INTEGER(11),
 			allowNull: false,
@@ -14,11 +15,11 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
 		},
-		Id_Client: {
-			field : 'Id_Client',
-			type: DataTypes.INTEGER(11),
-			allowNull: false
-		},
+		// Id_Client: {
+		// 	field : 'Id_Client',
+		// 	type: DataTypes.INTEGER(11),
+		// 	allowNull: false
+		// },
 		Date_Evenement: {
 			field : 'Date_Evenement',
 			type: DataTypes.DATE,
@@ -27,22 +28,38 @@ module.exports = (sequelize, DataTypes) => {
 		Id_Formule_Aperitif: {
 			field : 'Id_Formule_Aperitif',
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Id_Formule_Cocktail: {
 			field : 'Id_Formule_Cocktail',
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Id_Formule_Box: {
 			field : 'Id_Formule_Box',
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Id_Formule_Brunch: {
 			field : 'Id_Formule_Brunch',
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Commentaire: {
 			field : 'Commentaire',
@@ -54,11 +71,13 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING(10),
 			allowNull: true
 		}
-  }, {});
-  Estimations.associate = function(models) {
-    // associations can be defined here
-	Estimations.belongsTo(models.Clients, { foreignKey : 'Id_Client' }),
-	Estimations.hasOne(models.Devis)
-  };
-  return Estimations;
+	}, {
+		tableName: 'Estimations'
+	});
+
+	Estimations.associate = models => {
+		Estimations.belongsTo(models.Clients)
+	}
+
+	return Estimations
 };

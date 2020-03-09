@@ -1,7 +1,8 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const Clients = sequelize.define('Clients', {
-    Id_Client: {
+/* jshint indent: 1 */
+
+module.exports = function(sequelize, DataTypes) {
+	return sequelize.define('Clients', {
+		Id_Client: {
 			field : 'Id_Client',
 			type: DataTypes.INTEGER(11),
 			allowNull: false,
@@ -89,12 +90,7 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: '0'
 		}
-  }, {});
-  Clients.associate = function(models) {
-	// associations can be defined here
-	Clients.hasMany(models.Estimations)
-	Clients.hasMany(models.Devis)
-	Clients.hasMany(models.Factures)
-  };
-  return Clients;
+	}, {
+		tableName: 'clients'
+	});
 };

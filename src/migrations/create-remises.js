@@ -1,6 +1,7 @@
 'use strict';
-module.exports = (sequelize, DataTypes) => {
-    const Remises = sequelize.define('Remises', {
+module.exports = {
+  up: (queryInterface, Sequelize) => {
+    return queryInterface.createTable('Remises', {
         Id_Remise: {
 			type: DataTypes.INTEGER(11),
 			allowNull: false,
@@ -21,11 +22,9 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: '0'
 		}
-    }, {})
-    Remises.associate = models => {
-        Remises.hasMany(models.Devis),
-        Remises.hasMany(models.Factures)
-    }
-
-    return Remises
-}
+    })
+  },
+  down: (queryInterface, Sequelize) => {
+    return queryInterface.dropTable('Remises')
+  }
+};

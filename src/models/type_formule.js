@@ -1,8 +1,7 @@
-/* jshint indent: 1 */
-
-module.exports = function(sequelize, DataTypes) {
-	return sequelize.define('type_formule', {
-		Id_Type_Formule: {
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+    const Type_Formule = sequelize.define('Type_Formule', {
+        Id_Type_Formule: {
 			type: DataTypes.INTEGER(11),
 			allowNull: false,
 			primaryKey: true,
@@ -12,7 +11,10 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.STRING(100),
 			allowNull: false
 		}
-	}, {
-		tableName: 'type_formule'
-	});
-};
+    }, {})
+    Type_Formule.associate = models => {
+        Type_Formule.hasMany(models.Formule)
+    }
+
+    return Type_Formule
+}

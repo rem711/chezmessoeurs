@@ -1,7 +1,8 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-    const Factures = sequelize.define('Factures', {
-        Id_Facture: {
+/* jshint indent: 1 */
+
+module.exports = function(sequelize, DataTypes) {
+	return sequelize.define('factures', {
+		Id_Facture: {
 			type: DataTypes.INTEGER(11),
 			allowNull: false,
 			primaryKey: true,
@@ -18,7 +19,11 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		Id_Client: {
 			type: DataTypes.INTEGER(11),
-			allowNull: false
+			allowNull: false,
+			references: {
+				model: 'clients',
+				key: 'Id_Client'
+			}
 		},
 		Date_Evenement: {
 			type: DataTypes.DATE,
@@ -30,23 +35,43 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		Id_Devis: {
 			type: DataTypes.INTEGER(11),
-			allowNull: false
+			allowNull: false,
+			references: {
+				model: 'devis',
+				key: 'Id_Devis'
+			}
 		},
 		Id_Formule_Aperitif: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Id_Formule_Cocktail: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Id_Formule_Box: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Id_Formule_Brunch: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Commentaire: {
 			type: DataTypes.STRING(1000),
@@ -63,7 +88,11 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		Id_Remise: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'remises',
+				key: 'Id_Remise'
+			}
 		},
 		Prix_HT: {
 			type: DataTypes.FLOAT,
@@ -98,12 +127,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.DATE,
 			allowNull: true
 		}
-    }, {})
-    Factures.associate = models => {
-        Factures.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
-        Factures.belongsTo(models.Devis, { foreignKey : 'Id_Devis' })
-        Factures.belongsTo(models.Remise, { foreignKey : 'Id_Remise' })
-    }
-
-    return Factures
-}
+	}, {
+		tableName: 'factures'
+	});
+};

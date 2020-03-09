@@ -1,7 +1,8 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-    const Devis = sequelize.define('Devis', {
-        Id_Devis: {
+/* jshint indent: 1 */
+
+module.exports = function(sequelize, DataTypes) {
+	return sequelize.define('devis', {
+		Id_Devis: {
 			type: DataTypes.INTEGER(11),
 			allowNull: false,
 			primaryKey: true,
@@ -14,7 +15,11 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		Id_Client: {
 			type: DataTypes.INTEGER(11),
-			allowNull: false
+			allowNull: false,
+			references: {
+				model: 'clients',
+				key: 'Id_Client'
+			}
 		},
 		Date_Evenement: {
 			type: DataTypes.DATE,
@@ -26,23 +31,43 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		Id_Estimation: {
 			type: DataTypes.INTEGER(11),
-			allowNull: false
+			allowNull: false,
+			references: {
+				model: 'estimations',
+				key: 'Id_Estimation'
+			}
 		},
 		Id_Formule_Aperitif: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Id_Formule_Cocktail: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Id_Formule_Box: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Id_Formule_Brunch: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'formule',
+				key: 'Id_Formule'
+			}
 		},
 		Commentaire: {
 			type: DataTypes.STRING(1000),
@@ -58,7 +83,11 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		Id_Remise: {
 			type: DataTypes.INTEGER(11),
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: 'remises',
+				key: 'Id_Remise'
+			}
 		},
 		Prix_HT: {
 			type: DataTypes.FLOAT,
@@ -70,12 +99,7 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: '0'
 		}
-    }, {})
-    Devis.associate = models => {
-        Devis.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
-        Devis.belongsTo(models.Estimations, { foreignKey : 'Id_Estimation' })
-        Devis.belongsTo(models.Remise, { foreignKey : 'Id_Remise' })
-    }
-
-    return Devis
-}
+	}, {
+		tableName: 'devis'
+	});
+};

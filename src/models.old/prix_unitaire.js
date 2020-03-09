@@ -1,7 +1,8 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-    const Prix_Unitaire = sequelize.define('Prix_Unitaire', {
-        Id_Prix_Unitaire: {
+/* jshint indent: 1 */
+
+module.exports = function(sequelize, DataTypes) {
+	return sequelize.define('prix_unitaire', {
+		Id_Prix_Unitaire: {
 			type: DataTypes.INTEGER(11),
 			allowNull: false,
 			primaryKey: true,
@@ -21,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: '0'
 		}
-    }, {})
-
-    return Prix_Unitaire
-}
+	}, {
+		tableName: 'prix_unitaire'
+	});
+};
