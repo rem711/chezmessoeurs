@@ -17,8 +17,21 @@ Les models peuvent être aussi modifiés pour ajouter plus de controls qu'il n'y
 Utiliser les migrations gérer les contraintes de clefs étrangères
 Les FK ne peuvent donc pas être créées en BDD mais directement avec sequelize sinon il n'est pas possible de faire d'eager loading
 La colonne peut être créée dès le départ et ensuite on ajoute seulement la contrainte
+!!! les fichiers de migrations doivent être ordonnées de sorte que les clefs étrangères puissent être créées (ex estimations doit être créé après clients car il y a la FK_Id_Client)
 -> https://sequelize.org/master/class/lib/query-interface.js~QueryInterface.html#instance-method-addConstraint
 db:migrate --config src/config/config.json --models-path src/models/ --migrations-path src/migrations/
+
+*******
+Utiliser les seeds pour repmlir une BDD de tests 
+-> https://sequelize.org/master/manual/migrations.html#creating-the-first-seed
+
+*************************************************************************************************************************************
+
+Pour générer la base de test, créer une BDD du nom de (config/config.json).database
+npx sequelize-cli db:migrate // crée les tables et les dépendances
+npx sequelize-cli db:seed:all // insert le contenu
+
+*************************************************************************************************************************************
 
 Liens utils :
 Pour sequelize-auto
