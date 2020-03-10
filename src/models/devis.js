@@ -74,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
     Devis.associate = models => {
         Devis.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
         Devis.belongsTo(models.Estimations, { foreignKey : 'Id_Estimation' })
-        Devis.belongsTo(models.Remise, { foreignKey : 'Id_Remise' })
+        Devis.belongsTo(models.Remises, { foreignKey : 'Id_Remise' })
     }
 
     return Devis

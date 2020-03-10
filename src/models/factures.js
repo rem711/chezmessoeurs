@@ -102,7 +102,7 @@ module.exports = (sequelize, DataTypes) => {
     Factures.associate = models => {
         Factures.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
         Factures.belongsTo(models.Devis, { foreignKey : 'Id_Devis' })
-        Factures.belongsTo(models.Remise, { foreignKey : 'Id_Remise' })
+        Factures.belongsTo(models.Remises, { foreignKey : 'Id_Remise' })
     }
 
     return Factures

@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
 		}
     }, {})
     Type_Formule.associate = models => {
-        Type_Formule.hasMany(models.Formule)
+        Type_Formule.hasMany(models.Formules)
     }
 
     return Type_Formule
