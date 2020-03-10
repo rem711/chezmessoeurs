@@ -3,17 +3,17 @@ const router = new express.Router()
 const { Clients } = global.db
 const errorHandler = require('../utils/errorHandler')
 
-router
-// création d'un client
-.post('/clients', async (req, res) => {
-    // récupération des données client
-    const postClient = req.query
-
+const createOrLoadClient = async (postClient) => {
     // init valeurs retour
     let infos = undefined
     let client = undefined
 
-   try {
+    // vérification car impossible de faire un WHERE avec "undefined"
+    postClient.Email = postClient.Email === undefined ? '' : postClient.Email
+    // vérification car impossible d'appeler trim() sur undefined
+    postClient.Telephone = postClient.Telephone === undefined ? '' : postClient.Telephone    
+
+    try {
         // crée un nouveau client où le récupère s'il existe déjà
         const [ temp_client, created ] = await Clients.findOrCreate({
             where : {
@@ -61,6 +61,20 @@ router
    catch(error) {
        infos = errorHandler(error.errors[0].message, undefined)
    }
+
+   return {
+       infos,
+       client
+   }
+}
+
+router
+// création d'un client
+.post('/clients', async (req, res) => {
+    // récupération des données client
+    const postClient = req.query    
+
+    const {infos, client} = await createOrLoadClient(postClient)
 
    // la création d'un client se fait automatiquement depuis une estimation
    // on n'affiche donc pas de vue ensuite
@@ -182,11 +196,6 @@ router
 // utiliser method POST au lieu de DELETE car envoi depuis un formulaire html
 // .post('/clients/delete/:Id_Client', async (req, res) => {
 .delete('/clients/delete/:Id_Client', async (req, res) => {
-    // console.log('Client à supprimer', req.params.Id_Client)
-    // res.send({
-    //     Id_Client : req.params.Id_Client
-    // })
-
     // récupération de l'Id_Client
     const getId_Client = req.params.Id_Client
 
@@ -205,15 +214,13 @@ router
         infos = errorHandler('Le client n\'existe pas.', undefined)
     }
 
-    // res.render('index', {
-    //     isClients : true,
-    //     infos
-    // })
-
     res.send({
         infos
     })
 })
 
 
-module.exports = router
+module.exports = {
+    router,
+    createOrLoadClient
+}

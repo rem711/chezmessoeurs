@@ -1,6 +1,7 @@
 const express = require('express')
 const router = new express.Router()
 const { Clients, Estimations, Formules } = global.db
+const { createOrLoadClient }  = require('./clients')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const moment = require('moment')
@@ -16,7 +17,30 @@ router
     let infos = undefined
     let client = undefined // client récupéré ou créé avec l'estimation
     let estimation = undefined
-    
+
+    // crée ou récupère le client si déjà existant
+    const createRes = await createOrLoadClient( {
+        Nom_Prenom : postEstimation.Nom_Prenom,
+        Adresse_Facturation : postEstimation.Adresse_Facturation,
+        Email : postEstimation.Email,
+        Telephone : postEstimation.Telephone,
+        Type : postEstimation.Type
+    })
+    infos = createRes.infos
+    client = createRes.client
+
+    // s'il n'y a pas d'erreur lors de la création du client ou de sa récupération (paramètres invalides)
+    if(client !== undefined) {
+        // d'abord création des formules
+
+        // puis création de l'estimation
+        try {
+            
+        }
+        catch(error) {
+
+        }
+    }
 
     // renvoie à la calculette s'il y a des erreurs
     res.send({
@@ -44,7 +68,6 @@ router
     }
     else {
         estimations = []
-        // temp_estimations.forEach(e => {
         for(const e of temp_estimations) {
             const { Id_Estimation, Date_Creation, Client, Date_Evenement, Id_Formule_Aperitif, Id_Formule_Cocktail, Id_Formule_Box, Id_Formule_Brunch, Commentaire, Statut } = e
                         
@@ -113,6 +136,75 @@ router
         formatDateHeure
     })
 })
-// 
+// valide estimation pour créer un devis
+// récupère les infos, archive l'estimation, envoi sur devis pour le créer, renvoie sur la page du devis complet
+.post('/estimations/validation/:Id_Estimation', async (req, res) => {
+
+})
+// archive une estimation
+.patch('/estimations/:Id_Estimation', async (req, res) => {
+    const getId_Estimation = req.params.Id_Estimation
+
+    let infos = undefined
+
+    try {
+        const estimation = await Estimations.findOne({
+            where : {
+                Id_Estimation : getId_Estimation
+            }
+        })
+
+        if(estimation !== null) {
+            archiveEstimation(estimation)
+            infos = errorHandler(undefined, 'L\'estimation a bien été archivée.')
+        }
+        else {
+            infos = errorHandler('L\'estimation n\'existe pas.', undefined)
+        }
+    }
+    catch(error) {
+        infos = errorHandler(error, undefined)
+    }
+
+    res.send({
+        infos
+    })
+})
+
+// supprime une estimation
+.delete('/estimations/:Id_Estimation', async (req, res) => {
+    const getId_Estimation = req.params.Id_Estimation
+
+    let infos = undefined
+
+    try {
+        const estimation = await Estimations.findOne({
+            where : {
+                Id_Estimation : getId_Estimation
+            }
+        })
+
+        if(estimation !== null) {
+            await estimation.destroy()
+            infos = errorHandler(undefined, 'L\'estimation a bien été supprimée.')
+        }
+        else {
+            infos = errorHandler('L\'estimation n\'existe pas.', undefined)
+        }
+    }
+    catch(error) {
+        infos = errorHandler(error, undefined)
+    }
+
+    res.send({
+        infos
+    })
+})
+
+const archiveEstimation = async (estimation) => {
+    estimation.Statut = 'Archivé'
+    await estimation.save()
+}
+
 
 module.exports = router
