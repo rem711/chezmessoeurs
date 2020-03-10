@@ -193,9 +193,9 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Clients.associate = function(models) {
 	// associations can be defined here
-	Clients.hasMany(models.Estimations)
-	Clients.hasMany(models.Devis)
-	Clients.hasMany(models.Factures)
+	// Clients.hasMany(models.Estimations)
+	// Clients.hasMany(models.Devis)
+	// Clients.hasMany(models.Factures)
   };
   return Clients;
 };
