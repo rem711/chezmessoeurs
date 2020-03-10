@@ -5,16 +5,18 @@ const errorHandler = require('../utils/errorHandler')
 
 router
 // estimations
-.get('/estimations', (req, res) => {
+.get('/estimations', async (req, res) => {
     // res.render('index', {
     //     isEstimations : true
     // })
 
     let infos = undefined
     let estimations = undefined
+    let clients = undefined
 
     try {
-        estimations = Estimations.findAll()
+        estimations = await Estimations.findAll({})
+        clients = await Clients.findAll({})
     }
     catch(error) {
         infos = errorHandler(error, undefined)
@@ -22,6 +24,7 @@ router
 
     res.send({
         infos,
+        clients,
         estimations
     })
 })
