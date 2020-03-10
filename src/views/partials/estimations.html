@@ -1,0 +1,58 @@
+<link rel="stylesheet" href="css/estimations.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
+
+ 
+         
+
+          <h1>Estimations reçues</h1>
+        <div class="content_inner">
+            <table>
+                <thead>
+                    <th>Date even.</th>
+                    <th>Nom Prénom</th>
+                    <th>Téléphone</th>
+                    <th>Email</th>
+                    <th>Date estim.</th>                    
+                    <th>Apéritif</th>
+                    <th>Cocktail</th>
+                    <th>Boxes</th>
+                    <th>Brunch</th>
+                    <th>Commentaire</th>
+                    <th>Statut</th>
+                </thead>
+                <tbody>
+                <% if(locals.infos) { %>
+                    <tr><td colspan="8">
+                        <%= infos.error %>
+                        <%= infos.message %>
+                    </td></tr>         
+                <% } else { %>                    
+                    <% if(locals.estimations) { %>
+                        <% estimations.forEach(estimation => { %>
+                            <% const { Id_estimation, Date_Creation, Client, Date_Evenement, String_Formule_Aperitif, String_Formule_Cocktail, String_Formule_Box, String_Formule_Brunch, Commentaire, Statut } = estimation %>
+                            <% const id = 'estimation_' + Id_estimation %>
+                            <tr id="<%= id %>">
+                                <td><%= moment(Date_Evenement).format(formatDateHeure) %></td>   
+                                <td><%= Client.Nom_Prenom %></td>
+                                <td><%= Client.Telephone %></td>
+                                <td><%= Client.Email %></td>
+                                <td><%= moment(Date_Creation).format(formatDateHeure) %></td>
+                                <td><%= String_Formule_Aperitif %></td>
+                                <td><%= String_Formule_Cocktail %></td>
+                                <td><%= String_Formule_Box %></td>    
+                                <td><%= String_Formule_Brunch %></td>   
+                                <td><%= Commentaire %></td>   
+                                <td><%= Statut %></td>   
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                <% } %>
+                </tbody>
+            </table>
+        </div>
+        <div class="btnbotright">
+            <button>Devis</button> 
+            <button>X</button>
+        </div>
+

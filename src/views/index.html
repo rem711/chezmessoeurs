@@ -49,53 +49,30 @@
       
   <!--  INSERER INCLUDE CONTENT PAGE ICI -->
 
-        {{#if isAgenda}}
-            {{>agenda}}
-        {{/if}}
-
-        {{#if isEstimations}}
-            {{>estimations}}
-        {{/if}}
-
-        {{#if isDevis}}
-            {{>devis}}
-        {{/if}}
-
-        {{#if isClients}}
-            {{>clients}}
-        {{/if}}
-
-        {{#if isFactures}}
-            {{>factures}}
-        {{/if}}
-
-        {{#if isCarte}}
-            {{>carte}}
-        {{/if}}
-
-        {{#if isStatistiques}}
-            {{>statistiques}}
-        {{/if}}
-
-        {{#if isArchives}}
-            {{>archives}}
-        {{/if}}
-
-
-       
-
-
-
-       
-
-       
-      
-
-
-
-
-
-
+        <% if(locals.isAgenda) { %> 
+            <%- include('partials/agenda.html') %> 
+        <% } %>
+        <% if(locals.isEstimations) { %> 
+            <%- include('partials/estimations.html') %>
+        <% } %>
+        <% if(locals.isDevis) { %> 
+            <%- include('partials/devis.html') %>
+        <% } %>
+        <% if(locals.isClients) { %> 
+            <%- include('partials/clients.html') %>
+        <% } %>
+        <% if(locals.isFactures) { %> 
+            <%- include('partials/factures.html') %>
+        <% } %>
+        <% if(locals.isCarte) { %> 
+            <%- include('partials/carte.html') %>
+        <% } %>
+        <% if(locals.isStatistiques) { %> 
+            <%- include('partials/statistiques.html') %>
+        <% } %>
+        <% if(locals.isArchives) { %> 
+            <%- include('partials/archives.html') %>
+        <% } %>
 
 
     </div><!--  FIN CONTENT -->

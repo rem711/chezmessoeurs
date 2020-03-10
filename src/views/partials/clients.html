@@ -9,9 +9,6 @@
          
           <h1>Clients</h1>
         <div class="content_inner">
-            {{#if client}}
-                <h2>Client créé ou chargé :</h2>
-            {{/if}}
             <table>
                 <thead>
                     <th>Nom Prénom</th>
@@ -25,38 +22,30 @@
 
                 </thead>
                 <tbody>
-                {{#if infos}}
-                    <tr><td colspan="8">{{infos.error}}{{infos.message}}</td></tr>                    
-                {{else}}
-                    {{#if clients}}
-                        {{#each clients}}
-                            <tr id="client_{{Id_Client}}">
-                                <td>{{Nom_Prenom}}</td>
-                                <td>{{Adresse_Facturation}}</td>
-                                <td>{{Telephone}}</td>
-                                <td>{{Email}}</td>
-                                <td>{{Type}}</td>
-                                <td>{{Nombre_Prestations}}</td>
-                                <td>{{Dernier_Statut}}</td>
-                                <td>{{Paiement_En_Retard}}</td>
+                <% if(locals.infos) { %>
+                    <tr><td colspan="8">
+                        <%= infos.error %>
+                        <%= infos.message %>
+                    </td></tr>         
+                <% } else { %>                    
+                    <% if(locals.clients) { %>
+                        <% clients.forEach(client => { %>
+                            <% const { Id_Client, Nom_Prenom, Adresse_Facturation, Telephone, Email, Type, Nombre_Prestations, Dernier_Statut, Paiement_En_Retard } = client %>
+                            <% const id = 'client_' + Id_Client %>
+                            <tr id="<%= id %>">
+                                <td><%= Nom_Prenom %></td>
+                                <td><%= Adresse_Facturation %></td>
+                                <td><%= Telephone %></td>
+                                <td><%= Email %></td>
+                                <td><%= Type %></td>
+                                <td><%= Nombre_Prestations %></td>
+                                <td><%= Dernier_Statut %></td>
+                                <td><%= Paiement_En_Retard %></td>    
                             </tr>
-                        {{/each}}                
-                    {{/if}}
-                    {{#if client}}                        
-                        {{#with client}}
-                            <tr id="client_{{Id_Client}}">
-                                <td>{{Nom_Prenom}}</td>
-                                <td>{{Adresse_Facturation}}</td>
-                                <td>{{Telephone}}</td>
-                                <td>{{Email}}</td>
-                                <td>{{Type}}</td>
-                                <td>{{Nombre_Prestations}}</td>
-                                <td>{{Dernier_Statut}}</td>
-                                <td>{{Paiement_En_Retard}}</td>
-                            </tr>
-                        {{/with}}
-                    {{/if}}
-                {{/if}}                
+                        <% }) %>
+                    <% } %>
+                <% } %>
+                          
                 </tbody>
             </table>
         </div>

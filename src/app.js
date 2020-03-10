@@ -1,7 +1,7 @@
 // Chargement des bibliothèques
 const path = require('path')
 const express = require('express')
-const hbs = require('hbs')
+// const hbs = require('hbs') pour handlebars
 
 // chargement base de données
 const db = require('./models')
@@ -24,16 +24,17 @@ const port = 3000
 
 // chemins pour config Express
 const publicDirectoryPath = path.join(__dirname, '../public')
-const viewsPath = path.join(__dirname, './templates/views')
+const viewsPath = path.join(__dirname, './views')
 const partialsPath = path.join(__dirname, './templates/partials')
 
 // setup handlebars engine et le chemin des vues
 // lignes 1 et 2 pour utiliser des .html plutôt que .hbs avec handlebars
 app.set('view engine', 'html'); // 1
-app.engine('html', require('hbs').__express); // 2
+// app.engine('html', require('hbs').__express); // 2 pour handlebars
+app.engine('html', require('ejs').__express)
 // app.set('view engine', 'hbs')
 app.set('views', viewsPath)
-hbs.registerPartials(partialsPath)
+// hbs.registerPartials(partialsPath) pour handlebars
 
 // setup chemins des fichiers statics
 app.use(express.static(publicDirectoryPath))
