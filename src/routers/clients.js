@@ -80,7 +80,7 @@ router
     else if(clients.length === 0) {
         infos = errorHandler(undefined, 'Il n\'y a aucun client.')
     }
-
+    
     res.render('index', {
         isClients : true,
         infos,
