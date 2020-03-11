@@ -2,12 +2,15 @@ const express = require('express')
 const router = new express.Router()
 const { Clients, Estimations, Formules } = global.db
 const { createOrLoadClient }  = require('./clients')
+const gestionTypeFormule = require('../utils/gestion_type_formule')
+const gestionFormules = require('../utils/gestion_formules')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const moment = require('moment')
 const formatDateHeure = 'DD/MM/YYYY HH:mm'
 
 router
+// TODO
 // création estimation
 .post('/estimations', async (req, res) => {
     // récupération des données de l'estimation
@@ -21,7 +24,6 @@ router
     // crée ou récupère le client si déjà existant
     const createRes = await createOrLoadClient( {
         Nom_Prenom : postEstimation.Nom_Prenom,
-        Adresse_Facturation : postEstimation.Adresse_Facturation,
         Email : postEstimation.Email,
         Telephone : postEstimation.Telephone,
         Type : postEstimation.Type
@@ -32,6 +34,8 @@ router
     // s'il n'y a pas d'erreur lors de la création du client ou de sa récupération (paramètres invalides)
     if(client !== undefined) {
         // d'abord création des formules
+        // définition des éléments par formule
+        //// ici
 
         // puis création de l'estimation
         try {

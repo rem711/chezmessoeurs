@@ -21,7 +21,6 @@ const createOrLoadClient = async (postClient) => {
             },
             defaults : {
                 Nom_Prenom : postClient.Nom_Prenom,
-                Adresse_Facturation : postClient.Adresse_Facturation,
                 Telephone : postClient.Telephone.trim(),
                 Type : postClient.Type
             }
@@ -32,7 +31,6 @@ const createOrLoadClient = async (postClient) => {
         // modifie le client s'il existe déjà et ses informations sont différentes
         if(!created && (
             postClient.Nom_Prenom !== client.Nom_Prenom || 
-            postClient.Adresse_Facturation !== client.Adresse_Facturation ||
             postClient.Telephone !== client.Telephone ||
             postClient.Type !== client.Type
             )) {
@@ -40,7 +38,6 @@ const createOrLoadClient = async (postClient) => {
             await Clients.update(
                 {
                     Nom_Prenom : postClient.Nom_Prenom,
-                    Adresse_Facturation : postClient.Adresse_Facturation,
                     Telephone : postClient.Telephone.trim(),
                     Type : postClient.Type
                 },
@@ -52,7 +49,6 @@ const createOrLoadClient = async (postClient) => {
             )
             // on affecte à client les valeurs du post qui ont été mises en BDD plutôt que de relancer une requête
             client.Nom_Prenom = postClient.Nom_Prenom
-            client.Adresse_Facturation = postClient.Adresse_Facturation
             client.Telephone = postClient.Telephone
             client.Email = postClient.Email
             client.Type = postClient.Type

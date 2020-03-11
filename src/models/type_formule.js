@@ -11,7 +11,18 @@ module.exports = (sequelize, DataTypes) => {
 		Nom: {
 			field : 'Nom',
 			type: DataTypes.STRING(100),
-			allowNull: false
+			allowNull: false,
+			validate : {
+				isUndefined(value) {
+					if(value === undefined || value === '') {
+						throw new Error('Le nom ne peut pas être vide')
+					}
+				}
+			},
+			unique : {
+				args : true,
+				msg : 'Type de formule déjà existant.'
+			}
 		}
     }, {})
     Type_Formule.associate = models => {
