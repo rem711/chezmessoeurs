@@ -11,15 +11,18 @@
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    
   }
   
   /* Modal Content */
   .modal-content {
     background-color: #fefefe;
     margin: auto;
-    padding: 20px;
+    padding: 10px 20px 75px 20px;;
     border: 1px solid #888;
-    width: 80%;
+    width: 50%;
+      position: relative;
+    border : 3px solid #e06128;
   }
   
   /* The Close Button */
@@ -39,4 +42,86 @@
     color: #000;
     text-decoration: none;
     cursor: pointer;
+  } 
+
+
+h2{
+    text-align: center;
+}
+
+ #btnUpdate{
+    position: absolute;
+    right: -3px;
+    bottom: -3px;
+    height : 50px;
+    width : 70px;
+    background: #e06128;
+    color : #ffffff;
+    border : none;
+    transition : all 0.2s;
+}
+
+
+
+#btnUpdate:hover{
+        border : 3px solid #e06128;
+    background-color: #ffffff;
+    color : #e06128;
+    cursor: pointer;
+}
+
+
+.row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.rowinput{
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    padding: 5px 0;
+}
+
+.rowinput label{
+    padding-right: 15px;
+    min-width :150px;
+}
+
+.rowinput p{
+    padding :0;
+    margin: 0;
+}
+
+
+.row button{
+    height : auto;
+    min-height: 50px;
+    width : 30%;
+    background: #ffffff;
+    color : #e06128;
+    border : 3px solid #e06128;
+    transition : all 0.2s;
+}
+.row button:hover{
+    border : 3px solid #e06128;
+    background-color: #e06128;
+    color : #ffffff;
+    cursor: pointer;
+}
+
+input[type="text"]{
+    min-width : 50%;
+}
+
+
+
+
+@media screen and (max-width : 640px){
+      .modal-content {
+
+    width: 90%;
+
   }
+}

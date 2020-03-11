@@ -67,6 +67,27 @@
                 <li>Nom Plat</li>
             </ul>
         </div>
+
+        <div class="modal">
+            <div class="modal-content">
+                <span class="close closespan">&times;</span>
+                <h2>Recette</h2>
+                <div class="rowinput">
+                    <label>Catégorie recette </label>
+                    <input id="Particulier" name="Type" value="Particulier" type="radio" required><label>Recette salée </label>
+                    <input id="Professionnel" name="Type" value="Professionnel" type="radio" required><label>Recette sucrée</label>
+                </div>
+                <div class="rowinput">
+                    <label>Intitulé recette</label>
+                    <input id="intitule_recette" name="intitule_recette" type="text" placeholder="Nom de la recette" required>
+                </div>
+                <div class="rowinput">
+                    <label>Description recette</label>
+                    <input id="desc_recette" name="desc_recette" type="text" placeholder="Ceci est la description de la recette" required>
+                </div>
+                <button id="btnUpdate">&check;</button>
+            </div>
+        </div>
         
         <div class="btntopright">
             <button>+</button>

@@ -4,7 +4,7 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('Prix_Unitaire', [
         {
-            Nom_Type_Prestation : 'Pièce Salée',
+            Nom_Type_Prestation : 'Pièce salée',
             IsOption : 0,
             Montant : 1.6
         },
