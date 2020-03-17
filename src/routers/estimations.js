@@ -14,8 +14,8 @@ router
 // création estimation
 .post('/estimations', async (req, res) => {
     // récupération des données de l'estimation
-    const postEstimation = req.query
-
+    const postEstimation = req.body
+    
     // init valeurs retour
     let infos = undefined
     let client = undefined // client récupéré ou créé avec l'estimation
@@ -33,16 +33,33 @@ router
 
     // s'il n'y a pas d'erreur lors de la création du client ou de sa récupération (paramètres invalides)
     if(client !== undefined) {
-        // d'abord création des formules
-        // définition des éléments par formule
-        //// ici
+        // on crée les différentes formules
+        const formulesRes = await gestionFormules.createFormules(postEstimation)
+        const { idFormuleAperitif, idFormuleCocktail, idFormuleBox, idFormuleBrunch } = formulesRes
+        infos = formulesRes.infos
 
-        // puis création de l'estimation
-        try {
-            
-        }
-        catch(error) {
+        // on vérifie qu'il n'y a pas eu d'erreur(s) en créant les formules
+        // sinon l'erreur est déjà définie et sera renvoyée
+        if(infos === undefined || (infos && !infos.error)) {
+            // trim du commentaire si possible
+            postEstimation.Commentaire = postEstimation.Commentaire === undefined ? null : postEstimation.Commentaire.trim()
 
+            // puis création de l'estimation
+            try {
+                estimation = await Estimations.create({
+                    Id_Client : client.Id_Client,
+                    Date_Evenement : postEstimation.Date_Evenement,
+                    Id_Formule_Aperitif : idFormuleAperitif,
+                    Id_Formule_Cocktail : idFormuleCocktail,
+                    Id_Formule_Box : idFormuleBox,
+                    Id_Formule_Brunch : idFormuleBrunch,
+                    Commentaire : postEstimation.Commentaire
+                })
+            }
+            catch(error) {
+                console.log(error)
+                infos = errorHandler(error, undefined)
+            }
         }
     }
 

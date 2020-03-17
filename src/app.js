@@ -1,6 +1,7 @@
 // Chargement des bibliothèques
 const path = require('path')
 const express = require('express')
+const bodyParser = require('body-parser')
 // const hbs = require('hbs') pour handlebars
 
 // chargement base de données
@@ -20,6 +21,8 @@ const menuRouter = require('./routers/menu')
 const statistiquesRouter = require('./routers/statistiques')
 
 const app = express()
+app.use(bodyParser.urlencoded({ extended : true }))
+app.use(bodyParser.json())
 const port = 3000
 
 // chemins pour config Express

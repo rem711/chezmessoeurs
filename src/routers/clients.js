@@ -9,9 +9,10 @@ const createOrLoadClient = async (postClient) => {
     let client = undefined
 
     // vérification car impossible de faire un WHERE avec "undefined"
-    postClient.Email = postClient.Email === undefined ? '' : postClient.Email
+    postClient.Email = postClient.Email === undefined ? '' : postClient.Email.trim()
     // vérification car impossible d'appeler trim() sur undefined
-    postClient.Telephone = postClient.Telephone === undefined ? '' : postClient.Telephone    
+    postClient.Nom_Prenom = postClient.Nom_Prenom === undefined ? '' : postClient.Nom_Prenom.trim()
+    postClient.Telephone = postClient.Telephone === undefined ? '' : postClient.Telephone.trim().replace(/ /g, '') // retire également les espaces inutils
 
     try {
         // crée un nouveau client où le récupère s'il existe déjà
@@ -21,8 +22,7 @@ const createOrLoadClient = async (postClient) => {
             },
             defaults : {
                 Nom_Prenom : postClient.Nom_Prenom,
-                Telephone : postClient.Telephone.trim(),
-                Type : postClient.Type
+                Telephone : postClient.Telephone
             }
         })
         // récupération de l'objet client
@@ -38,7 +38,7 @@ const createOrLoadClient = async (postClient) => {
             await Clients.update(
                 {
                     Nom_Prenom : postClient.Nom_Prenom,
-                    Telephone : postClient.Telephone.trim(),
+                    Telephone : postClient.Telephone,
                     Type : postClient.Type
                 },
                 {
@@ -51,7 +51,6 @@ const createOrLoadClient = async (postClient) => {
             client.Nom_Prenom = postClient.Nom_Prenom
             client.Telephone = postClient.Telephone
             client.Email = postClient.Email
-            client.Type = postClient.Type
         }
    }
    catch(error) {

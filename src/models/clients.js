@@ -57,6 +57,7 @@ module.exports = (sequelize, DataTypes) => {
 			// type: DataTypes.STRING(13),
 			type : DataTypes.ENUM('Professionnel', 'Particulier'),
 			allowNull: false,
+			defaultValue: 'Particulier',
 			validate : {
 				notNull : {
 					msg : 'Le type doit être renseigné.'

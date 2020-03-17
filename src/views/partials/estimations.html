@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="css/estimations.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script defer src="js/estimations.js"></script>
 
 
  
@@ -30,8 +31,8 @@
                 <% } else { %>                    
                     <% if(locals.estimations) { %>
                         <% estimations.forEach(estimation => { %>
-                            <% const { Id_estimation, Date_Creation, Client, Date_Evenement, String_Formule_Aperitif, String_Formule_Cocktail, String_Formule_Box, String_Formule_Brunch, Commentaire, Statut } = estimation %>
-                            <% const id = 'estimation_' + Id_estimation %>
+                            <% const { Id_Estimation, Date_Creation, Client, Date_Evenement, String_Formule_Aperitif, String_Formule_Cocktail, String_Formule_Box, String_Formule_Brunch, Commentaire, Statut } = estimation %>
+                            <% const id = 'estimation_' + Id_Estimation %>
                             <tr id="<%= id %>">
                                 <td><%= moment(Date_Evenement).format(formatDateHeure) %></td>   
                                 <td><%= Client.Nom_Prenom %></td>
