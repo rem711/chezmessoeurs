@@ -1,56 +1,166 @@
-<link rel="stylesheet" href="css/devis.css">
-
-
-
+<link rel="stylesheet" type="text/css" href="/css/devis.css">
+<script defer src="/js/devis.js"></script>
 
   
    
         <h1>Devis</h1>
-        <div class="content_inner">
-            <label>Rechercher un devis</label>
-            <input type="text">
+        <div class="content_inner">     
+            <%# Affiche s'il une erreur est survenue %>      
+            <% if (locals.values['Général'].infos) { %>
+             <h3>
+                 <%= values['Général'].infos.error %> 
+             </h3>
+            <%# Affiche le contenu s'il n'y a pas de problème sur le serveur %> 
+            <% } else { %>
 
-            <h2>Devis en cours</h2>
-            <ul class="devis_list devis_encours">
-                <li>
-                    <p class="datedevis">Date even. : jj/mm/aaaa hh:mm</p>
-                    <p>Nom Prénom</p>
-                    <p>Date estim.</p>
-                    <p>Type</p>
-                    <p>Nb pièces/pers</p>
-                    <p>Commentaire commentaire</p>
-                </li>
-            </ul>
+                <label>Rechercher un devis</label>
+                <input type="text">
 
-            <h2>Devis envoyés</h2>
-            <ul class="devis_list devis_envoyes">
-                <li>
-                    <p class="datedevis">Date even. : jj/mm/aaaa hh:mm</p>
-                    <p>Nom Prénom</p>
-                    <p>Date estim.</p>
-                    <p>Type</p>
-                    <p>Nb pièces/pers</p>
-                    <p>Commentaire commentaire</p>
-                </li>
-            </ul>
+                <h2>Devis en cours</h2>
+                <table>
+                    <thead class="devis_list devis_encours">
+                        <th class="datedevis">Date even.</th>
+                        <th>Client</th>
+                        <th>Téléthhone</th>
+                        <th>Email</th>
+                        <th>Date estim.</th>                    
+                        <th>Athéritif</th>
+                        <th>Cocktail</th>
+                        <th>Boxes</th>
+                        <th>Brunch</th>
+                        <th>Commentaire</th>
+                    </thead>      
+                    <tbody>
+                        <%# Affichage s'il n'y a pas de devis %> 
+                        <% if (locals.values['En cours'].infos) { %>
+                            <tr>
+                                <td colspan="10">
+                                    <%= values['En cours'].infos.message %> 
+                                </td>
+                            </tr>
+                        <% } else { %> 
+                        <%# Affichage des devis %> 
+                            <% if (locals.values['En cours'].devis) { %>
+                                <% values['En cours'].devis.forEach(devis => { %>
+                                    <% const { Id_Devis, Client, Estimation, Date_Evenement, String_Formule_Aperitif, String_Formule_Cocktail, String_Formule_Box, String_Formule_Brunch, Commentaire } = devis %>     
+                                    <% const id = `devis_${Id_Devis}` %> 
+                                    <tr id="<%= id %> ">
+                                        <td class="datedevis"><%= moment(Date_Evenement).format(formatDateHeure) %></td>
+                                        <td><%= Client.Nom_Prenom %></td>
+                                        <td><%= Client.Telephone %></td>
+                                        <td><%= Client.Email %></td>
+                                        <td><%= moment(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
+                                        <td><%= String_Formule_Aperitif %></td>
+                                        <td><%= String_Formule_Cocktail %></td>
+                                        <td><%= String_Formule_Box %></td>
+                                        <td><%= String_Formule_Brunch %></td>
+                                        <td><%= Commentaire %></td>
+                                    </tr>
+                                <% }) %>
+                            <% } %> 
+                        <% } %> 
+                    </tbody>          
+                </table>
+
+                <h2>Devis envoyés</h2>
+                <table>
+                    <thead class="devis_list devis_envoyes">
+                        <th class="datedevis">Date even.</th>
+                        <th>Client</th>
+                        <th>Téléthhone</th>
+                        <th>Email</th>
+                        <th>Date estim.</th>                    
+                        <th>Athéritif</th>
+                        <th>Cocktail</th>
+                        <th>Boxes</th>
+                        <th>Brunch</th>
+                        <th>Commentaire</th>
+                    </thead>      
+                    <tbody>
+                        <%# Affichage s'il n'y a pas de devis %> 
+                        <% if (locals.values['Envoyés'].infos) { %>
+                            <tr>
+                                <td colspan="10">
+                                    <%= values['Envoyés'].infos.message %> 
+                                </td>
+                            </tr>
+                        <% } else { %> 
+                        <%# Affichage des devis %> 
+                            <% if (locals.values['Envoyés'].devis) { %>
+                                <% values['Envoyés'].devis.forEach(devis => { %>
+                                    <% const { Id_Devis, Client, Estimation, Date_Evenement, String_Formule_Aperitif, String_Formule_Cocktail, String_Formule_Box, String_Formule_Brunch, Commentaire } = devis %>     
+                                    <% const id = `devis_${Id_Devis}` %> 
+                                    <tr id="<%= id %> ">
+                                        <td class="datedevis"><%= moment(Date_Evenement).format(formatDateHeure) %></td>
+                                        <td><%= Client.Nom_Prenom %></td>
+                                        <td><%= Client.Telephone %></td>
+                                        <td><%= Client.Email %></td>
+                                        <td><%= moment(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
+                                        <td><%= String_Formule_Aperitif %></td>
+                                        <td><%= String_Formule_Cocktail %></td>
+                                        <td><%= String_Formule_Box %></td>
+                                        <td><%= String_Formule_Brunch %></td>
+                                        <td><%= Commentaire %></td>
+                                    </tr>
+                                <% }) %>
+                            <% } %> 
+                        <% } %> 
+                    </tbody>          
+                </table>
+
+                <h2>Devis validés</h2>
+                <table>
+                    <thead class="devis_list devis_valides">
+                        <th class="datedevis">Date even.</th>
+                        <th>Client</th>
+                        <th>Téléthhone</th>
+                        <th>Email</th>
+                        <th>Date estim.</th>                    
+                        <th>Athéritif</th>
+                        <th>Cocktail</th>
+                        <th>Boxes</th>
+                        <th>Brunch</th>
+                        <th>Commentaire</th>
+                    </thead>      
+                    <tbody>
+                        <%# Affichage s'il n'y a pas de devis %> 
+                        <% if (locals.values['Validés'].infos) { %>
+                            <tr>
+                                <td colspan="10">
+                                    <%= values['Validés'].infos.message %> 
+                                </td>
+                            </tr>
+                        <% } else { %> 
+                        <%# Affichage des devis %> 
+                            <% if (locals.values['Validés'].devis) { %>
+                                <% values['Validés'].devis.forEach(devis => { %>
+                                    <% const { Id_Devis, Client, Estimation, Date_Evenement, String_Formule_Aperitif, String_Formule_Cocktail, String_Formule_Box, String_Formule_Brunch, Commentaire } = devis %>     
+                                    <% const id = `devis_${Id_Devis}` %> 
+                                    <tr id="<%= id %> ">
+                                        <td class="datedevis"><%= moment(Date_Evenement).format(formatDateHeure) %></td>
+                                        <td><%= Client.Nom_Prenom %></td>
+                                        <td><%= Client.Telephone %></td>
+                                        <td><%= Client.Email %></td>
+                                        <td><%= moment(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
+                                        <td><%= String_Formule_Aperitif %></td>
+                                        <td><%= String_Formule_Cocktail %></td>
+                                        <td><%= String_Formule_Box %></td>
+                                        <td><%= String_Formule_Brunch %></td>
+                                        <td><%= Commentaire %></td>
+                                    </tr>
+                                <% }) %>
+                            <% } %> 
+                        <% } %> 
+                    </tbody>          
+                </table>
 
 
-            <h2>Devis validés</h2>
-            <ul class="devis_list devis_valides">
-                <li>
-                    <p class="datedevis">Date even. : jj/mm/aaaa hh:mm</p>
-                    <p>Nom Prénom</p>
-                    <p>Date estim.</p>
-                    <p>Type</p>
-                    <p>Nb pièces/pers</p>
-                    <p>Commentaire commentaire</p>
-                </li>
-            </ul>
-            <div class="btntopright">
-                <button>+</button>
-            </div>
-            <div class="btnbotright">
-                <button>0</button>
-                <button>X</button>
-            </div>
+                <div class="btntopright">
+                    <button id="btnNewDevis">+</button>
+                </div>
+                <div class="btnbotright">
+                    <button id="btnModifyDevis">0</button>
+                    <button id="btnArchiveDevis">X</button>
+                </div>
+            <% } %> 
         </div>

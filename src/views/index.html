@@ -1,13 +1,13 @@
-<link rel="stylesheet" href="css/main.css">
-<link rel="stylesheet" href="css/modal.css">
-<script defer src="js/utils.js"></script>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/modal.css">
+<script defer src="/js/utils.js"></script>
 
 
   <!--  MENU -->
 
 <div class="main-container">
     <div class="menu">
-        <a href="/" class="logo"><img src="img/logo_cmstraiteur.png"></a>
+        <a href="/" class="logo"><img src="/img/logo_cmstraiteur.png"></a>
         <ul class="menuleft">
             <li>
                 <a href="/agenda">Agenda</a>
@@ -57,6 +57,9 @@
         <% } %>
         <% if(locals.isDevis) { %> 
             <%- include('partials/devis.html') %>
+        <% } %>
+        <% if(locals.isDevisItem) { %> 
+            <%- include('partials/devisitem.html') %>
         <% } %>
         <% if(locals.isClients) { %> 
             <%- include('partials/clients.html') %>

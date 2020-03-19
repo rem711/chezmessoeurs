@@ -62,7 +62,8 @@ module.exports = (sequelize, DataTypes) => {
 		Statut: {
 			field : 'Statut',
 			type: DataTypes.STRING(10),
-			allowNull: false
+			allowNull: false,
+			defaultValue : 'En cours'
 		},
 		Liste_Options: {
 			field : 'Liste_Options',
@@ -90,7 +91,11 @@ module.exports = (sequelize, DataTypes) => {
     Devis.associate = models => {
         Devis.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
         Devis.belongsTo(models.Estimations, { foreignKey : 'Id_Estimation' })
-        Devis.belongsTo(models.Remises, { foreignKey : 'Id_Remise' })
+		Devis.belongsTo(models.Remises, { foreignKey : 'Id_Remise' })
+		Devis.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Aperitif', as : 'Formule_Aperitif' })
+		Devis.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Cocktail', as : 'Formule_Cocktail' })
+		Devis.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Box', as : 'Formule_Box' })
+		Devis.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Brunch', as : 'Formule_Brunch' })
     }
 
     return Devis

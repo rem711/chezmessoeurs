@@ -215,7 +215,9 @@ input:focus {
     outline: none;
 }
 
-
+.hiddenInfos {
+    display: none;
+}
 
 
 

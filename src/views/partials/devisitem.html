@@ -1,202 +1,459 @@
-<link rel="stylesheet" href="css/devisitem.css">
+<link rel="stylesheet" type="text/css" href="/css/devisitem.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="/js/devisitem.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-
-
-
-        <!--  INFOS CLIENT -->
-
-        <h1>Devis n°00000</h1>
+        
+    <%# Affiche s'il y a un problème avec le devis %> 
+    <% if (locals.infos) { %>
+        <h3>
+            <%= infos.error %> 
+        </h3>
+    <% } else { %>
+        <h1>Devis n°<%= devis.Id_Devis %> </h1>
+        <!--  doit être scrollable -->
         <div class="content_inner">
-            <div class="info_client_devis">
-                <div class="moitie">
-                    <label>Date de l'événement :</label>
-                    <input type="text" value="jj/mm/aaaa hh:mm">
-                </div>
-                <label>Adresse de livraison :</label>
-                <input type="text" value="1 Rue de la rue 21000 DIJON">
-            </div>
-
-            <div class="info_client_devis">
-                <div class="moitie">
-                    <label>Prestation :</label>
-                    <input type="text" value="Salé/Sucré">
-                </div>
-                <label>Type :</label>
-                <input type="text" value="Particulier / Professionnel">
-            </div>
-
-            <div class="info_client_devis">
-                <div class="moitie">
-                    <label>Client :</label>
-                    <input type="text" value="Nom Prénom">
-                </div>
-                <label>Téléphone :</label>
-                <input type="tel" value="0000000000">
-                <label>Email :</label>
-                <input type="email" value="email@email.fr">
-            </div>
-
-            <div class="info_client_devis">
-                <div class="moitie">
-                    <label>Ref client :</label>
-                    <input type="text" value="0123456B">
-                </div>
-                <label>Adresse facturation :</label>
-                <input type="text" value="1 Rue de La Rurue 21000 DIJON DIJON">
-            </div>
-            <div class="info_client_devis">
-                <label>Nombre de personnes :</label>
-                <input type="text" value="000">
-            </div>
-
-            <!--  RECETTES SALEES -->
-
-
-            <div class="select_recette_ctn">
-                <div class="select_recette">
-                    <div class="nb_salees">
-                        <label>Nombre de pièces salées par personne :</label>
-                        <input type="text" value="000">
+            <!--  INFOS CLIENT -->
+            <div>
+                <div class="info_client_devis">
+                    <div class="moitie">
+                        <label for="dateEvenement">Date de l'événement :</label>
+                        <input type="text" id="dateEvenement" value="<%= moment.utc(devis.Date_Evenement).format('DD/MM/YYYY') %>">
+                        <div id="horaire">
+                            <label for="heuresEvenement">Horaire de l'évènement</label>
+                            <% const heures = moment.utc(devis.Date_Evenement).format('HH') %> 
+                            <% const minutes = moment.utc(devis.Date_Evenement).format('mm') %> 
+                            <select id="heuresEvenement">
+                                <% for( let h = 0; h < 24; h++ ) { %>
+                                    <% const outH = h < 10 ? `0${h}` : h %>
+                                    <% const selected = heures == outH ? 'selected' : '' %> 
+                                    <option value="<%= outH %>" <%= selected %> ><%= outH %></option>
+                                <% } %>                            
+                            </select>
+                            <select id="minutesEvenement">
+                                <% for( let m = 0; m < 60; m += 15 ) { %>
+                                    <% const outM = m < 10 ? `0${m}` : m %> 
+                                    <% const selected = minutes == outM ? 'selected' : '' %> 
+                                    <option value="<%= outM %>" <%= selected %> > <%= outM %> </option>
+                                <% } %> 
+                            </select>
+                        </div>
+                        <div>
+                            <label>Adresse de livraison :</label>
+                            <input type="text" id="Adresse_Livraison" value="<%= devis.Adresse_Livraison %> ">
+                        </div>
+                        <label for="divPrestation">Prestation :</label>
+                        <div id="divPrestation">
+                            <% let typeFormuleChecked = '' %> 
+                            <label for="isAperitif">Apéritif</label>
+                            <% typeFormuleChecked = devis.Formule_Aperitif !== null ? 'checked' : '' %> 
+                            <input type="checkbox" id="isAperitif" <%= typeFormuleChecked %> >
+                            <label for="isCocktail">Cocktail</label>
+                            <% typeFormuleChecked = devis.Formule_Cocktail !== null ? 'checked' : '' %> 
+                            <input type="checkbox" id="isCocktail" <%= typeFormuleChecked %> >
+                            <label for="isBox">Box</label>
+                            <% typeFormuleChecked = devis.Formule_Box !== null ? 'checked' : '' %> 
+                            <input type="checkbox" id="isBox" <%= typeFormuleChecked %> >
+                            <label for="isBrunch">Brunch</label>
+                            <% typeFormuleChecked = devis.Formule_Brunch !== null ? 'checked' : '' %> 
+                            <input type="checkbox" id="isBrunch" <%= typeFormuleChecked %> >
+                        </div>
                     </div>
-                    <ul class="list_selected">
-                        <li>+</li>
-                        <li>+</li>
-                        <li>+</li>
-                        <li>+</li>
-                        <li>+</li>
-                        <li>+</li>
-                    </ul>
-                </div>
-                <div class="list_recettes">
-                    <label>Mes recettes salées</label>
-                    <div class="ctn_recettes">
-                        <ul>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                        </ul>
+                    <div class="moitie">
+                        <div>
+                            <label>Ref client :</label>
+                            <input type="text" id="Id_Client" value="<%= devis.Client.Id_Client %>">
+                        </div>
+                        <div>
+                            <label>Client :</label>
+                            <input type="text" id="Nom_Prenom" value="<%= devis.Client.Nom_Prenom %>">
+                        </div>
+                        <div>
+                            <label>Type :</label>
+                            <% let typeClientChecked = '' %> 
+                            <label for="typeParticulier">Particulier</label>
+                            <% typeClientChecked = devis.Client.Type === 'Particulier' ? 'checked' : '' %> 
+                            <input type="radio" id="typeParticulier" name="Type" <%= typeClientChecked %> >
+                            <label for="typeProfessionnel">Professionnel</label>
+                            <% typeClientChecked = devis.Client.Type === 'Professionnel' ? 'checked' : '' %>
+                            <input type="radio" id="typeProfessionnel" name="Type" <%= typeClientChecked %> >
+                        </div>
+                        <div>
+                            <label>Adresse facturation :</label>
+                            <input type="text" id="Adresse_Facturation" value="<%= devis.Client.Adresse_Facturation %> ">
+                        </div>
+                        <div>
+                            <label>Téléphone :</label>
+                            <input type="tel" id="Telephone" value="<%= devis.Client.Telephone %> ">
+                        </div>
+                        <div>
+                            <label>Email :</label>
+                            <input type="email" id="Email" value="<%= devis.Client.Email %> ">
+                        </div>
                     </div>
-                    <button>+</button>
-
                 </div>
             </div>
 
-            <!--  RECETTES SUCREES -->
-
-
-
-            <div class="select_recette_ctn">
-                <div class="select_recette">
-                    <div class="nb_salees">
-                        <label>Nombre de pièces sucrées par personne :</label>
-                        <input type="text" value="000">
-                    </div>
-                    <ul class="list_selected">
-                        <li>+</li>
-                        <li>+</li>
-                        <li>+</li>
-                        <li>+</li>
-                        <li>+</li>
-                        <li>+</li>
-                    </ul>
+            <!--  Formule Apéritif -->
+            <div id="divAperitif">
+                <% const { Formule_Aperitif } = devis %> 
+                <h3>Formule Apéritif</h3>
+                <div class="moitie">
+                    <label for="nbConvivesAperitif">Nombre de personnes :</label>
+                    <input type="text" id="nbConvivesAperitif" placeholder="6" value="<% if(Formule_Aperitif) { %><%= Formule_Aperitif.Nb_Convives %><% } %>"  >
                 </div>
-                <div class="list_recettes">
-                    <label>Mes recettes sucrées</label>
-                    <div class="ctn_recettes">
-                        <ul>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                            <li>Nom de recette</li>
-                        </ul>
+                <!--  RECETTES SALEES -->
+                <div class="select_recette_ctn">
+                    <div class="select_recette">
+                        <div class="nb_salees">
+                            <label for="nbPiecesSaleesAperitif">Nombre de pièces personne :</label>
+                            <select id="nbPiecesSaleesAperitif">
+                                <option value="0"></option>
+                            <% for( let nb = 4; nb < 17; nb++ ) { %>
+                            <option value="<%= nb %>" <% if(Formule_Aperitif && nb === Formule_Aperitif.Nb_Pieces_Salees) { %> selected <% } %> ><%= nb %></option>
+                            <% } %>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="listeRecettesSaleesAperitif">Mes recettes salées</label>
+                            <ul class="list_selected" id="listeRecettesSaleesAperitif">
+                            <% if(Formule_Aperitif && recettesSaleesAperitif) { %> 
+                                <% const diff = Formule_Aperitif.Nb_Pieces_Salees - recettesSaleesAperitif.length %> 
+                                <% for(const recette of recettesSaleesAperitif) { %>
+                                    <li id="recette_<%= recette.Id_Recette %>"><%= recette.Nom %> </li>
+                                <% } %> 
+                                <% for( let i = 0; i < diff; i++ ) { %>
+                                    <li>+</li>
+                                <% } %> 
+                            <% } else { %> 
+                                <li>+</li>
+                            <% } %> 
+                            </ul>
+                        </div>                        
                     </div>
-                    <button>+</button>
+                    <div class="list_recettes">
+                        <label>Recettes salées</label>
+                        <div class="ctn_recettes">
+                            <ul>
+                            <% for(const recette of listeRecettesSalees) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>"><%= recette.Nom %> </li>
+                            <% } %> 
+                            </ul>
+                        </div>
+                        <button>+</button>
 
+                    </div>
                 </div>
+                <!--  RECETTES BOISSONS -->
+                <div class="select_recette_ctn">
+                    <div class="select_recette">
+                        <div>
+                            <label for="listeRecettesBoissonsAperitif">Boissons sélectionnées</label>
+                            <ul class="list_selected" id="listeRecettesBoissonsAperitif">
+                                <li>+</li>
+                            </ul>
+                        </div>                    
+                    </div>
+                    <div class="list_recettes">
+                        <label>Boissons</label>
+                        <div class="ctn_recettes">
+                            <ul>
+                                <li>Nom de recette</li>
+                            </ul>
+                        </div>
+                        <button>+</button>
+                    </div>
+                </div>
+                <hr>
             </div>
+
+            <!--  Formule Cocktail -->
+            <div id="divCocktail">
+                <h3>Formule Cocktail</h3>
+                <div class="moitie">
+                    <label for="nbConvivesCocktail">Nombre de personnes :</label>
+                    <input type="text" id="nbConvivesCocktail" placeholder="6">
+                </div>
+                <!--  RECETTES SALEES -->
+                <div class="select_recette_ctn">
+                    <div class="select_recette">
+                        <div class="nb_salees">
+                            <label for="nbPiecesSaleesCocktail">Nombre de pièces salées personne :</label>
+                            <select id="nbPiecesSaleesCocktail">
+                                <option value="0"></option>
+                            <% for( let nb = 8; nb < 17; nb++ ) { %>
+                                <option value="<%= nb %>"><%= nb %></option>
+                            <% } %>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="listeRecettesSaleesCocktail">Mes recettes salées</label>
+                            <ul class="list_selected" id="listeRecettesSaleesCocktail">
+                                <li>+</li>
+                            </ul>
+                        </div>                        
+                    </div>
+                    <div class="list_recettes">
+                        <label>Recettes salées</label>
+                        <div class="ctn_recettes">
+                            <ul>
+                                <li>Nom de recette</li>
+                            </ul>
+                        </div>
+                        <button>+</button>
+                    </div>
+                </div>
+                <!--  RECETTES SUCREES -->
+                <div class="select_recette_ctn">
+                    <div class="select_recette">
+                        <div class="nb_salees">
+                            <label for="nbPiecesSucreesCocktail">Nombre de pièces sucrées par personne :</label>
+                            <select id="nbPiecesSucreesCocktail">
+                                <option value="0"></option>
+                            <% for( let nb = 1; nb < 6; nb++ ) { %>
+                                <option value="<%= nb %>"><%= nb %></option>
+                            <% } %>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="listeRecettesSucreesCocktail">Mes recettes sucrées</label>
+                            <ul class="list_selected" id="listeRecettesSucreesCocktail">
+                                <li>+</li>
+                            </ul>
+                        </div>                    
+                    </div>
+                    <div class="list_recettes">
+                        <label>Recettes sucrées</label>
+                        <div class="ctn_recettes">
+                            <ul>
+                                <li>Nom de recette</li>
+                            </ul>
+                        </div>
+                        <button>+</button>
+                    </div>
+                </div>
+                <!--  RECETTES BOISSONS -->
+                <div class="select_recette_ctn">
+                    <div class="select_recette">
+                        <div>
+                            <label for="listeRecettesBoissonsCocktail">Boissons sélectionnées</label>
+                            <ul class="list_selected" id="listeRecettesBoissonsCocktail">
+                                <li>+</li>
+                            </ul>
+                        </div>                    
+                    </div>
+                    <div class="list_recettes">
+                        <label>Boissons</label>
+                        <div class="ctn_recettes">
+                            <ul>
+                                <li>Nom de recette</li>
+                            </ul>
+                        </div>
+                        <button>+</button>
+                    </div>
+                </div>
+
+                <hr>
+            </div>
+
+            <!--  Formule Box -->
+            <div id="divBox">
+                <h3>Formule Box</h3>
+                <div class="moitie">
+                    <label for="nbConvivesBox">Nombre de personnes :</label>
+                    <input type="text" id="nbConvivesBox" placeholder="6">
+                </div>
+                <!--  RECETTES SALEES -->
+                <div class="select_recette_ctn">
+                    <div class="select_recette">
+                        <div>
+                            <label for="listeRecettesSaleesBox">Mes recettes salées</label>
+                            <ul class="list_selected" id="listeRecettesSaleesBox">
+                                <li>+</li>
+                                <li>+</li>
+                                <li>+</li>
+                            </ul>
+                        </div>                        
+                    </div>
+                    <div class="list_recettes">
+                        <label>Recettes salées</label>
+                        <div class="ctn_recettes">
+                            <ul>
+                                <li>Nom de recette</li>
+                            </ul>
+                        </div>
+                        <button>+</button>
+                    </div>
+                </div>
+                <!--  RECETTES SUCREES -->
+                <div class="select_recette_ctn">
+                    <div class="select_recette">
+                        <div>
+                            <label for="listeRecettesSucreesBox">Mes recettes sucrées</label>
+                            <ul class="list_selected" id="listeRecettesSucreesBox">
+                                <li>+</li>
+                            </ul>
+                        </div>                    
+                    </div>
+                    <div class="list_recettes">
+                        <label>Recettes sucrées</label>
+                        <div class="ctn_recettes">
+                            <ul>
+                                <li>Nom de recette</li>
+                            </ul>
+                        </div>
+                        <button>+</button>
+                    </div>
+                </div>
+                <!--  RECETTES BOISSONS -->
+                <div class="select_recette_ctn">
+                    <div class="select_recette">
+                        <div>
+                            <label for="listeRecettesBoissonsBox">Boissons sélectionnées</label>
+                            <ul class="list_selected" id="listeRecettesBoissonsBox">
+                                <li>+</li>
+                            </ul>
+                        </div>                    
+                    </div>
+                    <div class="list_recettes">
+                        <label>Boissons</label>
+                        <div class="ctn_recettes">
+                            <ul>
+                                <li>Nom de recette</li>
+                            </ul>
+                        </div>
+                        <button>+</button>
+                    </div>
+                </div>
+                <hr>
+            </div>
+
+            <!--  Formule Brunch -->
+            <div id="divBrunch">
+                <h3>Formule Brunch</h3>
+                <div>
+                    <label for="nbConvivesBrunch">Nombre de personnes :</label>
+                    <input type="text" id="nbConvivesBrunch" placeholder="15">
+                </div>
+                <label for="isBrunchSale">Formule Salée : </label>
+                <input type="checkbox" id="isBrunchSale">
+                <div id="divBrunchSale">
+                    <select id="typeBrunchSale">
+                        <option value="4">Petite Faim</option>
+                        <option value="8">Grande Faim</option>
+                    </select>
+                    <!--  RECETTES SALEES -->
+                    <div class="select_recette_ctn">
+                        <div class="select_recette">
+                            <div>
+                                <label for="listeRecettesSaleesBrunch">Mes recettes salées</label>
+                                <ul class="list_selected" id="listeRecettesSaleesBrunch">
+                                    <li>+</li>
+                                    <li>+</li>
+                                    <li>+</li>
+                                    <li>+</li>
+                                </ul>
+                            </div>                        
+                        </div>
+                        <div class="list_recettes">
+                            <label>Recettes salées</label>
+                            <div class="ctn_recettes">
+                                <ul>
+                                    <li>Nom de recette</li>
+                                </ul>
+                            </div>
+                            <button>+</button>
+                        </div>
+                    </div>
+                </div>
+                <label for="isBrunchSucre">Formule Sucrée : </label>
+                <input type="checkbox" id="isBrunchSucre">
+                <div id="divBrunchSucre">
+                    <select id="typeBrunchSucre">
+                        <option value="2">Petite Faim</option>
+                        <option value="4">Grande Faim</option>
+                    </select>
+                    <!--  RECETTES SUCREES -->
+                    <div class="select_recette_ctn">
+                        <div class="select_recette">
+                            <div>
+                                <label for="listeRecettesSucreesBrunch">Mes recettes sucrées</label>
+                                <ul class="list_selected" id="listeRecettesSucreesBrunch">
+                                    <li>+</li>
+                                </ul>
+                            </div>                    
+                        </div>
+                        <div class="list_recettes">
+                            <label>Recettes sucrées</label>
+                            <div class="ctn_recettes">
+                                <ul>
+                                    <li>Nom de recette</li>
+                                </ul>
+                            </div>
+                            <button>+</button>
+                        </div>
+                    </div>
+                </div>
+                <!--  RECETTES BOISSONS -->
+                <div class="select_recette_ctn">
+                    <div class="select_recette">
+                        <div>
+                            <label for="listeRecettesBoissonsBrunch">Boissons sélectionnées</label>
+                            <ul class="list_selected" id="listeRecettesBoissonsBrunch">
+                                <li>+</li>
+                            </ul>
+                        </div>                    
+                    </div>
+                    <div class="list_recettes">
+                        <label>Boissons</label>
+                        <div class="ctn_recettes">
+                            <ul>
+                                <li>Nom de recette</li>
+                            </ul>
+                        </div>
+                        <button>+</button>
+                    </div>
+                </div>
+                <hr>
+            </div>     
 
             <!--  OPTIONS -->
-
-
             <div class="select_recette_ctn">
                 <div class="select_recette">
                     <div class="nb_salees">
                         <label>Ajouter une option</label>
                     </div>
-                    <ul class="list_selected">
-                        <li>+</li>
-                        <li>+</li>
-                        <li>+</li>
-                        <li>+</li>
-                        <li>+</li>
+                    <ul class="list_selected" id="listeOptions">
                         <li>+</li>
                     </ul>
                 </div>
                 <div class="list_recettes">
-                    <label>Mes options</label>
+                    <label>Options</label>
                     <div class="ctn_recettes">
                         <ul>
-                            <li>Service sur place</li>
-                            <li>Livraison sur place</li>
-                            <li>Décoration florale</li>
-
+                            <li>Nom option</li>
                         </ul>
                     </div>
                     <button>+</button>
-
                 </div>
             </div>
 
             <!--  REMISE -->
-
-
             <div class="select_option_ctn">
                 <div class="select_recette">
                     <div class="nb_salees">
-                        <label>Ajouter une option</label>
+                        <label>Ajouter une remise</label>
                     </div>
-                    <ul class="list_selected">
+                    <ul class="list_selected" id="listeRemises">
                         <li>+</li>
                     </ul>
                 </div>
             </div>
 
 
-            <label>Commentaire :</label>
-            <input type="text">
+            <label for="commentaire">Commentaire :</label>
+            <input type="text" id="Commentaire">
 
             <!--  RECAP -->
 
@@ -205,35 +462,61 @@
             <div class="recap_ctn">
                 <div class="recap">
                     <div class="recap_item">
-                        <p>Salé</p>
-                        <p class="orange">00.00 HT/pers.</p>
-                        <p class="orange">00.00 HT</p>
+                        <p>Apéritif</p>
+                        <p class="orange" id="prixAperitifParPersonne">00.00 HT/pers.</p>
+                        <p class="orange" id="prixAperitifHT">00.00 HT</p>
                     </div>
                     <div class="recap_item">
-                        <p>Sucré</p>
-                        <p class="orange">00.00 HT/pers.</p>
-                        <p class="orange">00.00 HT</p>
+                        <p>Cocktail</p>
+                        <p class="orange" id="prixCocktailParPersonne">00.00 HT/pers.</p>
+                        <p class="orange" id="prixCocktailHT">00.00 HT</p>
                     </div>
                 </div>
                 <div class="recap recap_right">
                     <div class="recap_item">
                         <p>Box déjeuner</p>
-                        <p class="orange">00.00 HT/pers.</p>
-                        <p class="orange">00.00 HT</p>
+                        <p class="orange" id="prixBoxParPersonne">00.00 HT/pers.</p>
+                        <p class="orange" id="prixBoxHT">00.00 HT</p>
                     </div>
                     <div class="recap_item">
                         <p>Brunch privé</p>
-                        <p class="orange">00.00 HT/pers.</p>
-                        <p class="orange">00.00 HT</p>
+                        <p class="orange" id="prixBrunchParPersonne">00.00 HT/pers.</p>
+                        <p class="orange" id="prixBrunchHT">00.00 HT</p>
+                    </div>
+                </div>
+                <div class="recap">
+                    <div class="recap_item">
+                        <p>Options</p>
+                        <p class="orange" id="affichageListeOptions"></p>
+                        <p class="orange" id="prixOptions">00.00 HT</p>
+                    </div>
+                </div>
+                <div class="recap recap_right">
+                    <div class="recap_item">
+                        <p>Remise</p>
+                        <p class="orange" id="affichageRemise"></p>
+                        <p class="orange" id="prixRemise">00.00 HT</p>
                     </div>
                 </div>
             </div>
 
-
-
             <div class="totalprix">
-                <p>Prix HT : 00,00€</p>
-                <p>Prix HT : 00,00€</p>
+                <p id="prixTotalHT">Prix HT : 00,00€</p>
+                <p id="prixTotalTTC">Prix TTC : 00,00€</p>
             </div>
 
         </div>
+        <div class="hiddenInfos">
+            <%# liste prix unitaires pour faire le calcul %> 
+            <% if (locals.listePrix_unitaire) { %>
+                <div id="divPrix_unitaire">
+                <% listePrix_unitaire.forEach(prix_unitaire => { %> 
+                    <div id="prix_<%= prix_unitaire.Id_Prix_Unitaire %> ">
+                        <p class="Nom"><%= prix_unitaire.Nom_Type_Prestation %> </p>
+                        <p class="Montant"><%= prix_unitaire.Montant %> </p>
+                    </div>
+                <% }) %> 
+                </div>
+            <% } %>
+        </div>
+    <% } %> 
