@@ -1,6 +1,6 @@
-<link rel="stylesheet" href="css/estimations.css">
+<link rel="stylesheet" type="text/css" href="/css/estimations.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-<script defer src="js/estimations.js"></script>
+<script defer src="/js/estimations.js"></script>
 
 
  
@@ -11,7 +11,7 @@
             <table>
                 <thead>
                     <th>Date even.</th>
-                    <th>Nom Prénom</th>
+                    <th>Client</th>
                     <th>Téléphone</th>
                     <th>Email</th>
                     <th>Date estim.</th>                    
@@ -34,11 +34,11 @@
                             <% const { Id_Estimation, Date_Creation, Client, Date_Evenement, String_Formule_Aperitif, String_Formule_Cocktail, String_Formule_Box, String_Formule_Brunch, Commentaire, Statut } = estimation %>
                             <% const id = 'estimation_' + Id_Estimation %>
                             <tr id="<%= id %>">
-                                <td><%= moment(Date_Evenement).format(formatDateHeure) %></td>   
+                                <td><%= moment.utc(Date_Evenement).format(formatDateHeure) %></td>   
                                 <td><%= Client.Nom_Prenom %></td>
                                 <td><%= Client.Telephone %></td>
                                 <td><%= Client.Email %></td>
-                                <td><%= moment(Date_Creation).format(formatDateHeure) %></td>
+                                <td><%= moment.utc(Date_Creation).format(formatDateHeure) %></td>
                                 <td><%= String_Formule_Aperitif %></td>
                                 <td><%= String_Formule_Cocktail %></td>
                                 <td><%= String_Formule_Box %></td>    
@@ -53,7 +53,7 @@
             </table>
         </div>
         <div class="btnbotright">
-            <button>Devis</button> 
-            <button>X</button>
+            <button id="btnToDevis">Devis</button> 
+            <button id="btnArchiveEstimation">X</button>
         </div>
 

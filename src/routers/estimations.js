@@ -33,6 +33,10 @@ router
 
     // s'il n'y a pas d'erreur lors de la création du client ou de sa récupération (paramètres invalides)
     if(client !== undefined) {
+        // on met à jour le Dernier_Statut du client
+        client.Dernier_Statut = 'Estimation en cours'
+        client.save()
+
         // on crée les différentes formules
         const formulesRes = await gestionFormules.createFormules(postEstimation)
         const { idFormuleAperitif, idFormuleCocktail, idFormuleBox, idFormuleBrunch } = formulesRes
@@ -75,6 +79,9 @@ router
 
     let estimations = undefined
     const temp_estimations = await Estimations.findAll({
+        order : [
+            ['Date_Evenement', 'ASC']
+        ],
         where : {
             Statut : null
         },
@@ -177,6 +184,18 @@ router
 
         if(estimation !== null) {
             archiveEstimation(estimation)
+
+            await Clients.update(
+                {
+                    Dernier_Statut : 'Estimation archivée'
+                },
+                {
+                    where : {
+                        Id_Client : estimation.Id_Client
+                    }
+                }
+            )
+
             infos = errorHandler(undefined, 'L\'estimation a bien été archivée.')
         }
         else {

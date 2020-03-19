@@ -52,7 +52,8 @@ module.exports = (sequelize, DataTypes) => {
 		Statut: {
 			field : 'Statut',
 			type: DataTypes.STRING(10),
-			allowNull: true
+			allowNull: true,
+			defaultValue : 'En cours'
 		}
   }, {});
   Estimations.associate = function(models) {
