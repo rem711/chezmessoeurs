@@ -86,8 +86,17 @@ padding: 25px 0 0 25px;
     line-height: 25px;
 }
 
+.ctn_recettes li:hover, .ctn_recettes li:active, .ctn_recettes li:focus, .ctn_recettes li:focus-within{
+    border : 3px solid #cccccc;
+    cursor : pointer;
+}
+
+.selected {
+    border : 3px solid #cccccc;
+}
+
 .list_recettes button{
-    position: absolute;
+    position: relative;
     right: 0;
     bottom: 15px;
     height : 50px;

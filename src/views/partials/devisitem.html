@@ -1,8 +1,9 @@
 <link rel="stylesheet" type="text/css" href="/css/devisitem.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="/js/devisitem.js"></script>
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script defer src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script defer src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script defer src="/js/devisitem.js"></script>
 
         
     <%# Affiche s'il y a un problème avec le devis %> 
@@ -18,16 +19,16 @@
             <div>
                 <div class="info_client_devis">
                     <div class="moitie">
-                        <label for="dateEvenement">Date de l'événement :</label>
-                        <input type="text" id="dateEvenement" value="<%= moment.utc(devis.Date_Evenement).format('DD/MM/YYYY') %>">
+                        <label for="Date_Evenement">Date de l'événement :</label>
+                        <input type="text" id="Date_Evenement" value="<%= moment.utc(devis.Date_Evenement).format('DD/MM/YYYY') %>">
                         <div id="horaire">
-                            <label for="heuresEvenement">Horaire de l'évènement</label>
-                            <% const heures = moment.utc(devis.Date_Evenement).format('HH') %> 
+                            <label for="heureEvenement">Horaire de l'évènement</label>
+                            <% const heure = moment.utc(devis.Date_Evenement).format('HH') %> 
                             <% const minutes = moment.utc(devis.Date_Evenement).format('mm') %> 
-                            <select id="heuresEvenement">
+                            <select id="heureEvenement">
                                 <% for( let h = 0; h < 24; h++ ) { %>
                                     <% const outH = h < 10 ? `0${h}` : h %>
-                                    <% const selected = heures == outH ? 'selected' : '' %> 
+                                    <% const selected = heure == outH ? 'selected' : '' %> 
                                     <option value="<%= outH %>" <%= selected %> ><%= outH %></option>
                                 <% } %>                            
                             </select>
@@ -74,10 +75,10 @@
                             <% let typeClientChecked = '' %> 
                             <label for="typeParticulier">Particulier</label>
                             <% typeClientChecked = devis.Client.Type === 'Particulier' ? 'checked' : '' %> 
-                            <input type="radio" id="typeParticulier" name="Type" <%= typeClientChecked %> >
+                            <input type="radio" id="typeParticulier" name="Type" value="Particulier" <%= typeClientChecked %> >
                             <label for="typeProfessionnel">Professionnel</label>
                             <% typeClientChecked = devis.Client.Type === 'Professionnel' ? 'checked' : '' %>
-                            <input type="radio" id="typeProfessionnel" name="Type" <%= typeClientChecked %> >
+                            <input type="radio" id="typeProfessionnel" name="Type" value="Professionnel" <%= typeClientChecked %> >
                         </div>
                         <div>
                             <label>Adresse facturation :</label>
@@ -101,7 +102,7 @@
                 <h3>Formule Apéritif</h3>
                 <div class="moitie">
                     <label for="nbConvivesAperitif">Nombre de personnes :</label>
-                    <input type="text" id="nbConvivesAperitif" placeholder="6" value="<% if(Formule_Aperitif) { %><%= Formule_Aperitif.Nb_Convives %><% } %>"  >
+                    <input type="text" id="nbConvivesAperitif" placeholder="<%= tableCorrespondanceTypes['Apéritif'].nbMinConvives %>" value="<% if(Formule_Aperitif) { %><%= Formule_Aperitif.Nb_Convives %><% } %>"  >
                 </div>
                 <!--  RECETTES SALEES -->
                 <div class="select_recette_ctn">
@@ -110,7 +111,7 @@
                             <label for="nbPiecesSaleesAperitif">Nombre de pièces personne :</label>
                             <select id="nbPiecesSaleesAperitif">
                                 <option value="0"></option>
-                            <% for( let nb = 4; nb < 17; nb++ ) { %>
+                            <% for( let nb = tableCorrespondanceTypes['Apéritif'].nbPieces['salées'].min; nb <= tableCorrespondanceTypes['Apéritif'].nbPieces['salées'].max; nb++ ) { %>
                             <option value="<%= nb %>" <% if(Formule_Aperitif && nb === Formule_Aperitif.Nb_Pieces_Salees) { %> selected <% } %> ><%= nb %></option>
                             <% } %>
                             </select>
@@ -121,27 +122,26 @@
                             <% if(Formule_Aperitif && recettesSaleesAperitif) { %> 
                                 <% const diff = Formule_Aperitif.Nb_Pieces_Salees - recettesSaleesAperitif.length %> 
                                 <% for(const recette of recettesSaleesAperitif) { %>
-                                    <li id="recette_<%= recette.Id_Recette %>"><%= recette.Nom %> </li>
+                                    <li id="recette_<%= recette.Id_Recette %>" data-for="SaleAperitif"><%= recette.Nom %> </li>
                                 <% } %> 
                                 <% for( let i = 0; i < diff; i++ ) { %>
-                                    <li>+</li>
+                                    <li data-for="SaleAperitif">+</li>
                                 <% } %> 
-                            <% } else { %> 
-                                <li>+</li>
-                            <% } %> 
+                            <% } %>
                             </ul>
                         </div>                        
                     </div>
                     <div class="list_recettes">
                         <label>Recettes salées</label>
                         <div class="ctn_recettes">
-                            <ul>
+                            <ul id="recettesSaleesAperitif">
                             <% for(const recette of listeRecettesSalees) { %> 
-                                <li id="recette_<%= recette.Id_Recette %>"><%= recette.Nom %> </li>
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="SaleAperitif"><%= recette.Nom %> </li>
                             <% } %> 
                             </ul>
                         </div>
-                        <button>+</button>
+                        <button class="btnAjouteRecette" data-for="SaleAperitif">V</button>
+                        <button class="btnRetireRecette" data-for="SaleAperitif">X</button>
 
                     </div>
                 </div>
@@ -151,18 +151,24 @@
                         <div>
                             <label for="listeRecettesBoissonsAperitif">Boissons sélectionnées</label>
                             <ul class="list_selected" id="listeRecettesBoissonsAperitif">
-                                <li>+</li>
+                            <% for(const recette of recettesBoissonsAperitif) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsAperitif"><%= recette.Nom %> </li>
+                            <% } %> 
+                                <li data-for="BoissonsAperitif">+</li>
                             </ul>
                         </div>                    
                     </div>
                     <div class="list_recettes">
                         <label>Boissons</label>
                         <div class="ctn_recettes">
-                            <ul>
-                                <li>Nom de recette</li>
+                            <ul id="recettesBoissonsAperitif">
+                            <% for(const recette of listeRecettesBoissons) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsAperitif"><%= recette.Nom %> </li>
+                            <% } %> 
                             </ul>
                         </div>
-                        <button>+</button>
+                        <button class="btnAjouteRecette" data-for="BoissonsAperitif">V</button>
+                        <button class="btnRetireRecette" data-for="BoissonsAperitif">X</button>
                     </div>
                 </div>
                 <hr>
@@ -170,10 +176,11 @@
 
             <!--  Formule Cocktail -->
             <div id="divCocktail">
+                <% const { Formule_Cocktail } = devis %> 
                 <h3>Formule Cocktail</h3>
                 <div class="moitie">
                     <label for="nbConvivesCocktail">Nombre de personnes :</label>
-                    <input type="text" id="nbConvivesCocktail" placeholder="6">
+                    <input type="text" id="nbConvivesCocktail" placeholder="<%= tableCorrespondanceTypes['Cocktail'].nbMinConvives %>" value="<% if(Formule_Cocktail) { %><%= Formule_Cocktail.Nb_Convives %><% } %>" >
                 </div>
                 <!--  RECETTES SALEES -->
                 <div class="select_recette_ctn">
@@ -182,26 +189,37 @@
                             <label for="nbPiecesSaleesCocktail">Nombre de pièces salées personne :</label>
                             <select id="nbPiecesSaleesCocktail">
                                 <option value="0"></option>
-                            <% for( let nb = 8; nb < 17; nb++ ) { %>
-                                <option value="<%= nb %>"><%= nb %></option>
+                            <% for( let nb = tableCorrespondanceTypes['Cocktail'].nbPieces['salées'].min; nb <= tableCorrespondanceTypes['Cocktail'].nbPieces['salées'].max; nb++ ) { %>
+                                <option value="<%= nb %>" <% if(Formule_Cocktail && nb === Formule_Cocktail.Nb_Pieces_Salees) { %> selected <% } %> ><%= nb %></option>
                             <% } %>
                             </select>
                         </div>
                         <div>
                             <label for="listeRecettesSaleesCocktail">Mes recettes salées</label>
                             <ul class="list_selected" id="listeRecettesSaleesCocktail">
-                                <li>+</li>
+                            <% if(Formule_Cocktail && recettesSaleesCocktail) { %> 
+                                <% const diff = Formule_Cocktail.Nb_Pieces_Salees - recettesSaleesCocktail.length %> 
+                                <% for(const recette of recettesSaleesCocktail) { %>
+                                    <li id="recette_<%= recette.Id_Recette %>" data-for="SaleCocktail"><%= recette.Nom %> </li>
+                                <% } %> 
+                                <% for( let i = 0; i < diff; i++ ) { %>
+                                    <li data-for="SaleCocktail">+</li>
+                                <% } %> 
+                            <% } %>
                             </ul>
                         </div>                        
                     </div>
                     <div class="list_recettes">
                         <label>Recettes salées</label>
                         <div class="ctn_recettes">
-                            <ul>
-                                <li>Nom de recette</li>
+                            <ul id="recettesSaleesCocktail">
+                            <% for(const recette of listeRecettesSalees) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="SaleCocktail"><%= recette.Nom %> </li>
+                            <% } %> 
                             </ul>
                         </div>
-                        <button>+</button>
+                        <button class="btnAjouteRecette" data-for="SaleCocktail">V</button>
+                        <button class="btnRetireRecette" data-for="SaleCocktail">X</button>
                     </div>
                 </div>
                 <!--  RECETTES SUCREES -->
@@ -211,26 +229,37 @@
                             <label for="nbPiecesSucreesCocktail">Nombre de pièces sucrées par personne :</label>
                             <select id="nbPiecesSucreesCocktail">
                                 <option value="0"></option>
-                            <% for( let nb = 1; nb < 6; nb++ ) { %>
-                                <option value="<%= nb %>"><%= nb %></option>
+                            <% for( let nb = tableCorrespondanceTypes['Cocktail'].nbPieces['sucrées'].min; nb <= tableCorrespondanceTypes['Cocktail'].nbPieces['sucrées'].max; nb++ ) { %>
+                                <option value="<%= nb %>" <% if(Formule_Cocktail && nb === Formule_Cocktail.Nb_Pieces_Sucrees) { %> selected <% } %> ><%= nb %></option>
                             <% } %>
                             </select>
                         </div>
                         <div>
                             <label for="listeRecettesSucreesCocktail">Mes recettes sucrées</label>
                             <ul class="list_selected" id="listeRecettesSucreesCocktail">
-                                <li>+</li>
+                            <% if(Formule_Cocktail && recettesSucreesCocktail) { %> 
+                                <% const diff = Formule_Cocktail.Nb_Pieces_Sucrees - recettesSucreesCocktail.length %> 
+                                <% for(const recette of recettesSucreesCocktail) { %>
+                                    <li id="recette_<%= recette.Id_Recette %>" data-for="SucreCocktail"><%= recette.Nom %> </li>
+                                <% } %> 
+                                <% for( let i = 0; i < diff; i++ ) { %>
+                                    <li data-for="SucreCocktail">+</li>
+                                <% } %> 
+                            <% } %> 
                             </ul>
                         </div>                    
                     </div>
                     <div class="list_recettes">
                         <label>Recettes sucrées</label>
                         <div class="ctn_recettes">
-                            <ul>
-                                <li>Nom de recette</li>
+                            <ul id="recettesSucreesCocktail">
+                            <% for(const recette of listeRecettesSucrees) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="SucreCocktail"><%= recette.Nom %> </li>
+                            <% } %> 
                             </ul>
                         </div>
-                        <button>+</button>
+                        <button class="btnAjouteRecette" data-for="SucreCocktail">V</button>
+                        <button class="btnRetireRecette" data-for="SucreCocktail">X</button>
                     </div>
                 </div>
                 <!--  RECETTES BOISSONS -->
@@ -239,18 +268,24 @@
                         <div>
                             <label for="listeRecettesBoissonsCocktail">Boissons sélectionnées</label>
                             <ul class="list_selected" id="listeRecettesBoissonsCocktail">
-                                <li>+</li>
+                            <% for(const recette of recettesBoissonsCocktail) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsCocktail"><%= recette.Nom %> </li>
+                            <% } %> 
+                                <li data-for="BoissonsCocktail">+</li>
                             </ul>
                         </div>                    
                     </div>
                     <div class="list_recettes">
                         <label>Boissons</label>
                         <div class="ctn_recettes">
-                            <ul>
-                                <li>Nom de recette</li>
+                            <ul id="recettesBoissonsCocktail">
+                            <% for(const recette of listeRecettesBoissons) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsCocktail"><%= recette.Nom %> </li>
+                            <% } %>  
                             </ul>
                         </div>
-                        <button>+</button>
+                        <button class="btnAjouteRecette" data-for="BoissonsCocktail">V</button>
+                        <button class="btnRetireRecette" data-for="BoissonsCocktail">X</button>
                     </div>
                 </div>
 
@@ -259,10 +294,11 @@
 
             <!--  Formule Box -->
             <div id="divBox">
+                <% const { Formule_Box } = devis %> 
                 <h3>Formule Box</h3>
                 <div class="moitie">
                     <label for="nbConvivesBox">Nombre de personnes :</label>
-                    <input type="text" id="nbConvivesBox" placeholder="6">
+                    <input type="text" id="nbConvivesBox" placeholder="<%= tableCorrespondanceTypes['Box'].nbMinConvives %>" value="<% if(Formule_Box) { %><%= Formule_Box.Nb_Convives %><% } %>" >
                 </div>
                 <!--  RECETTES SALEES -->
                 <div class="select_recette_ctn">
@@ -270,20 +306,31 @@
                         <div>
                             <label for="listeRecettesSaleesBox">Mes recettes salées</label>
                             <ul class="list_selected" id="listeRecettesSaleesBox">
-                                <li>+</li>
-                                <li>+</li>
-                                <li>+</li>
+                            <% if(Formule_Box && recettesSaleesBox) { %> 
+                                <% const diff = Formule_Box.Nb_Pieces_Salees - recettesSaleesBox.length %> 
+                                <% for(const recette of recettesSaleesBox) { %>
+                                    <li id="recette_<%= recette.Id_Recette %>" data-for="SaleBox"><%= recette.Nom %> </li>
+                                <% } %> 
+                                <% for( let i = 0; i < diff; i++ ) { %>
+                                    <li data-for="SaleBox">+</li>
+                                <% } %> 
+                            <% } else { %> 
+                                <li data-for="SaleBox">+</li>
+                            <% } %> 
                             </ul>
                         </div>                        
                     </div>
                     <div class="list_recettes">
                         <label>Recettes salées</label>
                         <div class="ctn_recettes">
-                            <ul>
-                                <li>Nom de recette</li>
+                            <ul id="recettesSaleesBox">
+                            <% for(const recette of listeRecettesSalees) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="SaleBox"><%= recette.Nom %> </li>
+                            <% } %> 
                             </ul>
                         </div>
-                        <button>+</button>
+                        <button class="btnAjouteRecette" data-for="SaleBox">V</button>
+                        <button class="btnRetireRecette" data-for="SaleBox">X</button>
                     </div>
                 </div>
                 <!--  RECETTES SUCREES -->
@@ -292,18 +339,31 @@
                         <div>
                             <label for="listeRecettesSucreesBox">Mes recettes sucrées</label>
                             <ul class="list_selected" id="listeRecettesSucreesBox">
-                                <li>+</li>
+                            <% if(Formule_Box && recettesSucreesBox) { %> 
+                                <% const diff = Formule_Box.Nb_Pieces_Sucrees - recettesSucreesBox.length %> 
+                                <% for(const recette of recettesSucreesBox) { %>
+                                    <li id="recette_<%= recette.Id_Recette %>" data-for="SucreBox"><%= recette.Nom %> </li>
+                                <% } %> 
+                                <% for( let i = 0; i < diff; i++ ) { %>
+                                    <li data-for="SucreBox">+</li>
+                                <% } %> 
+                            <% } else { %> 
+                                <li data-for="SucreBox">+</li>
+                            <% } %> 
                             </ul>
                         </div>                    
                     </div>
                     <div class="list_recettes">
                         <label>Recettes sucrées</label>
                         <div class="ctn_recettes">
-                            <ul>
-                                <li>Nom de recette</li>
+                            <ul id="recettesSucreesBox">
+                            <% for(const recette of listeRecettesSucrees) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="SucreBox"><%= recette.Nom %> </li>
+                            <% } %> 
                             </ul>
                         </div>
-                        <button>+</button>
+                        <button class="btnAjouteRecette" data-for="SucreBox">V</button>
+                        <button class="btnRetireRecette" data-for="SucreBox">X</button>
                     </div>
                 </div>
                 <!--  RECETTES BOISSONS -->
@@ -312,18 +372,24 @@
                         <div>
                             <label for="listeRecettesBoissonsBox">Boissons sélectionnées</label>
                             <ul class="list_selected" id="listeRecettesBoissonsBox">
-                                <li>+</li>
+                                <% for(const recette of recettesBoissonsBox) { %> 
+                                    <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBox"><%= recette.Nom %> </li>
+                                <% } %> 
+                                <li data-for="BoissonsBox">+</li>
                             </ul>
                         </div>                    
                     </div>
                     <div class="list_recettes">
                         <label>Boissons</label>
                         <div class="ctn_recettes">
-                            <ul>
-                                <li>Nom de recette</li>
+                            <ul id="recettesBoissonsBox">
+                            <% for(const recette of listeRecettesBoissons) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBox"><%= recette.Nom %> </li>
+                            <% } %>  
                             </ul>
                         </div>
-                        <button>+</button>
+                        <button class="btnAjouteRecette" data-for="BoissonsBox">V</button>
+                        <button class="btnRetireRecette" data-for="BoissonsBox">X</button>
                     </div>
                 </div>
                 <hr>
@@ -331,17 +397,21 @@
 
             <!--  Formule Brunch -->
             <div id="divBrunch">
+                <% const { Formule_Brunch } = devis %> 
                 <h3>Formule Brunch</h3>
                 <div>
                     <label for="nbConvivesBrunch">Nombre de personnes :</label>
-                    <input type="text" id="nbConvivesBrunch" placeholder="15">
+                    <input type="text" id="nbConvivesBrunch" placeholder="<%= tableCorrespondanceTypes['Brunch'].nbMinConvives %>" value="<% if(Formule_Brunch) { %><%= Formule_Brunch.Nb_Convives %><% } %>" >
                 </div>
                 <label for="isBrunchSale">Formule Salée : </label>
-                <input type="checkbox" id="isBrunchSale">
+                <% let typeBrunchChecked = '' %> 
+                <% typeBrunchChecked = (Formule_Brunch && Formule_Brunch.Nb_Pieces_Salees > 0) ? 'checked' : '' %> 
+                <input type="checkbox" id="isBrunchSale" <%= typeBrunchChecked %> >
                 <div id="divBrunchSale">
                     <select id="typeBrunchSale">
-                        <option value="4">Petite Faim</option>
-                        <option value="8">Grande Faim</option>
+                        <option value="0"></option>                        
+                        <option value="<%= tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min %>" <% if(Formule_Brunch && tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min === Formule_Brunch.Nb_Pieces_Salees) { %> selected <% } %> >Petite Faim</option>
+                        <option value="<%= tableCorrespondanceTypes['Brunch'].nbPieces['salées'].max %>" <% if(Formule_Brunch && tableCorrespondanceTypes['Brunch'].nbPieces['salées'].max === Formule_Brunch.Nb_Pieces_Salees) { %> selected <% } %> >Grande Faim</option>
                     </select>
                     <!--  RECETTES SALEES -->
                     <div class="select_recette_ctn">
@@ -349,30 +419,40 @@
                             <div>
                                 <label for="listeRecettesSaleesBrunch">Mes recettes salées</label>
                                 <ul class="list_selected" id="listeRecettesSaleesBrunch">
-                                    <li>+</li>
-                                    <li>+</li>
-                                    <li>+</li>
-                                    <li>+</li>
+                                <% if(Formule_Brunch && recettesSaleesBrunch) { %> 
+                                    <% const diff = Formule_Brunch.Nb_Pieces_Salees - recettesSaleesBrunch.length %> 
+                                    <% for(const recette of recettesSaleesBrunch) { %>
+                                        <li id="recette_<%= recette.Id_Recette %>" data-for="SaleBrunch"><%= recette.Nom %> </li>
+                                    <% } %> 
+                                    <% for( let i = 0; i < diff; i++ ) { %>
+                                        <li data-for="SaleBrunch">+</li>
+                                    <% } %> 
+                                <% } %>
                                 </ul>
                             </div>                        
                         </div>
                         <div class="list_recettes">
                             <label>Recettes salées</label>
                             <div class="ctn_recettes">
-                                <ul>
-                                    <li>Nom de recette</li>
+                                <ul id="recettesSaleesBrunch">
+                                <% for(const recette of listeRecettesSalees) { %> 
+                                    <li id="recette_<%= recette.Id_Recette %>" data-for="SaleBrunch"><%= recette.Nom %> </li>
+                                <% } %>
                                 </ul>
                             </div>
-                            <button>+</button>
+                            <button class="btnAjouteRecette" data-for="SaleBrunch">V</button>
+                            <button class="btnRetireRecette" data-for="SaleBrunch">X</button>
                         </div>
                     </div>
                 </div>
                 <label for="isBrunchSucre">Formule Sucrée : </label>
-                <input type="checkbox" id="isBrunchSucre">
+                <% typeBrunchChecked = (Formule_Brunch && Formule_Brunch.Nb_Pieces_Sucrees > 0) ? 'checked' : '' %> 
+                <input type="checkbox" id="isBrunchSucre" <%= typeBrunchChecked %> >
                 <div id="divBrunchSucre">
                     <select id="typeBrunchSucre">
-                        <option value="2">Petite Faim</option>
-                        <option value="4">Grande Faim</option>
+                        <option value="0"></option>
+                        <option value="<%= tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min %>" <% if(Formule_Brunch && tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min === Formule_Brunch.Nb_Pieces_Sucrees) { %> selected <% } %> >Petite Faim</option>
+                        <option value="<%= tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].max %>" <% if(Formule_Brunch && tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].max === Formule_Brunch.Nb_Pieces_Sucrees) { %> selected <% } %> >Grande Faim</option>
                     </select>
                     <!--  RECETTES SUCREES -->
                     <div class="select_recette_ctn">
@@ -380,18 +460,29 @@
                             <div>
                                 <label for="listeRecettesSucreesBrunch">Mes recettes sucrées</label>
                                 <ul class="list_selected" id="listeRecettesSucreesBrunch">
-                                    <li>+</li>
+                                <% if(Formule_Brunch && recettesSucreesBrunch) { %> 
+                                    <% const diff = Formule_Brunch.Nb_Pieces_Sucrees - recettesSucreesBrunch.length %> 
+                                    <% for(const recette of recettesSucreesBrunch) { %>
+                                        <li id="recette_<%= recette.Id_Recette %>" data-for="SucreBrunch"><%= recette.Nom %> </li>
+                                    <% } %> 
+                                    <% for( let i = 0; i < diff; i++ ) { %>
+                                        <li data-for="SucreBrunch">+</li>
+                                    <% } %> 
+                                <% } %> 
                                 </ul>
                             </div>                    
                         </div>
                         <div class="list_recettes">
                             <label>Recettes sucrées</label>
                             <div class="ctn_recettes">
-                                <ul>
-                                    <li>Nom de recette</li>
+                                <ul id="recettesSucreesBrunch">
+                                <% for(const recette of listeRecettesSucrees) { %> 
+                                    <li id="recette_<%= recette.Id_Recette %>" data-for="SucreBrunch"><%= recette.Nom %> </li>
+                                <% } %> 
                                 </ul>
                             </div>
-                            <button>+</button>
+                            <button class="btnAjouteRecette" data-for="SucreBrunch">V</button>
+                            <button class="btnRetireRecette" data-for="SucreBrunch">X</button>
                         </div>
                     </div>
                 </div>
@@ -401,18 +492,24 @@
                         <div>
                             <label for="listeRecettesBoissonsBrunch">Boissons sélectionnées</label>
                             <ul class="list_selected" id="listeRecettesBoissonsBrunch">
-                                <li>+</li>
+                            <% for(const recette of recettesBoissonsBrunch) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBrunch"><%= recette.Nom %> </li>
+                            <% } %> 
+                                <li data-for="BoissonsBrunch">+</li>
                             </ul>
                         </div>                    
                     </div>
                     <div class="list_recettes">
                         <label>Boissons</label>
                         <div class="ctn_recettes">
-                            <ul>
-                                <li>Nom de recette</li>
+                            <ul id="recettesBoissonsBrunch">
+                            <% for(const recette of listeRecettesBoissons) { %> 
+                                <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBrunch"><%= recette.Nom %> </li>
+                            <% } %> 
                             </ul>
                         </div>
-                        <button>+</button>
+                        <button class="btnAjouteRecette" data-for="BoissonsBrunch">V</button>
+                        <button class="btnRetireRecette" data-for="BoissonsBrunch">X</button>
                     </div>
                 </div>
                 <hr>
@@ -425,17 +522,23 @@
                         <label>Ajouter une option</label>
                     </div>
                     <ul class="list_selected" id="listeOptions">
-                        <li>+</li>
+                        <% for(const option of optionsSelectionnees) { %>
+                            <li id="option_<%= option.Id_Prix_Unitaire %>" data-for="Options"><%= option.Nom_Type_Prestation %></li>
+                        <% } %> 
+                        <li  data-for="Options">+</li>
                     </ul>
                 </div>
                 <div class="list_recettes">
                     <label>Options</label>
                     <div class="ctn_recettes">
-                        <ul>
-                            <li>Nom option</li>
+                        <ul id="Options">
+                        <% for(const option of listeOptions) { %>
+                            <li id="option_<%= option.Id_Prix_Unitaire %>" data-for="Options"><%= option.Nom_Type_Prestation %></li>
+                        <% } %> 
                         </ul>
                     </div>
-                    <button>+</button>
+                    <button class="btnAjouteRecette" data-for="Options">V</button>
+                    <button class="btnRetireRecette" data-for="Options">X</button>
                 </div>
             </div>
 
@@ -453,56 +556,72 @@
 
 
             <label for="commentaire">Commentaire :</label>
-            <input type="text" id="Commentaire">
+            <input type="text" id="Commentaire" value="<% if(devis.Commentaire !== null) { %><%= devis.Commentaire %><% } %>" >
 
             <!--  RECAP -->
-
             <h2>Récapitulatif</h2>
-
             <div class="recap_ctn">
+                <% let prixParPersonne = '0' %> 
+                <% let prixHT = '0' %> 
                 <div class="recap">
                     <div class="recap_item">
                         <p>Apéritif</p>
-                        <p class="orange" id="prixAperitifParPersonne">00.00 HT/pers.</p>
-                        <p class="orange" id="prixAperitifHT">00.00 HT</p>
+                        <% prixParPersonne = Formule_Aperitif ? (Formule_Aperitif.Prix_HT / Formule_Aperitif.Nb_Convives) : '0' %> 
+                        <p class="orange" id="prixAperitifParPersonne"><%= Number.parseFloat(prixParPersonne).toFixed(2) %>  HT/pers.</p>
+                        <% prixHT = Formule_Aperitif ? Formule_Aperitif.Prix_HT : '0' %> 
+                        <p class="orange" id="prixAperitifHT"><%= Number.parseFloat(prixHT).toFixed(2) %>  HT</p>
                     </div>
                     <div class="recap_item">
                         <p>Cocktail</p>
-                        <p class="orange" id="prixCocktailParPersonne">00.00 HT/pers.</p>
-                        <p class="orange" id="prixCocktailHT">00.00 HT</p>
+                        <% prixParPersonne = Formule_Cocktail ? (Formule_Cocktail.Prix_HT / Formule_Cocktail.Nb_Convives) : '0' %> 
+                        <p class="orange" id="prixCocktailParPersonne"><%= Number.parseFloat(prixParPersonne).toFixed(2) %>  HT/pers.</p>
+                        <% prixHT = Formule_Cocktail ? Formule_Cocktail.Prix_HT : '0' %> 
+                        <p class="orange" id="prixCocktailHT"><%= Number.parseFloat(prixHT).toFixed(2) %>  HT</p>
                     </div>
                 </div>
                 <div class="recap recap_right">
                     <div class="recap_item">
                         <p>Box déjeuner</p>
-                        <p class="orange" id="prixBoxParPersonne">00.00 HT/pers.</p>
-                        <p class="orange" id="prixBoxHT">00.00 HT</p>
+                        <% prixParPersonne = Formule_Box ? (Formule_Box.Prix_HT / Formule_Box.Nb_Convives) : '0' %> 
+                        <p class="orange" id="prixBoxParPersonne"><%= Number.parseFloat(prixParPersonne).toFixed(2) %>  HT/pers.</p>
+                        <% prixHT = Formule_Box ? Formule_Box.Prix_HT : '0' %> 
+                        <p class="orange" id="prixBoxHT"><%= Number.parseFloat(prixHT).toFixed(2) %>  HT</p>
                     </div>
                     <div class="recap_item">
                         <p>Brunch privé</p>
-                        <p class="orange" id="prixBrunchParPersonne">00.00 HT/pers.</p>
-                        <p class="orange" id="prixBrunchHT">00.00 HT</p>
+                        <% prixParPersonne = Formule_Brunch ? (Formule_Brunch.Prix_HT / Formule_Brunch.Nb_Convives) : '0' %> 
+                        <p class="orange" id="prixBrunchParPersonne"><%= Number.parseFloat(prixParPersonne).toFixed(2) %>  HT/pers.</p>
+                        <% prixHT = Formule_Brunch ? Formule_Brunch.Prix_HT : '0' %> 
+                        <p class="orange" id="prixBrunchHT"><%= Number.parseFloat(prixHT).toFixed(2) %>  HT</p>
                     </div>
                 </div>
                 <div class="recap">
                     <div class="recap_item">
                         <p>Options</p>
-                        <p class="orange" id="affichageListeOptions"></p>
-                        <p class="orange" id="prixOptions">00.00 HT</p>
+                        <% let stringOptions = '' %>
+                        <% let prixOptions = 0 %> 
+                        <% for(const option of optionsSelectionnees) { %>  
+                            <% stringOptions += `${option.Nom_Type_Prestation} (${option.Montant}) / ` %> 
+                            <% prixOptions += option.Montant %> 
+                        <% } %> 
+                        <%# on retire le / final %> 
+                        <% stringOptions = stringOptions.substr(0, stringOptions.length - 3) %> 
+                        <p class="orange" id="affichageListeOptions"><%= stringOptions %> </p>
+                        <p class="orange" id="prixOptions"><%= Number.parseFloat(prixOptions).toFixed(2) %>  HT</p>
                     </div>
                 </div>
                 <div class="recap recap_right">
                     <div class="recap_item">
                         <p>Remise</p>
                         <p class="orange" id="affichageRemise"></p>
-                        <p class="orange" id="prixRemise">00.00 HT</p>
+                        <p class="orange" id="prixRemise">0.00 HT</p>
                     </div>
                 </div>
             </div>
 
             <div class="totalprix">
-                <p id="prixTotalHT">Prix HT : 00,00€</p>
-                <p id="prixTotalTTC">Prix TTC : 00,00€</p>
+                <p id="prixTotalHT">Prix HT : <%= Number.parseFloat(devis.Prix_HT).toFixed(2) %>€</p>
+                <p id="prixTotalTTC">Prix TTC : <%= Number.parseFloat(devis.Prix_TTC).toFixed(2) %>€</p>
             </div>
 
         </div>
@@ -511,9 +630,10 @@
             <% if (locals.listePrix_unitaire) { %>
                 <div id="divPrix_unitaire">
                 <% listePrix_unitaire.forEach(prix_unitaire => { %> 
-                    <div id="prix_<%= prix_unitaire.Id_Prix_Unitaire %> ">
-                        <p class="Nom"><%= prix_unitaire.Nom_Type_Prestation %> </p>
-                        <p class="Montant"><%= prix_unitaire.Montant %> </p>
+                    <div data-id="prix_<%= prix_unitaire.Id_Prix_Unitaire %>"
+                         data-nom="<%= prix_unitaire.Nom_Type_Prestation %>"
+                         data-montant="<%= prix_unitaire.Montant %>"
+                    >
                     </div>
                 <% }) %> 
                 </div>

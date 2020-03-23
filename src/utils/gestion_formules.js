@@ -521,6 +521,7 @@ const modify = async (postFormule) => {
 }
 
 module.exports = {
+    tableCorrespondanceTypes,
     createFormules,
     modify
 }
