@@ -8,11 +8,14 @@ const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const moment = require('moment')
 const formatDateHeure = 'DD/MM/YYYY HH:mm'
+const cors = require('cors')
 
 router
 // TODO
 // création estimation
-.post('/estimations', async (req, res) => {
+// cors enable for this route only
+.options('/estimations', cors()) // option is for preflight option sent before request for certain cors request as when using fetch
+.post('/estimations', cors(), async (req, res) => {
     // récupération des données de l'estimation
     const postEstimation = req.body
     
@@ -35,7 +38,16 @@ router
     if(client !== undefined) {
         // on met à jour le Dernier_Statut du client
         client.Dernier_Statut = 'Estimation en cours'
-        client.save()
+        await Clients.update(
+            {
+                Dernier_Statut : client.Dernier_Statut
+            },
+            {
+                where : {
+                    Email : client.Email
+                }
+            }
+        )
 
         // on crée les différentes formules
         const formulesRes = await gestionFormules.createFormules(postEstimation)
@@ -83,7 +95,10 @@ router
             ['Date_Evenement', 'ASC']
         ],
         where : {
-            Statut : null
+            [Op.or] : [
+                {Statut : {[Op.notLike] : 'Archivé'}},
+                {Statut : null}
+            ]
         },
         include : Clients 
     })
