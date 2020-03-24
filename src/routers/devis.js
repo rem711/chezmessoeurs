@@ -241,10 +241,6 @@ router
                         recettesSaleesAperitif.push(recette)
                     }
                 }
-
-                for(const r of recettesSaleesAperitif) {
-                    console.log(r.Nom)
-                }
             }
             if(devis.Formule_Aperitif.Liste_Id_Recettes_Boissons !== null) {
                 tabRecettesBoissons = devis.Formule_Aperitif.Liste_Id_Recettes_Boissons.split(';')
