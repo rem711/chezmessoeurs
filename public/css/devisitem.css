@@ -23,6 +23,11 @@
     margin-top: 50px; 
 }
 
+.content_inner{
+    height: 1000px;
+    overflow-y: scroll;
+}
+
 .select_option_ctn {
     display: flex;
     flex-direction: row;

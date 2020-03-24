@@ -18,6 +18,12 @@ const isBrunchCheckbox = document.getElementById('isBrunch')
 const isBrunchSaleCheckbox = document.getElementById('isBrunchSale')
 const isBrunchSucrecheckbox = document.getElementById('isBrunchSucre')
 
+// init des inputs du nombre de convives
+const inputNbConvivesAperitif = document.getElementById('nbConvivesAperitif')
+const inputNbConvivesCocktail = document.getElementById('nbConvivesCocktail')
+const inputNbConvivesBox = document.getElementById('nbConvivesBox')
+const inputNbConvivesBrunch = document.getElementById('nbConvivesBrunch')
+
 // init des selects de pièces
 const selectPiecesSaleesAperitif = document.getElementById('nbPiecesSaleesAperitif')
 const selectPiecesSaleesCocktail = document.getElementById('nbPiecesSaleesCocktail')
@@ -35,26 +41,32 @@ const toggle = event => {
         case 'isAperitif' : 
             const divAperitif = document.getElementById('divAperitif')
             divAperitif.style.display = divAperitif.style.display === 'block' ? 'none' : 'block'
+            changeAperitif()
             break;
         case 'isCocktail' :
             const divCocktail = document.getElementById('divCocktail')
             divCocktail.style.display = divCocktail.style.display === 'block' ? 'none' : 'block'
+            changeCocktail()
             break;
         case 'isBox' :
             const divBox = document.getElementById('divBox')
             divBox.style.display = divBox.style.display === 'block' ? 'none' : 'block'
+            changeBox()
             break;
         case 'isBrunch' :
             const divBrunch = document.getElementById('divBrunch')
             divBrunch.style.display = divBrunch.style.display === 'block' ? 'none' : 'block'
+            changeBrunch()
             break;
         case 'isBrunchSale' :
             const divBrunchSale = document.getElementById('divBrunchSale')
             divBrunchSale.style.display = divBrunchSale.style.display === 'block' ? 'none' : 'block'
+            changeBrunch()
             break;
         case 'isBrunchSucre' :
             const divBrunchSucre = document.getElementById('divBrunchSucre')
             divBrunchSucre.style.display = divBrunchSucre.style.display === 'block' ? 'none' : 'block'
+            changeBrunch()
             break;
     }
 }
@@ -208,6 +220,8 @@ const saveFormuleAperitif = () => {
         prixParPersonne,
         prixHT
     }
+
+    updateRecap()
 }
 
 // enregistre la formule Cocktail dans l'objet global et met à jour le prix
@@ -228,6 +242,8 @@ const saveFormuleCocktail = () => {
         prixParPersonne,
         prixHT
     }
+
+    updateRecap()
 }
 
 // enregistre la formule Box dans l'objet global et met à jour le prix
@@ -235,13 +251,15 @@ const saveFormuleBox = () => {
     global.Formule_Box = getFormuleBox()
 
     // màj des prix 
-    const prixParPersonne = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === 'Box').getAttribute('data-montant')
+    const prixParPersonne = global.Formule_Box.isBox ? Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === 'Box').getAttribute('data-montant') : 0
     const prixHT = prixParPersonne * global.Formule_Box.Nb_Convives
 
     prix.Box = {
         prixParPersonne,
         prixHT
     }
+
+    updateRecap()
 }
 
 // enregistre la formule Brunch dans l'objet global et met à jour le prix
@@ -270,19 +288,37 @@ const saveFormuleBrunch = () => {
         prixParPersonne,
         prixHT
     }
+
+    updateRecap()
 }
 
 // enregistre la liste d'options dans l'objet global et met à jour le prix
 const saveListeOptions = () => {
     global.Liste_Options = getListeOptions()
     
+    let prixHT = 0
     const options = global.Liste_Options.split(';')
+    const divPrix = Array.from(document.getElementById('divPrix_unitaire').children)
+    for(const option of options) {
+        if(option !== '') {
+            const temp_id = `prix_${option}`
+            prixHT += Number(divPrix.find(div => div.getAttribute('data-id') === temp_id).getAttribute('data-montant'))
+        }
+    }
 
+    prix.Liste_Options = {
+        prixHT
+    }
+
+    updateRecap()
 }
 
+// TODO:
 // enregistre la remise dans l'objet global et met à jour le prix
 const saveRemise = () => {
     global.Id_Remise = getIdRemise()
+
+    updateRecap()
 }
 
 // modifie l'affichage si la formule Aperitif change
@@ -551,7 +587,7 @@ const ajouteRecette = (event) => {
                 li.onclick = selectElementList
                 element.parentElement.append(li)
             }
-
+            
             saveListeOptions()
         }
     }
@@ -566,15 +602,13 @@ const retireRecette = (event) => {
         // remise à null de l'element dans l'objet de gestion
         selectedElements.element = null
 
-        // si c'est une option on appelle la fonction save ici car pas de oncgange sur ul
+        // si c'est une option on appelle la fonction save ici car pas de onchange sur ul
         if(element.getAttribute('data-for').indexOf('Options') !== -1) {
             const li = document.createElement('li')
             li.setAttribute('id', element.getAttribute('id'))
             li.setAttribute('data-for', 'Options')
             li.innerHTML = element.innerHTML            
-            document.getElementById('Options').appendChild(li)
-
-            saveListeOptions()
+            document.getElementById('Options').appendChild(li)      
         }
 
         // l'élément est réellement retiré pour les box, les boissons et les options s'il y a plus d'1 élément
@@ -587,12 +621,78 @@ const retireRecette = (event) => {
             element.removeAttribute('id')
             element.innerHTML = '+'
         }
+
+        // une fois que le traitement a eu lieu, on peut enregistrer la liste des options si c'est celle-ci qui a été modifiée
+        if(element.getAttribute('data-for').indexOf('Options') !== -1) saveListeOptions()
     }
 }
 
+// TODO:
 // met à jour l'affichage des prix depuis l'objet prix
-const updatePrix = () => {
+const updateRecap = () => {
+    let prixAperitifHT = 0
+    let prixCocktailHT = 0
+    let prixBoxHT = 0
+    let prixBrunchHT = 0
+    let prixOptionsHT = 0
+    let prixTotalHT = 0
 
+    if(prix.Aperitif) {
+        // Aperitif
+        document.getElementById('prixAperitifParPersonne').innerHTML = `${Number.parseFloat(prix.Aperitif.prixParPersonne).toFixed(2)} HT/pers.`
+        prixAperitifHT = prix.Aperitif.prixHT
+        document.getElementById('prixAperitifHT').innerHTML = `${Number.parseFloat(prixAperitifHT).toFixed(2)} HT`
+    }
+
+    if(prix.Cocktail) {
+        // Cocktail
+        document.getElementById('prixCocktailParPersonne').innerHTML = `${Number.parseFloat(prix.Cocktail.prixParPersonne).toFixed(2)} HT/pers.`
+        prixCocktailHT = prix.Cocktail.prixHT 
+        document.getElementById('prixCocktailHT').innerHTML = `${Number.parseFloat(prixCocktailHT).toFixed(2)} HT`
+    }
+
+    if(prix.Box) {
+        // Box
+        document.getElementById('prixBoxParPersonne').innerHTML = `${Number.parseFloat(prix.Box.prixParPersonne).toFixed(2)} HT/pers.`
+        prixBoxHT = prix.Box.prixHT 
+        document.getElementById('prixBoxHT').innerHTML = `${Number.parseFloat(prixBoxHT).toFixed(2)} HT`
+    }
+
+    if(prix.Brunch) {
+        // Brunch
+        document.getElementById('prixBrunchParPersonne').innerHTML = `${Number.parseFloat(prix.Brunch.prixParPersonne).toFixed(2)} HT/pers.`
+        prixBrunchHT = prix.Brunch.prixHT 
+        document.getElementById('prixBrunchHT').innerHTML = `${Number.parseFloat(prixBrunchHT).toFixed(2)} HT`
+    }
+
+    if(prix.Liste_Options) {
+        // options
+        let stringOptions = ''
+        const options = global.Liste_Options.split(';')
+        const tabOptions = Array.from(document.getElementById('divPrix_unitaire').children)
+        const entete = 'prix_'
+        for(const option of options) {
+            if(option !== '') {
+                const div = tabOptions.find(div => div.getAttribute('data-id') === `${entete}${option}`)
+                const nom  = div.getAttribute('data-nom')
+                const montant = div.getAttribute('data-montant')
+                stringOptions += `${nom} (${montant}) `
+            }
+        }
+        prixOptionsHT = prix.Liste_Options.prixHT
+        document.getElementById('affichageListeOptions').innerHTML = stringOptions
+        document.getElementById('prixOptions').innerHTML = `${Number.parseFloat(prixOptionsHT).toFixed(2)} HT`
+    }
+
+    // TODO:
+    // remise
+
+
+    // total
+    prixTotalHT += prixAperitifHT + prixCocktailHT + prixBoxHT + prixBrunchHT + prixOptionsHT
+    prixTotalTTC = prixTotalHT * 1.1
+    document.getElementById('prixTotalHT').innerHTML = `Prix HT : ${Number.parseFloat(prixTotalHT).toFixed(2)}€`
+    document.getElementById('prixTotalTTC').innerHTML = `Prix TTC : ${Number.parseFloat(prixTotalTTC).toFixed(2)}€`
 }
 
 
@@ -603,6 +703,12 @@ isBoxCheckbox.onclick = toggle
 isBrunchCheckbox.onclick = toggle
 isBrunchSaleCheckbox.onclick = toggle
 isBrunchSucrecheckbox.onclick = toggle
+
+// gestion du changement du nombre de convives
+inputNbConvivesAperitif.onchange = changeAperitif
+inputNbConvivesCocktail.onchange = changeCocktail
+inputNbConvivesBox.onchange = changeBox
+inputNbConvivesBrunch.onchange = changeBrunch
 
 // gestion du changemnt du nombre de pièces par personne
 selectPiecesSaleesAperitif.onchange = changeAperitif
