@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
 		Id_Estimation: {
 			field : 'Id_Estimation',
 			type: DataTypes.INTEGER(11),
-			allowNull: false
+			allowNull: true
 		},
 		Id_Formule_Aperitif: {
 			field : 'Id_Formule_Aperitif',

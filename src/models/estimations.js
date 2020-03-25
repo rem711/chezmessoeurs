@@ -59,7 +59,10 @@ module.exports = (sequelize, DataTypes) => {
   Estimations.associate = function(models) {
     // associations can be defined here
 	Estimations.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
-	// Estimations.hasOne(models.Devis)
+	Estimations.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Aperitif', as : 'Formule_Aperitif' })
+	Estimations.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Cocktail', as : 'Formule_Cocktail' })
+	Estimations.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Box', as : 'Formule_Box' })
+	Estimations.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Brunch', as : 'Formule_Brunch' })
   };
   return Estimations;
 };

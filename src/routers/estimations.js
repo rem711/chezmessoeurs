@@ -1,14 +1,16 @@
 const express = require('express')
 const router = new express.Router()
+const cors = require('cors')
 const { Clients, Estimations, Formules } = global.db
 const { createOrLoadClient }  = require('./clients')
 const gestionTypeFormule = require('../utils/gestion_type_formule')
 const gestionFormules = require('../utils/gestion_formules')
+const createDevis = require('./devis').createDevis
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const moment = require('moment')
 const formatDateHeure = 'DD/MM/YYYY HH:mm'
-const cors = require('cors')
+
 
 router
 // TODO
@@ -179,10 +181,47 @@ router
         formatDateHeure
     })
 })
+// TODO:
 // valide estimation pour créer un devis
 // récupère les infos, archive l'estimation, envoi sur devis pour le créer, renvoie sur la page du devis complet
 .post('/estimations/validation/:Id_Estimation', async (req, res) => {
+    const postIdEstimation = req.params.Id_Estimation
 
+    let infos = undefined
+    let devis = undefined
+
+    const temp_estimation = await Estimations.findOne({
+        where : {
+            Id_Estimation : postIdEstimation
+        },
+        include : [
+            { model : Clients },
+            { model : Formules, as : 'Formule_Aperitif' },
+            { model : Formules, as : 'Formule_Cocktail' },
+            { model : Formules, as : 'Formule_Box' },
+            { model : Formules, as : 'Formule_Brunch' }
+        ]
+    })
+
+    // TODO:
+    // on vérifie que l'estimation existe
+    if(temp_estimation !== null) {
+        createRes =  await createDevis(temp_estimation)
+        infos = createRes.infos
+        devis = createRes.devis
+
+        if(infos === undefined) {            
+            infos = errorHandler(undefined, `Le devis pour l'évènement du ${moment(devis.Date_Evenement).format(formatDateHeure)} vient d'être créé.`)
+        }
+    }
+    else {
+        infos = errorHandler('Une erreur s\'est produite, veuillez actualiser la page et réessayer.')
+    }
+
+    res.send({
+        infos,
+        devis
+    })
 })
 // archive une estimation
 .patch('/estimations/:Id_Estimation', async (req, res) => {

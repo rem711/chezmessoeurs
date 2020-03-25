@@ -7,15 +7,74 @@ const errorHandler = require('../utils/errorHandler')
 const moment = require('moment')
 const formatDateHeure = 'DD/MM/YYYY HH:mm'
 
-const createDevis = async (estimation) => {
-    const client = await Clients.findOne({
-        where : {
-            Id_Client : 8
-        }
-    })
+const createDevis = async (estimation = undefined) => {
+    let infos = undefined
+    let devis = undefined
+    let hasEstimation = true
 
-    client.Dernier_Statut = 'test'
-    client.save()
+    // cas où le devis est créé directement, en dehors d'une estimation
+    // TODO:
+    if(estimation === undefined) {
+        hasEstimation = false
+        estimation = {
+            
+        }
+    }
+
+    try {
+        // TODO:
+        // gestion des prix
+        let prixHT = 0
+        let prixTTC = 0
+
+        if(estimation.Formule_Aperitif !== null) {
+            prixHT += estimation.Formule_Aperitif.Prix_HT
+        }
+        if(estimation.Formule_Cocktail !== null) {
+            prixHT += estimation.Formule_Cocktail.Prix_HT
+        }
+        if(estimation.Formule_Box !== null) {
+            prixHT += estimation.Formule_Box.Prix_HT
+        }
+        if(estimation.Formule_Brunch !== null) {
+            prixHT += estimation.Formule_Brunch.Prix_HT
+        }
+
+        prixTTC = prixHT * 1.1
+
+        // création du devis
+        devis = await Devis.create({
+            Id_Estimation : estimation.Id_Estimation,
+            Id_Client : estimation.Id_Client,
+            Date_Evenement : estimation.Date_Evenement,
+            Adresse_Livraison : estimation.Client.Adresse_Facturation,
+            Id_Formule_Aperitif : estimation.Id_Formule_Aperitif,
+            Id_Formule_Cocktail : estimation.Id_Formule_Cocktail,
+            Id_Formule_Box : estimation.Id_Formule_Box,
+            Id_Formule_Brunch : estimation.Id_Formule_Brunch,
+            Commentaire : estimation.Commentaire,
+            Statut : 'En cours',
+            Prix_HT : prixHT,
+            Prix_TTC : prixTTC
+        })
+
+        // on archive l'estimation
+        estimation.Statut = 'Archivé'
+        estimation.save()
+
+        // on met à jour le statut du client
+        estimation.Client.Dernier_Statut = 'Devis en cours'
+        estimation.Client.save()
+    }
+    catch(error) {
+        console.log(error)
+        infos = errorHandler(error, undefined)
+    }
+
+    return {
+        infos,
+        devis
+    }
 }
 
 // prend une liste de devis, récupère et renvoie les infos utiles dans une liste de devis
@@ -84,6 +143,7 @@ const getListInfosDevis = async (listDevis) => {
 }
 
 router
+// TODO:
 // crée un devis
 .post('/devis', (req, res) => {
     const devis = req.body
