@@ -50,7 +50,7 @@ const toDevis = async () => {
             else if(infos.message && devis !== undefined) {
                 const message = infos.message + ' Vous allez être redirigé vers le devis.'
                 alert(message)
-                location.replace(`/devis/${devis.ID_Devis}`)
+                location.replace(`/devis/${devis.Id_Devis}`)
             }
         }
     }

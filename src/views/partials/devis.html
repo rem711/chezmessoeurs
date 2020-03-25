@@ -45,11 +45,11 @@
                                     <% const { Id_Devis, Client, Estimation, Date_Evenement, String_Formule_Aperitif, String_Formule_Cocktail, String_Formule_Box, String_Formule_Brunch, Commentaire } = devis %>     
                                     <% const id = `devis_${Id_Devis}` %> 
                                     <tr id="<%= id %> ">
-                                        <td class="datedevis"><%= moment(Date_Evenement).format(formatDateHeure) %></td>
+                                        <td class="datedevis"><%= moment.utc(Date_Evenement).format(formatDateHeure) %></td>
                                         <td><%= Client.Nom_Prenom %></td>
                                         <td><%= Client.Telephone %></td>
                                         <td><%= Client.Email %></td>
-                                        <td><%= moment(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
+                                        <td><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
                                         <td><%= String_Formule_Aperitif %></td>
                                         <td><%= String_Formule_Cocktail %></td>
                                         <td><%= String_Formule_Box %></td>
@@ -91,11 +91,11 @@
                                     <% const { Id_Devis, Client, Estimation, Date_Evenement, String_Formule_Aperitif, String_Formule_Cocktail, String_Formule_Box, String_Formule_Brunch, Commentaire } = devis %>     
                                     <% const id = `devis_${Id_Devis}` %> 
                                     <tr id="<%= id %> ">
-                                        <td class="datedevis"><%= moment(Date_Evenement).format(formatDateHeure) %></td>
+                                        <td class="datedevis"><%= moment.utc(Date_Evenement).format(formatDateHeure) %></td>
                                         <td><%= Client.Nom_Prenom %></td>
                                         <td><%= Client.Telephone %></td>
                                         <td><%= Client.Email %></td>
-                                        <td><%= moment(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
+                                        <td><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
                                         <td><%= String_Formule_Aperitif %></td>
                                         <td><%= String_Formule_Cocktail %></td>
                                         <td><%= String_Formule_Box %></td>
@@ -137,11 +137,11 @@
                                     <% const { Id_Devis, Client, Estimation, Date_Evenement, String_Formule_Aperitif, String_Formule_Cocktail, String_Formule_Box, String_Formule_Brunch, Commentaire } = devis %>     
                                     <% const id = `devis_${Id_Devis}` %> 
                                     <tr id="<%= id %> ">
-                                        <td class="datedevis"><%= moment(Date_Evenement).format(formatDateHeure) %></td>
+                                        <td class="datedevis"><%= moment.utc(Date_Evenement).format(formatDateHeure) %></td>
                                         <td><%= Client.Nom_Prenom %></td>
                                         <td><%= Client.Telephone %></td>
                                         <td><%= Client.Email %></td>
-                                        <td><%= moment(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
+                                        <td><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
                                         <td><%= String_Formule_Aperitif %></td>
                                         <td><%= String_Formule_Cocktail %></td>
                                         <td><%= String_Formule_Box %></td>
