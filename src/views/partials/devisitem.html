@@ -522,8 +522,10 @@
                         <label>Ajouter une option</label>
                     </div>
                     <ul class="list_selected" id="listeOptions">
-                        <% for(const option of optionsSelectionnees) { %>
-                            <li id="option_<%= option.Id_Prix_Unitaire %>" data-for="Options"><%= option.Nom_Type_Prestation %></li>
+                        <% if(optionsSelectionnees !== undefined) { %> 
+                            <% for(const option of optionsSelectionnees) { %>
+                                <li id="option_<%= option.Id_Prix_Unitaire %>" data-for="Options"><%= option.Nom_Type_Prestation %></li>
+                            <% } %> 
                         <% } %> 
                         <li  data-for="Options">+</li>
                     </ul>
@@ -600,12 +602,14 @@
                         <p>Options</p>
                         <% let stringOptions = '' %>
                         <% let prixOptions = 0 %> 
-                        <% for(const option of optionsSelectionnees) { %>  
-                            <% stringOptions += `${option.Nom_Type_Prestation} (${option.Montant}) / ` %> 
-                            <% prixOptions += option.Montant %> 
+                        <% if(optionsSelectionnees !== undefined) { %> 
+                            <% for(const option of optionsSelectionnees) { %>  
+                                <% stringOptions += `${option.Nom_Type_Prestation} (${option.Montant}) / ` %> 
+                                <% prixOptions += option.Montant %> 
+                            <% } %> 
+                            <%# on retire le / final %> 
+                            <% stringOptions = stringOptions.substr(0, stringOptions.length - 3) %> 
                         <% } %> 
-                        <%# on retire le / final %> 
-                        <% stringOptions = stringOptions.substr(0, stringOptions.length - 3) %> 
                         <p class="orange" id="affichageListeOptions"><%= stringOptions %> </p>
                         <p class="orange" id="prixOptions"><%= Number.parseFloat(prixOptions).toFixed(2) %>  HT</p>
                     </div>
