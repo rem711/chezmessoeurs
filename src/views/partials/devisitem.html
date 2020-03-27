@@ -1,7 +1,8 @@
 <link rel="stylesheet" type="text/css" href="/css/devisitem.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script defer src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script defer src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script defer src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script defer src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script defer src="/libs/js/datepicker-fr.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script defer src="/js/devisitem.js"></script>
 
@@ -64,7 +65,7 @@
                     <div class="moitie">
                         <div>
                             <label>Ref client :</label>
-                            <input type="text" id="Id_Client" value="<%= devis.Client.Id_Client %>">
+                            <span id="Id_Client"><%= devis.Client.Id_Client %></span>
                         </div>
                         <div>
                             <label>Client :</label>
@@ -151,8 +152,10 @@
                         <div>
                             <label for="listeRecettesBoissonsAperitif">Boissons sélectionnées</label>
                             <ul class="list_selected" id="listeRecettesBoissonsAperitif">
-                            <% for(const recette of recettesBoissonsAperitif) { %> 
-                                <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsAperitif"><%= recette.Nom %> </li>
+                            <% if(Formule_Aperitif) { %> 
+                                <% for(const recette of recettesBoissonsAperitif) { %> 
+                                    <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsAperitif"><%= recette.Nom %> </li>
+                                <% } %> 
                             <% } %> 
                                 <li data-for="BoissonsAperitif">+</li>
                             </ul>
@@ -268,8 +271,10 @@
                         <div>
                             <label for="listeRecettesBoissonsCocktail">Boissons sélectionnées</label>
                             <ul class="list_selected" id="listeRecettesBoissonsCocktail">
-                            <% for(const recette of recettesBoissonsCocktail) { %> 
-                                <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsCocktail"><%= recette.Nom %> </li>
+                            <% if(Formule_Cocktail) { %> 
+                                <% for(const recette of recettesBoissonsCocktail) { %> 
+                                    <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsCocktail"><%= recette.Nom %> </li>
+                                <% } %> 
                             <% } %> 
                                 <li data-for="BoissonsCocktail">+</li>
                             </ul>
@@ -372,8 +377,10 @@
                         <div>
                             <label for="listeRecettesBoissonsBox">Boissons sélectionnées</label>
                             <ul class="list_selected" id="listeRecettesBoissonsBox">
-                                <% for(const recette of recettesBoissonsBox) { %> 
-                                    <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBox"><%= recette.Nom %> </li>
+                                <% if(Formule_Box) { %> 
+                                    <% for(const recette of recettesBoissonsBox) { %> 
+                                        <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBox"><%= recette.Nom %> </li>
+                                    <% } %> 
                                 <% } %> 
                                 <li data-for="BoissonsBox">+</li>
                             </ul>
@@ -492,8 +499,10 @@
                         <div>
                             <label for="listeRecettesBoissonsBrunch">Boissons sélectionnées</label>
                             <ul class="list_selected" id="listeRecettesBoissonsBrunch">
-                            <% for(const recette of recettesBoissonsBrunch) { %> 
-                                <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBrunch"><%= recette.Nom %> </li>
+                            <% if(Formule_Brunch) { %> 
+                                <% for(const recette of recettesBoissonsBrunch) { %> 
+                                    <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBrunch"><%= recette.Nom %> </li>
+                                <% } %> 
                             <% } %> 
                                 <li data-for="BoissonsBrunch">+</li>
                             </ul>
@@ -522,7 +531,7 @@
                         <label>Ajouter une option</label>
                     </div>
                     <ul class="list_selected" id="listeOptions">
-                        <% if(optionsSelectionnees !== undefined) { %> 
+                        <% if(locals.optionsSelectionnees !== undefined) { %> 
                             <% for(const option of optionsSelectionnees) { %>
                                 <li id="option_<%= option.Id_Prix_Unitaire %>" data-for="Options"><%= option.Nom_Type_Prestation %></li>
                             <% } %> 
@@ -602,7 +611,7 @@
                         <p>Options</p>
                         <% let stringOptions = '' %>
                         <% let prixOptions = 0 %> 
-                        <% if(optionsSelectionnees !== undefined) { %> 
+                        <% if(locals.optionsSelectionnees !== undefined) { %> 
                             <% for(const option of optionsSelectionnees) { %>  
                                 <% stringOptions += `${option.Nom_Type_Prestation} (${option.Montant}) / ` %> 
                                 <% prixOptions += option.Montant %> 
@@ -629,14 +638,29 @@
             </div>
 
             <div>
-                <button>Archiver</button>
-                <button>Facture</button>
-                <button>Envoyer</button>
-                <button>Valider</button>
+                <h5 id="divInfos"></h5>
+            </div>
+            <div>
+            <%# si c'est une création on ne peut que créer le nouveau devis %> 
+            <% if (locals.isCreation) { %>
+                <button id="btnCreateDevis">Créer le devis</button>
+            <% } else { %>
+            <%# sinon on accède aux différents traitements d'un devis %> 
+                <button id="btnArchiveDevis">Archiver</button>
+                <button id="btnSaveDevis">Enregistrer</button>
+                <button id="btnSendDevis">Envoyer</button>
+                <%# Valide le devis pour en créer une facture %> 
+                <button id="btnToFacture">Valider</button>
+            <% } %>                 
             </div>
 
         </div>
         <div class="hiddenInfos">
+            <%# boolean pour savoir si le devis est à créer ou s'il existe déjà provenant d'une estimation %> 
+            <div id="isCreation"><% if(locals.isCreation) { %><%= isCreation %><% } else { %>false<% } %></div>
+            <% if(locals.devis.Id_Devis) { %>
+                <div id="Id_Devis" data-id="<%= devis.Id_Devis %>"></div>
+            <% } %>
             <%# liste prix unitaires pour faire le calcul %> 
             <% if (locals.listePrix_unitaire) { %>
                 <div id="divPrix_unitaire">
