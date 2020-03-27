@@ -1,45 +1,42 @@
 const { Type_Formule } = global.db
-const errorHandler = require('../utils/errorHandler')
 
 
 // ajoute en BDD et le retourne
 const create = async (postType_Formule) => {
-    let infos = undefined
     let type_formule = undefined
 
-    // controle pour la clause where
-    postType_Formule.Nom = postType_Formule.Nom === undefined ? '' : postType_Formule.Nom
+    try {
+        // controle pour la clause where
+        postType_Formule.Nom = postType_Formule.Nom === undefined ? '' : postType_Formule.Nom
 
-    // vérification unicité Nom
-    const temp_type_formule = await Type_Formule.findOne({
-        where : {
-            Nom : postType_Formule.Nom
-        }
-    })
-
-    // si n'existe pas encore on le crée
-    if(temp_type_formule === null) {
-        try {
-            type_formule = await Type_Formule.create({
+        // vérification unicité Nom
+        const temp_type_formule = await Type_Formule.findOne({
+            where : {
                 Nom : postType_Formule.Nom
-            })
-            infos = errorHandler(undefined, 'Le type de formule a été créé.')
+            }
+        })
+
+        // si n'existe pas encore on le crée
+        if(temp_type_formule === null) {
+            try {
+                type_formule = await Type_Formule.create({
+                    Nom : postType_Formule.Nom
+                })
+            }
+            catch(error) {
+                throw new Error(error.errors[0].message)
+            }
         }
-        catch(error) {
-            infos = errorHandler(error.errors[0].message, undefined)
+        // sinon erreur
+        else {
+            throw new Error('Type de formule déjà existant.')
         }
     }
-    // sinon erreur
-    else {
-        infos = errorHandler('Type de formule déjà existant.', undefined)
+    catch(error) {
+        throw new Error(error)
     }
 
-    console.log('infos : ', infos)
-    console.log('type_formule : ', type_formule)
-    return {
-        infos,
-        type_formule
-    }
+    return type_formule
 }
 
 // TODO

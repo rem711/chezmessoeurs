@@ -1,4 +1,4 @@
-const { Formules, Type_Formule, Prix_Unitaire } = global.db
+const { Formules, Type_Formule, Prix_Unitaire, Recettes } = global.db
 const errorHandler = require('../utils/errorHandler')
 
 const tableCorrespondanceTypes = {
@@ -59,7 +59,7 @@ const tableCorrespondanceTypes = {
 // fait les vérification avant de vouloir créer une formule
 // renvoie les infos et le type de formule s'il existe
 const checksFormule = async (postFormule) => {
-    let infos = undefined
+    // let infos = undefined
     let type_formule = undefined
 
     // contrôle pour la clause where
@@ -87,118 +87,142 @@ const checksFormule = async (postFormule) => {
                 (postFormule.Nb_Pieces_Sucrees >= tableCorrespondanceTypes[type_formule.Nom].nbPieces['sucrées'].min && postFormule.Nb_Pieces_Sucrees <= tableCorrespondanceTypes[type_formule.Nom].nbPieces['sucrées'].max)
                 ) {
                 
-                    infos = errorHandler(undefined, 'ok')
+                    // infos = errorHandler(undefined, 'ok')
             }
             else {
-                infos = errorHandler(`Le nombre de pièces par personne pour la formule ${type_formule.Nom} est incorrect.`)
+                // infos = errorHandler(`Le nombre de pièces par personne pour la formule ${type_formule.Nom} est incorrect.`)
+                throw new Error(`Le nombre de pièces par personne pour la formule ${type_formule.Nom} est incorrect.`)
             }
         }
         else {
-            infos = errorHandler(`Le nombre de convives pour la formule ${type_formule.Nom} est insuffisant.`, undefined)
+            // infos = errorHandler(`Le nombre de convives pour la formule ${type_formule.Nom} est insuffisant.`, undefined)
+            throw new Error(`Le nombre de convives pour la formule ${type_formule.Nom} est insuffisant.`)
         }
     }
     else {
-        infos = errorHandler('Le type de formule est invalide.', undefined)
+        // infos = errorHandler('Le type de formule est invalide.', undefined)
+        throw new Error('Le type de formule est invalide.')
     }
 
-    return {
-        infos,
-        type_formule
-    }
+    // return {
+    //     infos,
+    //     type_formule
+    // }
+    return type_formule
 }
 
 // crée une formule apéritif lors d'une estimation
 const createAperitif = async (postFormule) => {
-    let infos = undefined
+    // let infos = undefined
     let formule = undefined
     let type_formule = undefined
 
     // vérifie si les paramètres sont valides
-    const checks = await checksFormule(postFormule)
-    infos = checks.infos
-    if(infos.message === 'ok') {
-        type_formule = checks.type_formule
-
-        let Prix_HT = 0     
-        // récupération des prix 
-        const prixSaléApéritif = await Prix_Unitaire.findOne({
-            where : {
-                Nom_Type_Prestation : 'Pièce salée'
+    // const checks = await checksFormule(postFormule)
+    // infos = checks.infos
+    // if(infos.message === 'ok') {
+    //     type_formule = checks.type_formule
+    try {
+        type_formule = await checksFormule(postFormule)
+        if(type_formule !== undefined) {
+            let Prix_HT = 0     
+            // récupération des prix 
+            const prixSaléApéritif = await Prix_Unitaire.findOne({
+                where : {
+                    Nom_Type_Prestation : 'Pièce salée'
+                }
+            })        
+            if(prixSaléApéritif !== null) {
+                const prixParPersonne = postFormule.Nb_Pieces_Salees * prixSaléApéritif.Montant
+                Prix_HT = prixParPersonne * postFormule.Nb_Convives
             }
-        })         
-        const prixParPersonne = postFormule.Nb_Pieces_Salees * prixSaléApéritif.Montant
 
-        Prix_HT = prixParPersonne * postFormule.Nb_Convives
-
-        // on a toutes les infos d'une formule provenant d'une estimation pour créer celle-ci
-        try {
-            formule = await Formules.create({
-                Id_Type_Formule : type_formule.Id_Type_Formule,
-                Nb_Convives : postFormule.Nb_Convives,
-                Prix_HT,
-                Nb_Pieces_Salees : postFormule.Nb_Pieces_Salees
-            })
-        }
-        catch(error) {
-            infos = errorHandler(error.errors[0].message, undefined)
+            // on a toutes les infos d'une formule provenant d'une estimation pour créer celle-ci
+            try {
+                formule = await Formules.create({
+                    Id_Type_Formule : type_formule.Id_Type_Formule,
+                    Nb_Convives : postFormule.Nb_Convives,
+                    Prix_HT,
+                    Nb_Pieces_Salees : postFormule.Nb_Pieces_Salees
+                })
+            }
+            catch(error) {
+                // infos = errorHandler(error.errors[0].message, undefined)
+                throw new Error(error.errors[0].message)
+            }
         }
     }
-
-    return {
-        infos, 
-        formule
+    catch(error) {
+        throw new Error(error)
     }
+
+
+    // return {
+    //     infos, 
+    //     formule
+    // }
+    return formule
 }
 
 // crée une formule cocktail lors d'une estimation
 const createCocktail = async (postFormule) => {
-    let infos = undefined
+    // let infos = undefined
     let formule = undefined
     let type_formule = undefined
 
     // vérifie si les paramètres sont valides
-    const checks = await checksFormule(postFormule)
-    infos = checks.infos
-    if(infos.message === 'ok') {
-        type_formule = checks.type_formule
-
-        let Prix_HT = 0     
-        // récupération des prix 
-        const prixSaléCocktail = await Prix_Unitaire.findOne({
-            where : {
-                Nom_Type_Prestation : 'Pièce salée'
+    // const checks = await checksFormule(postFormule)
+    // infos = checks.infos
+    // if(infos.message === 'ok') {
+    //     type_formule = checks.type_formule
+    try {
+        type_formule = await checksFormule(postFormule)
+        if(type_formule !== undefined) {
+            let Prix_HT = 0     
+            // récupération des prix 
+            const prixSaléCocktail = await Prix_Unitaire.findOne({
+                where : {
+                    Nom_Type_Prestation : 'Pièce salée'
+                }
+            })   
+            const prixSucré = await Prix_Unitaire.findOne({
+                where : {
+                    Nom_Type_Prestation : 'Pièce sucrée'
+                }
+            })   
+            let prixSaléParPersonne = 0
+            let prixsucréParPersonne = 0
+            if(prixSaléCocktail !== null && prixSucré !== null) {
+                prixSaléParPersonne = postFormule.Nb_Pieces_Salees * prixSaléCocktail.Montant
+                prixsucréParPersonne = postFormule.Nb_Pieces_Sucrees * prixSucré.Montant
+                Prix_HT = prixSaléParPersonne * postFormule.Nb_Convives + prixsucréParPersonne * postFormule.Nb_Convives
             }
-        })   
-        const prixSucré = await Prix_Unitaire.findOne({
-            where : {
-                Nom_Type_Prestation : 'Pièce sucrée'
+
+            // on a toutes les infos d'une formule provenant d'une estimation pour créer celle-ci
+            try {
+                formule = await Formules.create({
+                    Id_Type_Formule : type_formule.Id_Type_Formule,
+                    Nb_Convives : postFormule.Nb_Convives,
+                    Prix_HT,
+                    Nb_Pieces_Salees : postFormule.Nb_Pieces_Salees,
+                    Nb_Pieces_Sucrees : postFormule.Nb_Pieces_Sucrees
+                })
             }
-        })   
-
-        const prixSaléParPersonne = postFormule.Nb_Pieces_Salees * prixSaléCocktail.Montant
-        const prixsucréParPersonne = postFormule.Nb_Pieces_Sucrees * prixSucré.Montant
-
-        Prix_HT = prixSaléParPersonne * postFormule.Nb_Convives + prixsucréParPersonne * postFormule.Nb_Convives
-
-        // on a toutes les infos d'une formule provenant d'une estimation pour créer celle-ci
-        try {
-            formule = await Formules.create({
-                Id_Type_Formule : type_formule.Id_Type_Formule,
-                Nb_Convives : postFormule.Nb_Convives,
-                Prix_HT,
-                Nb_Pieces_Salees : postFormule.Nb_Pieces_Salees,
-                Nb_Pieces_Sucrees : postFormule.Nb_Pieces_Sucrees
-            })
-        }
-        catch(error) {
-            infos = errorHandler(error.errors[0].message, undefined)
+            catch(error) {
+                // infos = errorHandler(error.errors[0].message, undefined)
+                throw new Error(error.errors[0].message)
+            }
         }
     }
-
-    return {
-        infos, 
-        formule
+    catch(error) {
+        throw new Error(error)
     }
+
+    // return {
+    //     infos, 
+    //     formule
+    // }
+    return formule
 }
 
 // crée une formule box lors d'une estimation
@@ -208,105 +232,127 @@ const createBox = async (postFormule) => {
     let type_formule = undefined
 
     // vérifie si les paramètres sont valides
-    const checks = await checksFormule(postFormule)
-    infos = checks.infos
-    if(infos.message === 'ok') {
-        type_formule = checks.type_formule
+    // const checks = await checksFormule(postFormule)
+    // infos = checks.infos
+    // if(infos.message === 'ok') {
+    //     type_formule = checks.type_formule
+    try {
+        type_formule = await checksFormule(postFormule)
+        if(type_formule !== undefined) {
+            let Prix_HT = 0     
+            // récupération des prix 
+            const prixBox = await Prix_Unitaire.findOne({
+                where : {
+                    Nom_Type_Prestation : 'Box'
+                }
+            })   
 
-        let Prix_HT = 0     
-        // récupération des prix 
-        const prixBox = await Prix_Unitaire.findOne({
-            where : {
-                Nom_Type_Prestation : 'Box'
+            if(prixBox !== null) {
+                Prix_HT = prixBox.Montant * postFormule.Nb_Convives
             }
-        })   
 
-        Prix_HT = prixBox.Montant * postFormule.Nb_Convives
-
-        // on a toutes les infos d'une formule provenant d'une estimation pour créer celle-ci
-        try {
-            formule = await Formules.create({
-                Id_Type_Formule : type_formule.Id_Type_Formule,
-                Nb_Convives : postFormule.Nb_Convives,
-                Prix_HT,
-                Nb_Pieces_Salees : postFormule.Nb_Pieces_Salees,
-                Nb_Pieces_Sucrees : postFormule.Nb_Pieces_Sucrees
-            })
-        }
-        catch(error) {
-            infos = errorHandler(error.errors[0].message, undefined)
+            // on a toutes les infos d'une formule provenant d'une estimation pour créer celle-ci
+            try {
+                formule = await Formules.create({
+                    Id_Type_Formule : type_formule.Id_Type_Formule,
+                    Nb_Convives : postFormule.Nb_Convives,
+                    Prix_HT,
+                    Nb_Pieces_Salees : postFormule.Nb_Pieces_Salees,
+                    Nb_Pieces_Sucrees : postFormule.Nb_Pieces_Sucrees
+                })
+            }
+            catch(error) {
+                // infos = errorHandler(error.errors[0].message, undefined)
+                throw new Error(error.errors[0].message)
+            }
         }
     }
-
-    return {
-        infos, 
-        formule
+    catch(error) {
+        throw new Error(error)
     }
+
+    // return {
+    //     infos, 
+    //     formule
+    // }
+    return formule
 }
 
 // crée une formule brunch lors d'une estimation
 const createBrunch = async (postFormule) => {
-    let infos = undefined
+    // let infos = undefined
     let formule = undefined
     let type_formule = undefined
 
     // vérifie si les paramètres sont valides
-    const checks = await checksFormule(postFormule)
-    infos = checks.infos
-    if(infos.message === 'ok') {
-        type_formule = checks.type_formule
+    // const checks = await checksFormule(postFormule)
+    // infos = checks.infos
+    // if(infos.message === 'ok') {
+    //     type_formule = checks.type_formule
+    try {
+        type_formule = await checksFormule(postFormule)
+        if(type_formule !== undefined) {
+            let Prix_HT = 0     
 
-        let Prix_HT = 0     
-
-        // vérification du/des types de brunchs souhaité
-        let prixBrunchSaléParPersonne = 0
-        let prixBrunchSucréParPersonne = 0
-        if(postFormule.isBrunchSale) {
-            // choix petite ou grande faim, si nb pièces = min alors petit sinon grand brunch
-            let typePrestationSalée = postFormule.Nb_Pieces_Salees == tableCorrespondanceTypes[type_formule.Nom].nbPieces['salées'].min ? 'Petit ' : 'Grand '
-            typePrestationSalée += 'brunch salé'
-            // const prixBrunchSalé = prix_unitaire.find(prestation => prestation.Nom_Type_Prestation === typePrestationSalée)
-            const prixBrunchSalé = await Prix_Unitaire.findOne({
-                where : {
-                    Nom_Type_Prestation : typePrestationSalée
+            // vérification du/des types de brunchs souhaité
+            let prixBrunchSaléParPersonne = 0
+            let prixBrunchSucréParPersonne = 0
+            if(postFormule.isBrunchSale) {
+                // choix petite ou grande faim, si nb pièces = min alors petit sinon grand brunch
+                let typePrestationSalée = postFormule.Nb_Pieces_Salees == tableCorrespondanceTypes[type_formule.Nom].nbPieces['salées'].min ? 'Petit ' : 'Grand '
+                typePrestationSalée += 'brunch salé'
+                // const prixBrunchSalé = prix_unitaire.find(prestation => prestation.Nom_Type_Prestation === typePrestationSalée)
+                const prixBrunchSalé = await Prix_Unitaire.findOne({
+                    where : {
+                        Nom_Type_Prestation : typePrestationSalée
+                    }
+                })
+                if(prixBrunchSalé !== null) {
+                    prixBrunchSaléParPersonne = prixBrunchSalé.Montant * postFormule.Nb_Convives
                 }
-            })
-            prixBrunchSaléParPersonne = prixBrunchSalé.Montant * postFormule.Nb_Convives
-        }
-        if(postFormule.isBrunchSucre) {
-            // choix petite ou grande faim, si nb pièces = min alors petit sinon grand brunch
-            let typePrestationSucrée = postFormule.Nb_Pieces_Sucrees == tableCorrespondanceTypes[type_formule.Nom].nbPieces['sucrées'].min ? 'Petit ' : 'Grand '
-            typePrestationSucrée += 'brunch sucré'
-            // const prixBrunchSucré = prix_unitaire.find(prestation => prestation.Nom_Type_Prestation === typePrestationSucrée)
-            const prixBrunchSucré = await Prix_Unitaire.findOne({
-                where: {
-                    Nom_Type_Prestation : typePrestationSucrée
+            }
+            if(postFormule.isBrunchSucre) {
+                // choix petite ou grande faim, si nb pièces = min alors petit sinon grand brunch
+                let typePrestationSucrée = postFormule.Nb_Pieces_Sucrees == tableCorrespondanceTypes[type_formule.Nom].nbPieces['sucrées'].min ? 'Petit ' : 'Grand '
+                typePrestationSucrée += 'brunch sucré'
+                // const prixBrunchSucré = prix_unitaire.find(prestation => prestation.Nom_Type_Prestation === typePrestationSucrée)
+                const prixBrunchSucré = await Prix_Unitaire.findOne({
+                    where: {
+                        Nom_Type_Prestation : typePrestationSucrée
+                    }
+                })
+                if(prixBrunchSucré !== null) {
+                    prixBrunchSucréParPersonne = prixBrunchSucré.Montant * postFormule.Nb_Convives
                 }
-            })
-            prixBrunchSucréParPersonne = prixBrunchSucré.Montant * postFormule.Nb_Convives
-        }
-        
-        Prix_HT = prixBrunchSaléParPersonne + prixBrunchSucréParPersonne
+            }
+            
+            Prix_HT = prixBrunchSaléParPersonne + prixBrunchSucréParPersonne
 
-        // on a toutes les infos d'une formule provenant d'une estimation pour créer celle-ci
-        try {
-            formule = await Formules.create({
-                Id_Type_Formule : type_formule.Id_Type_Formule,
-                Nb_Convives : postFormule.Nb_Convives,
-                Prix_HT,
-                Nb_Pieces_Salees : postFormule.Nb_Pieces_Salees,
-                Nb_Pieces_Sucrees : postFormule.Nb_Pieces_Sucrees
-            })
-        }
-        catch(error) {
-            infos = errorHandler(error.errors[0].message, undefined)
+            // on a toutes les infos d'une formule provenant d'une estimation pour créer celle-ci
+            try {
+                formule = await Formules.create({
+                    Id_Type_Formule : type_formule.Id_Type_Formule,
+                    Nb_Convives : postFormule.Nb_Convives,
+                    Prix_HT,
+                    Nb_Pieces_Salees : postFormule.Nb_Pieces_Salees,
+                    Nb_Pieces_Sucrees : postFormule.Nb_Pieces_Sucrees
+                })
+            }
+            catch(error) {
+                // infos = errorHandler(error.errors[0].message, undefined)
+                throw new Error(error.errors[0].message)
+            }
         }
     }
-
-    return {
-        infos, 
-        formule
+    catch(error) {
+        throw new Error(error)
     }
+
+    // return {
+    //     infos, 
+    //     formule
+    // }
+    return formule
 }
 
 
@@ -314,100 +360,113 @@ const createBrunch = async (postFormule) => {
 // initialise les valeurs par défaut et certains paramètres avant de créer la formule
 // prend en paramètre les informations provenant de l'estimation pour savoir ce qui doit être créé
 const createFormules = async (post) => {
-    let infos = undefined
+    // let infos = undefined
     
-    let idFormuleAperitif = null
-    let idFormuleCocktail = null
-    let idFormuleBox = null
-    let idFormuleBrunch = null
+    let Formule_Aperitif = null
+    let Formule_Cocktail = null
+    let Formule_Box = null
+    let Formule_Brunch = null
 
-    if(post.isAperitif) {
-        // initialise les valeurs pour un apéritif
-        const paramsAperitif = {
-            Id_Type_Formule : 1,
-            Nb_Convives : post.nbConvivesAperitif,
-            Nb_Pieces_Salees : post.nbPiecesSaleesAperitif,
-            Nb_Pieces_Sucrees : 0
+    try {
+        if(post.isAperitif) {
+            // initialise les valeurs pour un apéritif
+            const paramsAperitif = {
+                Id_Type_Formule : 1,
+                Nb_Convives : post.nbConvivesAperitif,
+                Nb_Pieces_Salees : post.nbPiecesSaleesAperitif,
+                Nb_Pieces_Sucrees : 0
+            }
+            // crée la formule apéritif
+            // const aperitif = await createAperitif(paramsAperitif)
+            // infos = aperitif.infos
+            // if(aperitif.formule !== undefined) {
+            //     Formule_Aperitif = aperitif.formule.Id_Formule
+            // }        
+            Formule_Aperitif = await createAperitif(paramsAperitif)
+            if(Formule_Aperitif === undefined) Formule_Aperitif = null
         }
-        // crée la formule apéritif
-        const aperitif = await createAperitif(paramsAperitif)
-        infos = aperitif.infos
-        if(aperitif.formule !== undefined) {
-            idFormuleAperitif = aperitif.formule.Id_Formule
-        }        
-    }
-    if(post.isCocktail) {
-        // initialise les valeurs pour un cocktail
-        const paramsCocktail = {
-            Id_Type_Formule : 2,
-            Nb_Convives : post.nbConvivesCocktail,
-            Nb_Pieces_Salees : post.nbPiecesSaleesCocktail,
-            Nb_Pieces_Sucrees : post.nbPiecesSucreesCocktail
+        if(post.isCocktail) {
+            // initialise les valeurs pour un cocktail
+            const paramsCocktail = {
+                Id_Type_Formule : 2,
+                Nb_Convives : post.nbConvivesCocktail,
+                Nb_Pieces_Salees : post.nbPiecesSaleesCocktail,
+                Nb_Pieces_Sucrees : post.nbPiecesSucreesCocktail
+            }
+            // crée la formule cocktail
+            // const cocktail = await createCocktail(paramsCocktail)
+            // infos = cocktail.infos
+            // if(cocktail.formule !== undefined) {
+            //     Formule_Cocktail = cocktail.formule.Id_Formule
+            // }
+            Formule_Cocktail = await createCocktail(paramsCocktail)
+            if(Formule_Cocktail === undefined) Formule_Cocktail = null
         }
-        // crée la formule cocktail
-        const cocktail = await createCocktail(paramsCocktail)
-        infos = cocktail.infos
-        if(cocktail.formule !== undefined) {
-            idFormuleCocktail = cocktail.formule.Id_Formule
+        if(post.isBox) {
+            // initialise les valeurs pour une box
+            const paramsBox = {
+                Id_Type_Formule : 3,
+                Nb_Convives : post.nbConvivesBox,
+                Nb_Pieces_Salees : tableCorrespondanceTypes['Box'].nbPieces['salées'].min,
+                Nb_Pieces_Sucrees : tableCorrespondanceTypes['Box'].nbPieces['sucrées'].min
+            }   
+            //crée la formule box
+            // const box = await createBox(paramsBox)
+            // infos = box.infos
+            // if(box.formule !== undefined) {
+            //     Formule_Box = box.formule.Id_Formule
+            // }
+            Formule_Box = await createBox(paramsBox)
+            if(Formule_Box === undefined) Formule_Box = null
         }
-    }
-    if(post.isBox) {
-        // initialise les valeurs pour une box
-        const paramsBox = {
-            Id_Type_Formule : 3,
-            Nb_Convives : post.nbConvivesBox,
-            Nb_Pieces_Salees : tableCorrespondanceTypes['Box'].nbPieces['salées'].min,
-            Nb_Pieces_Sucrees : tableCorrespondanceTypes['Box'].nbPieces['sucrées'].min
-        }   
-        //crée la formule box
-        const box = await createBox(paramsBox)
-        infos = box.infos
-        if(box.formule !== undefined) {
-            idFormuleBox = box.formule.Id_Formule
-        }
-    }
-    if(post.isBrunch) {
-        // init pièces salées
-        let Nb_Pieces_Salees = 0
-        if(post.typeBrunchSale === undefined || post.typeBrunchSale === 'Petite Faim') {
-            Nb_Pieces_Salees = tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min
-        }
-        if(post.typeBrunchSale === 'Grande Faim') {
-            Nb_Pieces_Salees = tableCorrespondanceTypes['Brunch'].nbPieces['salées'].max
-        }   
+        if(post.isBrunch) {
+            // init pièces salées
+            let Nb_Pieces_Salees = 0
+            if(post.typeBrunchSale === undefined || post.typeBrunchSale === 'Petite Faim') {
+                Nb_Pieces_Salees = tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min
+            }
+            if(post.typeBrunchSale === 'Grande Faim') {
+                Nb_Pieces_Salees = tableCorrespondanceTypes['Brunch'].nbPieces['salées'].max
+            }   
 
-        // init pièces sucrées
-        let Nb_Pieces_Sucrees = 0
-        if(post.typeBrunchSucre === undefined || post.typeBrunchSucre === 'Petite Faim') {
-            Nb_Pieces_Sucrees = tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min
-        }
-        if(post.typeBrunchSucre === 'Grande Faim') {
-            Nb_Pieces_Sucrees = tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].max
-        } 
+            // init pièces sucrées
+            let Nb_Pieces_Sucrees = 0
+            if(post.typeBrunchSucre === undefined || post.typeBrunchSucre === 'Petite Faim') {
+                Nb_Pieces_Sucrees = tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min
+            }
+            if(post.typeBrunchSucre === 'Grande Faim') {
+                Nb_Pieces_Sucrees = tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].max
+            } 
 
-        // initialise les valeurs pour un brunch
-        const paramsBrunch = {
-            Id_Type_Formule : 4,
-            Nb_Convives : post.nbConvivesBrunch,
-            Nb_Pieces_Salees,
-            Nb_Pieces_Sucrees,
-            isBrunchSale : post.isBrunchSale,
-            isBrunchSucre : post.isBrunchSucre
+            // initialise les valeurs pour un brunch
+            const paramsBrunch = {
+                Id_Type_Formule : 4,
+                Nb_Convives : post.nbConvivesBrunch,
+                Nb_Pieces_Salees,
+                Nb_Pieces_Sucrees,
+                isBrunchSale : post.isBrunchSale,
+                isBrunchSucre : post.isBrunchSucre
+            }
+            // crée la formule brunch
+            // const brunch = await createBrunch(paramsBrunch)
+            // infos = brunch.infos
+            // if(brunch.formule !== undefined) {
+            //     Formule_Brunch = brunch.formule.Id_Formule
+            // }
+            Formule_Brunch = await createBrunch(paramsBrunch)
+            if(Formule_Brunch === undefined) Formule_Brunch = null
         }
-        // crée la formule brunch
-        const brunch = await createBrunch(paramsBrunch)
-        infos = brunch.infos
-        if(brunch.formule !== undefined) {
-            idFormuleBrunch = brunch.formule.Id_Formule
-        }
+    }
+    catch(error) {
+        throw new Error(error)
     }
 
     return {
-        infos,
-        idFormuleAperitif,
-        idFormuleCocktail,
-        idFormuleBox,
-        idFormuleBrunch
+        // infos,
+        Formule_Aperitif,
+        Formule_Cocktail,
+        Formule_Box,
+        Formule_Brunch
     }
 }
 
@@ -515,13 +574,159 @@ const createFormules = async (post) => {
 //     }
 // }
 
-// TODO
-const modify = async (postFormule) => {
+// TODO:
+const modifyFormule = async (oldFormule, newFormule) => {
+    // let infos = undefined
+    let formule = undefined
 
+    try {
+        // s'il n'existait pas de formule on en crée une
+        if(oldFormule === null) {
+            const params = {
+                Nb_Convives : newFormule.Nb_Convives            
+            }
+            if(newFormule.isAperitif) {
+                // initialise les valeurs pour un apéritif
+                params.Id_Type_Formule = 1
+                params.Nb_Pieces_Salees = newFormule.Nb_Pieces_Salees
+                params.Nb_Pieces_Sucrees = 0
+
+                // const createRes = await createAperitif(params)
+                // infos = createRes.infos
+                // if(createRes.formule !== undefined) {
+                //     formule = createRes.formule
+                // }
+                formule = await createAperitif(params)
+            }
+            if(newFormule.isCocktail) {
+                // initialise les valeurs pour un cocktail
+                params.Id_Type_Formule = 2
+                params.Nb_Pieces_Salees = newFormule.Nb_Pieces_Salees
+                params.Nb_Pieces_Sucrees = newFormule.Nb_Pieces_Sucrees
+
+                // const createRes = await createCocktail(params)
+                // infos = createRes.infos
+                // if(createRes.formule !== undefined) {
+                //     formule = createRes.formule
+                // }
+                formule = await createCocktail(params)
+            }
+            if(newFormule.isBox) {
+                // initialise les valeurs pour une box
+                params.Id_Type_Formule = 3
+                params.Nb_Pieces_Salees = tableCorrespondanceTypes['Box'].nbPieces['salées'].min
+                params.Nb_Pieces_Sucrees = tableCorrespondanceTypes['Box'].nbPieces['sucrées'].min
+
+                // const createRes = await createBox(params)
+                // infos = createRes.infos
+                // if(createRes.formule !== undefined) {
+                //     formule = createRes.formule
+                // }
+                formule = await createBox(params)
+            }
+            if(newFormule.isBrunch) {
+                // initialise les valeurs pour un brunch
+                params.Id_Type_Formule = 4
+                if(newFormule.Nb_Pieces_Salees == 0 && newFormule.Nb_Pieces_Sucrees == 0) {
+                    // infos = errorHandler('Un type de brunch doit être sélectionné.')
+                    throw new Error('Un type de brunch doit être sélectionné.')
+                }
+                else {
+                    // dans le cas où le brunch salé n'est pas choisi, on initilise avec la valeur min pour passer les tests
+                    params.Nb_Pieces_Salees = newFormule.Nb_Pieces_Salees > 0 ? newFormule.Nb_Pieces_Salees : tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min
+                    // dans le cas où le brunch sucré n'est pas choisi, on initilise avec la valeur min pour passer les tests
+                    params.Nb_Pieces_Sucrees = newFormule.Nb_Pieces_Sucrees > 0 ? newFormule.Nb_Pieces_Sucrees : tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min
+                    params.isBrunchSale = newFormule.isBrunchSale
+                    params.isBrunchSucre = newFormule.isBrunchSucre
+
+                    // const createRes = await createBrunch(params)
+                    // infos = createRes.infos
+                    // if(createRes.formule !== undefined) {
+                    //     formule = createRes.formule
+                    // }
+                    formule = await createBrunch(params)
+                }
+            }
+        }
+        else {
+            formule = oldFormule
+            // affectation des nouvelles infos présentent lors de la création à l'ancienne formule
+            formule.Nb_Convives = newFormule.Nb_Convives
+
+            if(newFormule.isAperitif) {
+                formule.Nb_Pieces_Salees = newFormule.Nb_Pieces_Salees
+                formule.Nb_Pieces_Sucrees = 0
+            }
+            else if(newFormule.isBox) {
+                formule.Nb_Pieces_Salees = tableCorrespondanceTypes['Box'].nbPieces['salées'].min
+                formule.Nb_Pieces_Sucrees = tableCorrespondanceTypes['Box'].nbPieces['sucrées'].min
+            }
+            else {
+                formule.Nb_Pieces_Salees = newFormule.Nb_Pieces_Salees
+                formule.Nb_Pieces_Sucrees = newFormule.Nb_Pieces_Sucrees         
+            }
+
+            // on vérifie les modifs apportées
+            await checksFormule(formule)
+        }
+
+        // s'il n'y a pas d'erreur
+        // affectation des recettes
+        formule.Liste_Id_Recettes_Salees = newFormule.Liste_Id_Recettes_Salees
+        formule.Liste_Id_Recettes_Sucrees = newFormule.Liste_Id_Recettes_Sucrees
+        formule.Liste_Id_Recettes_Boissons = newFormule.Liste_Id_Recettes_Boissons
+
+        // vérification de l'existence des recettes
+        if(formule.Liste_Id_Recettes_Salees !== null && formule.Liste_Id_Recettes_Salees !== '') {
+            formule.Liste_Id_Recettes_Salees = await checksListeRecettes(formule.Liste_Id_Recettes_Salees)
+        }
+        if(formule.Liste_Id_Recettes_Sucrees !== null && formule.Liste_Id_Recettes_Sucrees !== '') {
+            formule.Liste_Id_Recettes_Sucrees = await checksListeRecettes(formule.Liste_Id_Recettes_Sucrees)
+        }
+        if(formule.Liste_Id_Recettes_Boissons !== null && formule.Liste_Id_Recettes_Boissons !== '') {
+            formule.Liste_Id_Recettes_Boissons = await checksListeRecettes(formule.Liste_Id_Recettes_Boissons)
+        }
+
+        
+        formule.save()
+    }
+    catch(error) {
+        throw new Error(error)
+    }
+
+    // return {
+    //     infos,
+    //     formule
+    // }
+    return formule
+}
+
+const checksListeRecettes = async (listeRecettes) => {
+    // on vérifie que la liste soit bien une string non vide
+    if(typeof listeRecettes !== "string" || listeRecettes === '') return null
+
+    // utiliser une liste de retour permet de sanitizer les données
+    let returnedList = ''
+
+    const tabRecettes = listeRecettes.split(';')
+    for(const idRecette of tabRecettes) {
+        if(idRecette !== '') {
+            const recette = await Recettes.findOne({
+                where: {
+                    Id_Recette : idRecette
+                }
+            })
+            if(recette === null) return null
+            returnedList += `${idRecette};`
+        }
+    }
+
+    // si tout s'est bien passé, la liste est ok
+    return returnedList
 }
 
 module.exports = {
     tableCorrespondanceTypes,
     createFormules,
-    modify
+    modifyFormule
 }

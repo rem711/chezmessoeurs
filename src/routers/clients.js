@@ -5,7 +5,7 @@ const errorHandler = require('../utils/errorHandler')
 
 const createOrLoadClient = async (postClient) => {
     // init valeurs retour
-    let infos = undefined
+    // let infos = undefined
     let client = undefined
 
     // vérification car impossible de faire un WHERE avec "undefined"
@@ -54,22 +54,32 @@ const createOrLoadClient = async (postClient) => {
         }
    }
    catch(error) {
-       infos = errorHandler(error.errors[0].message, undefined)
+    //    infos = errorHandler(error.errors[0].message, undefined)
+    throw new Error(error.errors[0].message)
    }
 
-   return {
-       infos,
-       client
-   }
+//    return {
+//        infos,
+//        client
+//    }
+   return client
 }
 
 router
 // création d'un client
 .post('/clients', async (req, res) => {
     // récupération des données client
-    const postClient = req.query    
+    const postClient = req.query   
+    let infos = undefined 
+    let client = undefined
 
-    const {infos, client} = await createOrLoadClient(postClient)
+    // const {infos, client} = await createOrLoadClient(postClient)
+    try {
+        client = await createOrLoadClient(postClient)
+    }
+    catch(error) {
+        infos = errorHandler(error, undefined)
+    }
 
    // la création d'un client se fait automatiquement depuis une estimation
    // on n'affiche donc pas de vue ensuite
@@ -87,7 +97,7 @@ router
         infos = errorHandler('Une erreur s\'est produite, impossible de charger les clients.', undefined)
     }
     else if(clients.length === 0) {
-        infos = errorHandler(undefined, 'Il n\'y a aucun client.')
+        infos = errorHandler(undefined, 'Aucun client')
     }
     
     res.render('index', {

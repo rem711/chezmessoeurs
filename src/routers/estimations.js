@@ -13,7 +13,6 @@ const formatDateHeure = 'DD/MM/YYYY HH:mm'
 
 
 router
-// TODO
 // création estimation
 // cors enable for this route only
 .options('/estimations', cors()) // option is for preflight option sent before request for certain cors request as when using fetch
@@ -26,39 +25,32 @@ router
     let client = undefined // client récupéré ou créé avec l'estimation
     let estimation = undefined
 
-    // crée ou récupère le client si déjà existant
-    const createRes = await createOrLoadClient( {
-        Nom_Prenom : postEstimation.Nom_Prenom,
-        Email : postEstimation.Email,
-        Telephone : postEstimation.Telephone,
-        Type : postEstimation.Type
-    })
-    infos = createRes.infos
-    client = createRes.client
+    try {
+        // crée ou récupère le client si déjà existant
+        // const createRes = await createOrLoadClient( {
+        //     Nom_Prenom : postEstimation.Nom_Prenom,
+        //     Email : postEstimation.Email,
+        //     Telephone : postEstimation.Telephone,
+        //     Type : postEstimation.Type
+        // })
+        // infos = createRes.infos
+        // client = createRes.client
+        client = await createOrLoadClient( {
+            Nom_Prenom : postEstimation.Nom_Prenom,
+            Email : postEstimation.Email,
+            Telephone : postEstimation.Telephone,
+            Type : postEstimation.Type
+        })
 
-    // s'il n'y a pas d'erreur lors de la création du client ou de sa récupération (paramètres invalides)
-    if(client !== undefined) {
-        // on met à jour le Dernier_Statut du client
-        client.Dernier_Statut = 'Estimation en cours'
-        await Clients.update(
-            {
-                Dernier_Statut : client.Dernier_Statut
-            },
-            {
-                where : {
-                    Email : client.Email
-                }
-            }
-        )
+        // s'il n'y a pas d'erreur lors de la création du client ou de sa récupération (paramètres invalides)
+        if(client !== undefined) {
+            // on crée les différentes formules
+            const formulesRes = await gestionFormules.createFormules(postEstimation)
+            const { Formule_Aperitif, Formule_Cocktail, Formule_Box, Formule_Brunch } = formulesRes
+            // infos = formulesRes.infos
 
-        // on crée les différentes formules
-        const formulesRes = await gestionFormules.createFormules(postEstimation)
-        const { idFormuleAperitif, idFormuleCocktail, idFormuleBox, idFormuleBrunch } = formulesRes
-        infos = formulesRes.infos
-
-        // on vérifie qu'il n'y a pas eu d'erreur(s) en créant les formules
-        // sinon l'erreur est déjà définie et sera renvoyée
-        if(infos === undefined || (infos && !infos.error)) {
+            // il n'y a pas eu d'erreur(s) en créant les formules
+            // sinon l'erreur est déjà définie et sera renvoyée
             // trim du commentaire si possible
             postEstimation.Commentaire = postEstimation.Commentaire === undefined ? null : postEstimation.Commentaire.trim()
 
@@ -66,19 +58,38 @@ router
             try {
                 estimation = await Estimations.create({
                     Id_Client : client.Id_Client,
-                    Date_Evenement : postEstimation.Date_Evenement,
-                    Id_Formule_Aperitif : idFormuleAperitif,
-                    Id_Formule_Cocktail : idFormuleCocktail,
-                    Id_Formule_Box : idFormuleBox,
-                    Id_Formule_Brunch : idFormuleBrunch,
+                    Date_Evenement : moment.utc(postEstimation.Date_Evenement),
+                    Id_Formule_Aperitif : Formule_Aperitif.Id_Formule,
+                    Id_Formule_Cocktail : Formule_Cocktail.Id_Formule,
+                    Id_Formule_Box : Formule_Box.Id_Formule,
+                    Id_Formule_Brunch : Formule_Brunch.Id_Formule,
                     Commentaire : postEstimation.Commentaire
                 })
+
+                // on met à jour le Dernier_Statut du client si l'estimation a été créée
+                client.Dernier_Statut = 'Estimation en cours'
+                await Clients.update(
+                    {
+                        Dernier_Statut : client.Dernier_Statut
+                    },
+                    {
+                        where : {
+                            Email : client.Email
+                        }
+                    }
+                )
+
+                infos = errorHandler(undefined, 'ok')
             }
             catch(error) {
+                // infos = errorHandler(error.errors[0].message, undefined)
                 console.log(error)
-                infos = errorHandler(error, undefined)
+                throw new Error(error.errors[0].message)
             }
         }
+    }
+    catch(error) {
+        infos = errorHandler(error, undefined)
     }
 
     // renvoie à la calculette s'il y a des erreurs
@@ -109,7 +120,7 @@ router
         infos = errorHandler('Une erreur s\'est produite, impossible de charger les estimations.', undefined)        
     }
     else if(temp_estimations.length === 0) {
-        infos = (undefined, 'Il n\' a pas d\'estimation.')
+        infos = errorHandler(undefined, 'Aucune estimation')
     }
     else {
         estimations = []
@@ -181,7 +192,6 @@ router
         formatDateHeure
     })
 })
-// TODO:
 // valide estimation pour créer un devis
 // récupère les infos, archive l'estimation, envoi sur devis pour le créer, renvoie sur la page du devis complet
 .post('/estimations/validation/:Id_Estimation', async (req, res) => {
@@ -203,19 +213,20 @@ router
         ]
     })
 
-    // TODO:
-    // on vérifie que l'estimation existe
-    if(temp_estimation !== null) {
-        createRes =  await createDevis(temp_estimation)
-        infos = createRes.infos
-        devis = createRes.devis
+    try {
+        // on vérifie que l'estimation existe
+        if(temp_estimation !== null) {
+            devis = await createDevis(temp_estimation)
 
-        if(infos === undefined) {            
+            // le devis a bien été créé
             infos = errorHandler(undefined, `Le devis pour l'évènement du ${moment(devis.Date_Evenement).format(formatDateHeure)} vient d'être créé.`)
         }
+        else {
+            throw new Error('Une erreur s\'est produite, veuillez actualiser la page et réessayer.')
+        }
     }
-    else {
-        infos = errorHandler('Une erreur s\'est produite, veuillez actualiser la page et réessayer.')
+    catch(error) {
+        infos = errorHandler(error, undefined)
     }
 
     res.send({
