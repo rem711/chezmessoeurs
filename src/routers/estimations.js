@@ -84,7 +84,7 @@ router
             catch(error) {
                 // infos = errorHandler(error.errors[0].message, undefined)
                 console.log(error)
-                throw new Error(error.errors[0].message)
+                throw error.errors[0].message
             }
         }
     }
@@ -222,7 +222,7 @@ router
             infos = errorHandler(undefined, `Le devis pour l'évènement du ${moment(devis.Date_Evenement).format(formatDateHeure)} vient d'être créé.`)
         }
         else {
-            throw new Error('Une erreur s\'est produite, veuillez actualiser la page et réessayer.')
+            throw 'Une erreur s\'est produite, veuillez actualiser la page et réessayer.'
         }
     }
     catch(error) {

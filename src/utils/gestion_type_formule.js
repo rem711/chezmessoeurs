@@ -24,16 +24,16 @@ const create = async (postType_Formule) => {
                 })
             }
             catch(error) {
-                throw new Error(error.errors[0].message)
+                throw error.errors[0].message
             }
         }
         // sinon erreur
         else {
-            throw new Error('Type de formule déjà existant.')
+            throw 'Type de formule déjà existant.'
         }
     }
     catch(error) {
-        throw new Error(error)
+        throw error
     }
 
     return type_formule

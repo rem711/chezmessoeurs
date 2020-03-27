@@ -55,7 +55,7 @@ const createOrLoadClient = async (postClient) => {
    }
    catch(error) {
     //    infos = errorHandler(error.errors[0].message, undefined)
-    throw new Error(error.errors[0].message)
+    throw error.errors[0].message
    }
 
 //    return {

@@ -91,17 +91,17 @@ const checksFormule = async (postFormule) => {
             }
             else {
                 // infos = errorHandler(`Le nombre de pièces par personne pour la formule ${type_formule.Nom} est incorrect.`)
-                throw new Error(`Le nombre de pièces par personne pour la formule ${type_formule.Nom} est incorrect.`)
+                throw `Le nombre de pièces par personne pour la formule ${type_formule.Nom} est incorrect.`
             }
         }
         else {
             // infos = errorHandler(`Le nombre de convives pour la formule ${type_formule.Nom} est insuffisant.`, undefined)
-            throw new Error(`Le nombre de convives pour la formule ${type_formule.Nom} est insuffisant.`)
+            throw `Le nombre de convives pour la formule ${type_formule.Nom} est insuffisant.`
         }
     }
     else {
         // infos = errorHandler('Le type de formule est invalide.', undefined)
-        throw new Error('Le type de formule est invalide.')
+        throw 'Le type de formule est invalide.'
     }
 
     // return {
@@ -148,12 +148,12 @@ const createAperitif = async (postFormule) => {
             }
             catch(error) {
                 // infos = errorHandler(error.errors[0].message, undefined)
-                throw new Error(error.errors[0].message)
+                throw error.errors[0].message
             }
         }
     }
     catch(error) {
-        throw new Error(error)
+        throw error
     }
 
 
@@ -210,12 +210,12 @@ const createCocktail = async (postFormule) => {
             }
             catch(error) {
                 // infos = errorHandler(error.errors[0].message, undefined)
-                throw new Error(error.errors[0].message)
+                throw error.errors[0].message
             }
         }
     }
     catch(error) {
-        throw new Error(error)
+        throw error
     }
 
     // return {
@@ -263,12 +263,12 @@ const createBox = async (postFormule) => {
             }
             catch(error) {
                 // infos = errorHandler(error.errors[0].message, undefined)
-                throw new Error(error.errors[0].message)
+                throw error.errors[0].message
             }
         }
     }
     catch(error) {
-        throw new Error(error)
+        throw error
     }
 
     // return {
@@ -340,12 +340,12 @@ const createBrunch = async (postFormule) => {
             }
             catch(error) {
                 // infos = errorHandler(error.errors[0].message, undefined)
-                throw new Error(error.errors[0].message)
+                throw error.errors[0].message
             }
         }
     }
     catch(error) {
-        throw new Error(error)
+        throw error
     }
 
     // return {
@@ -458,7 +458,7 @@ const createFormules = async (post) => {
         }
     }
     catch(error) {
-        throw new Error(error)
+        throw error
     }
 
     return {
@@ -629,7 +629,7 @@ const modifyFormule = async (oldFormule, newFormule) => {
                 params.Id_Type_Formule = 4
                 if(newFormule.Nb_Pieces_Salees == 0 && newFormule.Nb_Pieces_Sucrees == 0) {
                     // infos = errorHandler('Un type de brunch doit être sélectionné.')
-                    throw new Error('Un type de brunch doit être sélectionné.')
+                    throw 'Un type de brunch doit être sélectionné.'
                 }
                 else {
                     // dans le cas où le brunch salé n'est pas choisi, on initilise avec la valeur min pour passer les tests
@@ -691,7 +691,7 @@ const modifyFormule = async (oldFormule, newFormule) => {
         formule.save()
     }
     catch(error) {
-        throw new Error(error)
+        throw error
     }
 
     // return {

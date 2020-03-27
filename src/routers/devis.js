@@ -68,11 +68,11 @@ const createDevis = async (estimation = undefined) => {
             estimation.Client.save()
         }
         catch(error) {
-            throw new Error(error.errors[0].message)
+            throw error.errors[0].message
         }
     }
     catch(error) {
-        throw new Error(error)
+        throw error
     }
 
     return devis
