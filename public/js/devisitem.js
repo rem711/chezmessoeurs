@@ -111,14 +111,16 @@ const initAffichage = () => {
 
 // ajoute à l'objet global les infos du à envoyer
 const setGlobals = () => {
-    global.client = getClient()
-    global.Date_Evenement = getDateEvenement()
-    global.Adresse_Livraison = getAdresseLivraison()
+    global.isCreation = document.getElementById('isCreation').innerHTML
+    global.Id_Devis = document.getElementById('Id_Devis') !== null ? document.getElementById('Id_Devis').getAttribute('data-id') : undefined
+    saveClient()
+    saveDateEvenement()
+    saveAdresseLivraison()
     saveFormuleAperitif()
     saveFormuleCocktail()
     saveFormuleBox()
     saveFormuleBrunch()
-    global.Commentaire = getCommentaire()
+    saveCommentaire()
     saveListeOptions()
     saveRemise()
 }
@@ -183,6 +185,8 @@ const getFormuleBox = () => {
 const getFormuleBrunch = () => {
     return {
         isBrunch : document.getElementById('isBrunch').checked,
+        isBrunchSale : document.getElementById('isBrunchSale').checked,
+        isBrunchSucre : document.getElementById('isBrunchSucre').checked,
         Nb_Convives : document.getElementById('nbConvivesBrunch').value,
         Nb_Pieces_Salees : document.getElementById('typeBrunchSale').value,
         Nb_Pieces_Sucrees : document.getElementById('typeBrunchSucre').value,
@@ -222,6 +226,26 @@ const saveFormuleAperitif = () => {
     }
 
     updateRecap()
+}
+
+// enregistre le client dans l'objet global
+const saveClient = () => {
+    global.client = getClient()
+}
+
+// enregistre la date de l'évènement
+const saveDateEvenement = () => {
+    global.Date_Evenement = getDateEvenement()
+}
+
+// enregistre l'adresse de livraison dans l'objet global
+const saveAdresseLivraison = () => {
+    global.Adresse_Livraison = getAdresseLivraison()
+}
+
+// enregistre le commentaire dans l'objet global
+const saveCommentaire = () => {
+    global.Commentaire = getCommentaire()
 }
 
 // enregistre la formule Cocktail dans l'objet global et met à jour le prix
@@ -270,18 +294,20 @@ const saveFormuleBrunch = () => {
     let prixBrunchSaleParPersonne = 0
     let prixBrunchSucreParPersonne = 0
 
-    if(global.Formule_Brunch.Nb_Pieces_Salees > 0) {
-        let typePrestationSalee = selectPiecesSaleesBrunch.selectedOptions[0].text === 'Petite Faim' ? 'Petit' : 'Grand'
-        typePrestationSalee += ' brunch salé'
-        prixBrunchSaleParPersonne = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === typePrestationSalee).getAttribute('data-montant')
-    }
-    if(global.Formule_Brunch.Nb_Pieces_Sucrees > 0) {
-        let typePrestationSucree = selectPiecesSucreesBrunch.selectedOptions[0].text === 'Petite Faim' ? 'Petit' : 'Grand'
-        typePrestationSucree += ' brunch sucré'
-        prixBrunchSucreParPersonne = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === typePrestationSucree).getAttribute('data-montant')
+    if(global.Formule_Brunch.isBrunch) {
+        if(global.Formule_Brunch.Nb_Pieces_Salees > 0) {
+            let typePrestationSalee = selectPiecesSaleesBrunch.selectedOptions[0].text === 'Petite Faim' ? 'Petit' : 'Grand'
+            typePrestationSalee += ' brunch salé'
+            prixBrunchSaleParPersonne = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === typePrestationSalee).getAttribute('data-montant')
+        }
+        if(global.Formule_Brunch.Nb_Pieces_Sucrees > 0) {
+            let typePrestationSucree = selectPiecesSucreesBrunch.selectedOptions[0].text === 'Petite Faim' ? 'Petit' : 'Grand'
+            typePrestationSucree += ' brunch sucré'
+            prixBrunchSucreParPersonne = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === typePrestationSucree).getAttribute('data-montant')
+        }
     }
 
-    const prixParPersonne = prixBrunchSaleParPersonne + prixBrunchSucreParPersonne
+    const prixParPersonne = Number.parseFloat(prixBrunchSaleParPersonne) + Number.parseFloat(prixBrunchSucreParPersonne)
     const prixHT = prixParPersonne * global.Formule_Brunch.Nb_Convives
 
     prix.Brunch = {
@@ -313,7 +339,7 @@ const saveListeOptions = () => {
     updateRecap()
 }
 
-// TODO:
+// TODO:saveRemise
 // enregistre la remise dans l'objet global et met à jour le prix
 const saveRemise = () => {
     global.Id_Remise = getIdRemise()
@@ -412,7 +438,7 @@ const changeCocktail = () => {
             for(let i = 0 ; i < diff; i++) {
                 const li = document.createElement('li')
                 li.innerHTML = '+'
-                li.setAttribute('data-for', 'SaleCocktail')
+                li.setAttribute('data-for', 'SucreCocktail')
                 li.onclick = selectElementList
                 listeRecettesSucreesCocktail.append(li)
             }
@@ -490,7 +516,7 @@ const changeBrunch = () => {
             for(let i = 0 ; i < diff; i++) {
                 const li = document.createElement('li')
                 li.innerHTML = '+'
-                li.setAttribute('data-for', 'SaleBrunch')
+                li.setAttribute('data-for', 'SucreBrunch')
                 li.onclick = selectElementList
                 listeRecettesSucreesBrunch.append(li)
             }
@@ -590,6 +616,12 @@ const ajouteRecette = (event) => {
             
             saveListeOptions()
         }
+
+        // on appelle les fonctions de sauvegarde pour chaque catégorie modifiée pour enregistrer le changement
+        if(element.getAttribute('data-for').indexOf('Aperitif') !== -1) saveFormuleAperitif()
+        if(element.getAttribute('data-for').indexOf('Cocktail') !== -1) saveFormuleCocktail()
+        if(element.getAttribute('data-for').indexOf('Box') !== -1) saveFormuleBox()
+        if(element.getAttribute('data-for').indexOf('Brunch') !== -1) saveFormuleBrunch()
     }
 }
 
@@ -624,10 +656,15 @@ const retireRecette = (event) => {
 
         // une fois que le traitement a eu lieu, on peut enregistrer la liste des options si c'est celle-ci qui a été modifiée
         if(element.getAttribute('data-for').indexOf('Options') !== -1) saveListeOptions()
+
+        // on appelle les fonctions de sauvegarde pour chaque catégorie modifiée pour enregistrer le changement
+        if(element.getAttribute('data-for').indexOf('Aperitif') !== -1) saveFormuleAperitif()
+        if(element.getAttribute('data-for').indexOf('Cocktail') !== -1) saveFormuleCocktail()
+        if(element.getAttribute('data-for').indexOf('Box') !== -1) saveFormuleBox()
+        if(element.getAttribute('data-for').indexOf('Brunch') !== -1) saveFormuleBrunch()
     }
 }
 
-// TODO:
 // met à jour l'affichage des prix depuis l'objet prix
 const updateRecap = () => {
     let prixAperitifHT = 0
@@ -684,7 +721,7 @@ const updateRecap = () => {
         document.getElementById('prixOptions').innerHTML = `${Number.parseFloat(prixOptionsHT).toFixed(2)} HT`
     }
 
-    // TODO:
+    // TODO:updateRecap gestion remise
     // remise
 
 
@@ -695,62 +732,166 @@ const updateRecap = () => {
     document.getElementById('prixTotalTTC').innerHTML = `Prix TTC : ${Number.parseFloat(prixTotalTTC).toFixed(2)}€`
 }
 
+// TODO:createDevis
+const createDevis = async () => {
+    const div = document.getElementById('divInfos')
+    div.innerHTML = ''
+    // enregistrement des infos autres que les formules qui sont actualisées lors d'un changement
+    saveClient()
+    saveDateEvenement()
+    saveAdresseLivraison()
+    saveCommentaire()
 
-// gestion du clic sur les checkboxes pour l'affichage
-isAperitifCheckbox.onclick = toggle
-isCocktailCheckbox.onclick = toggle
-isBoxCheckbox.onclick = toggle
-isBrunchCheckbox.onclick = toggle
-isBrunchSaleCheckbox.onclick = toggle
-isBrunchSucrecheckbox.onclick = toggle
+    const url = `/devis/${global.Id_Devis}`
+    const options = {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        method : 'PATCH',
+        body : JSON.stringify(global)
+    }
 
-// gestion du changement du nombre de convives
-inputNbConvivesAperitif.onchange = changeAperitif
-inputNbConvivesCocktail.onchange = changeCocktail
-inputNbConvivesBox.onchange = changeBox
-inputNbConvivesBrunch.onchange = changeBrunch
+    const response = await fetch(url, options)
+    if(response.ok) {
+        const data = await response.json()
+        const { infos, devis } = data
+        
+        if(infos.message) {
+            alert(`${infos.message} Vous allez être redirigé vers celui-ci.`)
+            location.replace(`/devis/${devis.Id_Devis}`)
+        }
+        if(infos.error) {
+            div.style.color = 'red'
+            div.innerHTML = infos.error
+        }
+    }
+}
 
-// gestion du changemnt du nombre de pièces par personne
-selectPiecesSaleesAperitif.onchange = changeAperitif
-selectPiecesSaleesCocktail.onchange = changeCocktail
-selectPiecesSucreesCocktail.onchange = changeCocktail
-selectPiecesSaleesBrunch.onchange = changeBrunch
-selectPiecesSucreesBrunch.onchange = changeBrunch
+// TODO:archiveDevis
+const archiveDevis = () => {
 
-// gestion du clic sur les éléments de la liste des recettes sélectionnées
-Array.from(document.getElementById('listeRecettesSaleesAperitif').children).forEach(li => li.onclick = selectElementList)
-Array.from(document.getElementById('listeRecettesBoissonsAperitif').children).forEach(li => li.onclick = selectElementList)
-Array.from(document.getElementById('listeRecettesSaleesCocktail').children).forEach(li => li.onclick = selectElementList)
-Array.from(document.getElementById('listeRecettesSucreesCocktail').children).forEach(li => li.onclick = selectElementList)
-Array.from(document.getElementById('listeRecettesBoissonsCocktail').children).forEach(li => li.onclick = selectElementList)
-Array.from(document.getElementById('listeRecettesSaleesBox').children).forEach(li => li.onclick = selectElementList)
-Array.from(document.getElementById('listeRecettesSucreesBox').children).forEach(li => li.onclick = selectElementList)
-Array.from(document.getElementById('listeRecettesBoissonsBox').children).forEach(li => li.onclick = selectElementList)
-Array.from(document.getElementById('listeRecettesSaleesBrunch').children).forEach(li => li.onclick = selectElementList)
-Array.from(document.getElementById('listeRecettesSucreesBrunch').children).forEach(li => li.onclick = selectElementList)
-Array.from(document.getElementById('listeRecettesBoissonsBrunch').children).forEach(li => li.onclick = selectElementList)
-Array.from(document.getElementById('listeOptions').children).forEach(li => li.onclick = selectElementList)
+}
 
-// gestion du clic sur les recettes sélectionnables
-Array.from(document.getElementById('recettesSaleesAperitif').children).forEach(li => li.onclick = selectRecette)
-Array.from(document.getElementById('recettesBoissonsAperitif').children).forEach(li => li.onclick = selectRecette)
-Array.from(document.getElementById('recettesSaleesCocktail').children).forEach(li => li.onclick = selectRecette)
-Array.from(document.getElementById('recettesSucreesCocktail').children).forEach(li => li.onclick = selectRecette)
-Array.from(document.getElementById('recettesBoissonsCocktail').children).forEach(li => li.onclick = selectRecette)
-Array.from(document.getElementById('recettesSaleesBox').children).forEach(li => li.onclick = selectRecette)
-Array.from(document.getElementById('recettesSucreesBox').children).forEach(li => li.onclick = selectRecette)
-Array.from(document.getElementById('recettesBoissonsBox').children).forEach(li => li.onclick = selectRecette)
-Array.from(document.getElementById('recettesSaleesBrunch').children).forEach(li => li.onclick = selectRecette)
-Array.from(document.getElementById('recettesSucreesBrunch').children).forEach(li => li.onclick = selectRecette)
-Array.from(document.getElementById('recettesBoissonsBrunch').children).forEach(li => li.onclick = selectRecette)
-Array.from(document.getElementById('Options').children).forEach(li => li.onclick = selectRecette)
+// TODO:saveDevis
+const saveDevis = async () => {
+    const div = document.getElementById('divInfos')
+    div.innerHTML = ''
+    // enregistrement des infos autres que les formules qui sont actualisées lors d'un changement
+    saveClient()
+    saveDateEvenement()
+    saveAdresseLivraison()
+    saveCommentaire()
 
-// ajoute le clic sur les boutons d'ajout et de retrait de recettes
-tabBtnAjouteRecette.forEach(btn => btn.onclick = ajouteRecette)
-tabBtnRetireRecette.forEach(btn => btn.onclick = retireRecette)
+    const url = `/devis/${global.Id_Devis}`
+    const options = {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        method : 'PATCH',
+        body : JSON.stringify(global)
+    }
+
+    const response = await fetch(url, options)
+    if(response.ok) {
+        const data = await response.json()
+        const { infos } = data
+        
+        if(infos.message) {
+            div.style.color = 'green'
+            div.innerHTML = infos.message
+        }
+        if(infos.error) {
+            div.style.color = 'red'
+            div.innerHTML = infos.error
+        }
+        console.log(infos)
+    }
+}
+
+// TODO:sendDevis
+// en priorité export en pdf
+// dans un second temps, envoie par mail
+const sendDevis = () => {
+// appelle save avant de l'envoyer
+}
+
+// TODO:toFacture
+// valide le devis et le transforme en facture
+const toFacture = () => {
+    // appelle save pour le valider
+}
+
+const initUX = () => {
+    // gestion du clic sur les checkboxes pour l'affichage
+    isAperitifCheckbox.onclick = toggle
+    isCocktailCheckbox.onclick = toggle
+    isBoxCheckbox.onclick = toggle
+    isBrunchCheckbox.onclick = toggle
+    isBrunchSaleCheckbox.onclick = toggle
+    isBrunchSucrecheckbox.onclick = toggle
+
+    // gestion du changement du nombre de convives
+    inputNbConvivesAperitif.onchange = changeAperitif
+    inputNbConvivesCocktail.onchange = changeCocktail
+    inputNbConvivesBox.onchange = changeBox
+    inputNbConvivesBrunch.onchange = changeBrunch
+
+    // gestion du changemnt du nombre de pièces par personne
+    selectPiecesSaleesAperitif.onchange = changeAperitif
+    selectPiecesSaleesCocktail.onchange = changeCocktail
+    selectPiecesSucreesCocktail.onchange = changeCocktail
+    selectPiecesSaleesBrunch.onchange = changeBrunch
+    selectPiecesSucreesBrunch.onchange = changeBrunch
+
+    // gestion du clic sur les éléments de la liste des recettes sélectionnées
+    Array.from(document.getElementById('listeRecettesSaleesAperitif').children).forEach(li => li.onclick = selectElementList)
+    Array.from(document.getElementById('listeRecettesBoissonsAperitif').children).forEach(li => li.onclick = selectElementList)
+    Array.from(document.getElementById('listeRecettesSaleesCocktail').children).forEach(li => li.onclick = selectElementList)
+    Array.from(document.getElementById('listeRecettesSucreesCocktail').children).forEach(li => li.onclick = selectElementList)
+    Array.from(document.getElementById('listeRecettesBoissonsCocktail').children).forEach(li => li.onclick = selectElementList)
+    Array.from(document.getElementById('listeRecettesSaleesBox').children).forEach(li => li.onclick = selectElementList)
+    Array.from(document.getElementById('listeRecettesSucreesBox').children).forEach(li => li.onclick = selectElementList)
+    Array.from(document.getElementById('listeRecettesBoissonsBox').children).forEach(li => li.onclick = selectElementList)
+    Array.from(document.getElementById('listeRecettesSaleesBrunch').children).forEach(li => li.onclick = selectElementList)
+    Array.from(document.getElementById('listeRecettesSucreesBrunch').children).forEach(li => li.onclick = selectElementList)
+    Array.from(document.getElementById('listeRecettesBoissonsBrunch').children).forEach(li => li.onclick = selectElementList)
+    Array.from(document.getElementById('listeOptions').children).forEach(li => li.onclick = selectElementList)
+
+    // gestion du clic sur les recettes sélectionnables
+    Array.from(document.getElementById('recettesSaleesAperitif').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('recettesBoissonsAperitif').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('recettesSaleesCocktail').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('recettesSucreesCocktail').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('recettesBoissonsCocktail').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('recettesSaleesBox').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('recettesSucreesBox').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('recettesBoissonsBox').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('recettesSaleesBrunch').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('recettesSucreesBrunch').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('recettesBoissonsBrunch').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('Options').children).forEach(li => li.onclick = selectRecette)
+
+    // ajoute le clic sur les boutons d'ajout et de retrait de recettes
+    tabBtnAjouteRecette.forEach(btn => btn.onclick = ajouteRecette)
+    tabBtnRetireRecette.forEach(btn => btn.onclick = retireRecette)
+
+    // ajout des clics des boutons d'action de bas de page
+    if(document.getElementById('Id_Devis') !== null) {
+        document.getElementById('btnArchiveDevis').onclick = archiveDevis
+        document.getElementById('btnSaveDevis').onclick = saveDevis
+        document.getElementById('btnSendDevis').onclick = sendDevis
+        document.getElementById('btnToFacture').onclick = toFacture
+    }
+    else {
+        document.getElementById('btnCreateDevis').onclick = createDevis
+    }
+}
+
+
 
 window.addEventListener("DOMContentLoaded", (event) => {
-    $( "#dateEvenement" ).datepicker();
+    $( "#Date_Evenement" ).datepicker($.datepicker.regional['fr']);
     initAffichage()
     setGlobals()
+    initUX()
 });

@@ -49,7 +49,7 @@
                                         <td><%= Client.Nom_Prenom %></td>
                                         <td><%= Client.Telephone %></td>
                                         <td><%= Client.Email %></td>
-                                        <td><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
+                                        <td><% if(Estimation !== null) { %><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %><% } else { %> - <% } %></td>                    
                                         <td><%= String_Formule_Aperitif %></td>
                                         <td><%= String_Formule_Cocktail %></td>
                                         <td><%= String_Formule_Box %></td>
@@ -95,7 +95,7 @@
                                         <td><%= Client.Nom_Prenom %></td>
                                         <td><%= Client.Telephone %></td>
                                         <td><%= Client.Email %></td>
-                                        <td><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
+                                        <td><% if(Estimation !== null) { %><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %><% } else { %> - <% } %></td>                    
                                         <td><%= String_Formule_Aperitif %></td>
                                         <td><%= String_Formule_Cocktail %></td>
                                         <td><%= String_Formule_Box %></td>
@@ -141,7 +141,7 @@
                                         <td><%= Client.Nom_Prenom %></td>
                                         <td><%= Client.Telephone %></td>
                                         <td><%= Client.Email %></td>
-                                        <td><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %></td>                    
+                                        <td><% if(Estimation !== null) { %><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %><% } else { %> - <% } %></td>                    
                                         <td><%= String_Formule_Aperitif %></td>
                                         <td><%= String_Formule_Cocktail %></td>
                                         <td><%= String_Formule_Box %></td>

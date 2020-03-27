@@ -31,11 +31,10 @@ const toggleSelectedTr = (trClicked) => {
 }
 
 const newDevis = () => {
-    console.log('new devis')
+    location.replace('/devis/create')
 }
 
 const modifyDevis = () => {
-    console.log('modify devis')
     const trSelected = document.getElementsByClassName('selected')[0]
     if(trSelected) {
         const Id_Devis = trSelected.getAttribute('id').split('_')[1]

@@ -46,7 +46,11 @@ router
         if(client !== undefined) {
             // on crée les différentes formules
             const formulesRes = await gestionFormules.createFormules(postEstimation)
-            const { Formule_Aperitif, Formule_Cocktail, Formule_Box, Formule_Brunch } = formulesRes
+            // const { Formule_Aperitif, Formule_Cocktail, Formule_Box, Formule_Brunch } = 
+            const idFormuleAperitif = formulesRes.Formule_Aperitif ? formulesRes.Formule_Aperitif.Id_Formule : formulesRes.Formule_Aperitif
+            const idFormuleCocktail = formulesRes.Formule_Cocktail ? formulesRes.Formule_Cocktail.Id_Formule : formulesRes.Formule_Cocktail
+            const idFormuleBox = formulesRes.Formule_Box ? formulesRes.Formule_Box.Id_Formule : formulesRes.Formule_Box
+            const idFormuleBrunch = formulesRes.Formule_Brunch ? formulesRes.Formule_Brunch.Id_Formule : formulesRes.Formule_Brunch
             // infos = formulesRes.infos
 
             // il n'y a pas eu d'erreur(s) en créant les formules
@@ -59,10 +63,10 @@ router
                 estimation = await Estimations.create({
                     Id_Client : client.Id_Client,
                     Date_Evenement : moment.utc(postEstimation.Date_Evenement),
-                    Id_Formule_Aperitif : Formule_Aperitif.Id_Formule,
-                    Id_Formule_Cocktail : Formule_Cocktail.Id_Formule,
-                    Id_Formule_Box : Formule_Box.Id_Formule,
-                    Id_Formule_Brunch : Formule_Brunch.Id_Formule,
+                    Id_Formule_Aperitif : idFormuleAperitif,
+                    Id_Formule_Cocktail : idFormuleCocktail,
+                    Id_Formule_Box : idFormuleBox,
+                    Id_Formule_Brunch : idFormuleBrunch,
                     Commentaire : postEstimation.Commentaire
                 })
 

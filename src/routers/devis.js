@@ -2,74 +2,147 @@ const express = require('express')
 const router = new express.Router()
 const ejs = require('ejs')
 const { Devis, Clients, Estimations, Formules, Recettes, Prix_Unitaire } = global.db
-const { tableCorrespondanceTypes, modifyFormule } = require('../utils/gestion_formules')
+const { tableCorrespondanceTypes, modifyFormule, createFormules } = require('../utils/gestion_formules')
+const { createOrLoadClient }  = require('./clients')
 const { checksListeOptions } = require('../utils/gestion_prix_unitaire')
 const { Op } = require('sequelize')
 const errorHandler = require('../utils/errorHandler')
 const moment = require('moment')
 const formatDateHeure = 'DD/MM/YYYY HH:mm'
 
-const createDevis = async (estimation = undefined) => {
+const createDevis = async (estimation) => {
     let devis = undefined
-    let hasEstimation = true
 
     try {
         // cas où le devis est créé directement, en dehors d'une estimation
         // TODO:Création devis en dehors d'une estimation
-        if(estimation === undefined) {
-            hasEstimation = false
-            estimation = {
-                
+        if(estimation.isCreation) {
+            //  créer les formules
+            // paramètres pour la création des formules
+            const params = {} 
+
+            // Aperitif
+            if(estimation.Formule_Aperitif.isAperitif) {
+                params.isAperitif = estimation.Formule_Aperitif.isAperitif
+                params.nbConvivesAperitif = estimation.Formule_Aperitif.Nb_Convives
+                params.nbPiecesSaleesAperitif = estimation.Formule_Aperitif.Nb_Pieces_Salees
             }
+            // Cocktail
+            if(estimation.Formule_Cocktail.isCocktail) {
+                params.isCocktail = estimation.Formule_Cocktail.isCocktail
+                params.nbConvivesCocktail = estimation.Formule_Cocktail.Nb_Convives
+                params.nbPiecesSaleesCocktail = estimation.Formule_Cocktail.Nb_Pieces_Salees
+                params.nbPiecesSucreesCocktail = estimation.Formule_Cocktail.Nb_Pieces_Sucrees
+            }
+            // Box
+            if(estimation.Formule_Box.isBox) {
+                params.isBox = estimation.Formule_Box.isBox
+                params.nbConvivesBox = estimation.Formule_Box.Nb_Convives
+            }
+            // Brunch
+            if(estimation.Formule_Brunch.isBrunch) {
+                params.isBrunch = estimation.Formule_Brunch.isBrunch
+                params.typeBrunchSale = undefined
+                params.typeBrunchSucre = undefined
+                params.nbConvivesBrunch = estimation.Formule_Brunch.Nb_Convives
+                params.isBrunchSale = estimation.Formule_Brunch.isBrunchSale
+                params.isBrunchSucre = estimation.Formule_Brunch.isBrunchSucre
+                if(estimation.Formule_Brunch.isBrunchSale) {                    
+                    params.typeBrunchSale = estimation.Formule_Brunch.Nb_Pieces_Salees == tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min ? 'Petite Faim' : 'Grande Faim'
+                }
+                if(estimation.Formule_Brunch.isBrunchSucre) {
+                    params.typeBrunchSucre = estimation.Formule_Brunch.Nb_Pieces_Sucrees == tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min ? 'Petite Faim' : 'Grande Faim'
+                }
+            }
+            
+            const formules = await createFormules(params)
+
+            // créer ou trouver client
+            let client = await createOrLoadClient( {
+                Nom_Prenom : estimation.client.Nom_Prenom.trim(),
+                Adresse_Facturation : estimation.client.Adresse_Facturation.trim(),
+                Email : estimation.client.Email.trim(),
+                Telephone : estimation.client.Telephone.trim(),
+                Type : estimation.client.Type
+            })
+
+            // ajout des nouvelles informations à la fausse estimation
+            estimation.Id_Estimation = null
+            estimation.Id_Client = client.Id_Client
+            estimation.Id_Formule_Aperitif = formules.Formule_Aperitif ? formules.Formule_Aperitif.Id_Formule : formules.Formule_Aperitif
+            estimation.Id_Formule_Cocktail = formules.Formule_Cocktail ? formules.Formule_Cocktail.Id_Formule : formules.Formule_Cocktail
+            estimation.Id_Formule_Box = formules.Formule_Box ? formules.Formule_Box.Id_Formule : formules.Formule_Box
+            estimation.Id_Formule_Brunch = formules.Formule_Brunch ? formules.Formule_Brunch.Id_Formule : formules.Formule_Brunch
+
+            estimation.Formule_Aperitif = formules.Formule_Aperitif
+            estimation.Formule_Cocktail = formules.Formule_Cocktail
+            estimation.Formule_Box = formules.Formule_Box
+            estimation.Formule_Brunch = formules.Formule_Brunch
+            estimation.Client = client
         }
 
+        
+        // gestion des prix
+        let prixHT = 0
+        let prixTTC = 0
+
+        if(estimation.Formule_Aperitif !== null) {
+            prixHT += estimation.Formule_Aperitif.Prix_HT
+        }
+        if(estimation.Formule_Cocktail !== null) {
+            prixHT += estimation.Formule_Cocktail.Prix_HT
+        }
+        if(estimation.Formule_Box !== null) {
+            prixHT += estimation.Formule_Box.Prix_HT
+        }
+        if(estimation.Formule_Brunch !== null) {
+            prixHT += estimation.Formule_Brunch.Prix_HT
+        }
+
+        prixTTC = prixHT * 1.1
+
+        let Adresse_Livraison = estimation.Client.Adresse_Facturation
+        if(estimation.isCreation) {
+            Adresse_Livraison = estimation.Adresse_Livraison
+        }
+
+        const Liste_Options = estimation.Liste_Options !== undefined ? estimation.Liste_Options : null      
+
+        const Id_Remise = estimation.Id_Remise !== undefined ? estimation.Id_Remise : null
+
         try {
-            // gestion des prix
-            let prixHT = 0
-            let prixTTC = 0
-
-            if(estimation.Formule_Aperitif !== null) {
-                prixHT += estimation.Formule_Aperitif.Prix_HT
-            }
-            if(estimation.Formule_Cocktail !== null) {
-                prixHT += estimation.Formule_Cocktail.Prix_HT
-            }
-            if(estimation.Formule_Box !== null) {
-                prixHT += estimation.Formule_Box.Prix_HT
-            }
-            if(estimation.Formule_Brunch !== null) {
-                prixHT += estimation.Formule_Brunch.Prix_HT
-            }
-
-            prixTTC = prixHT * 1.1
-
             // création du devis
             devis = await Devis.create({
                 Id_Estimation : estimation.Id_Estimation,
                 Id_Client : estimation.Id_Client,
                 Date_Evenement : estimation.Date_Evenement,
-                Adresse_Livraison : estimation.Client.Adresse_Facturation,
+                Adresse_Livraison : Adresse_Livraison,
                 Id_Formule_Aperitif : estimation.Id_Formule_Aperitif,
                 Id_Formule_Cocktail : estimation.Id_Formule_Cocktail,
                 Id_Formule_Box : estimation.Id_Formule_Box,
                 Id_Formule_Brunch : estimation.Id_Formule_Brunch,
                 Commentaire : estimation.Commentaire,
                 Statut : 'En cours',
+                Liste_Options : Liste_Options,
+                Id_Remise : Id_Remise,
                 Prix_HT : prixHT,
                 Prix_TTC : prixTTC
             })
-
-            // on archive l'estimation
-            estimation.Statut = 'Archivé'
-            estimation.save()
-
-            // on met à jour le statut du client
-            estimation.Client.Dernier_Statut = 'Devis en cours'
-            estimation.Client.save()
         }
         catch(error) {
             throw error.errors[0].message
         }
+
+        // si l'on avait un devis, on l'archive
+        if(!estimation.isCreation) {
+            // on archive l'estimation
+            estimation.Statut = 'Archivé'
+            estimation.save()
+        }
+
+        // on met à jour le statut du client
+        estimation.Client.Dernier_Statut = 'Devis en cours'
+        estimation.Client.save()        
     }
     catch(error) {
         throw error
@@ -414,10 +487,6 @@ router
                         recettesSaleesCocktail.push(recette)
                     }
                 }
-
-                for(const r of recettesSaleesCocktail) {
-                    console.log(r.Nom)
-                }
             }
             if(devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees !== null) {
                 tabRecettesSucrees = devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees.split(';')
@@ -435,10 +504,6 @@ router
                     if(recette !== null) {
                         recettesSucreesCocktail.push(recette)
                     }
-                }
-
-                for(const r of recettesSucreesCocktail) {
-                    console.log(r.Nom)
                 }
             }
             if(devis.Formule_Cocktail.Liste_Id_Recettes_Boissons !== null) {
@@ -483,10 +548,6 @@ router
                         recettesSaleesBox.push(recette)
                     }
                 }
-
-                for(const r of recettesSaleesBox) {
-                    console.log(r.Nom)
-                }
             }
             if(devis.Formule_Box.Liste_Id_Recettes_Sucrees !== null) {
                 tabRecettesSucrees = devis.Formule_Box.Liste_Id_Recettes_Sucrees.split(';')
@@ -504,10 +565,6 @@ router
                     if(recette !== null) {
                         recettesSucreesBox.push(recette)
                     }
-                }
-
-                for(const r of recettesSucreesBox) {
-                    console.log(r.Nom)
                 }
             }
             if(devis.Formule_Box.Liste_Id_Recettes_Boissons !== null) {
@@ -552,10 +609,6 @@ router
                         recettesSaleesBrunch.push(recette)
                     }
                 }
-
-                for(const r of recettesSaleesBrunch) {
-                    console.log(r.Nom)
-                }
             }
             if(devis.Formule_Brunch.Liste_Id_Recettes_Sucrees !== null) {
                 tabRecettesSucrees = devis.Formule_Brunch.Liste_Id_Recettes_Sucrees.split(';')
@@ -573,10 +626,6 @@ router
                     if(recette !== null) {
                         recettesSucreesBrunch.push(recette)
                     }
-                }
-
-                for(const r of recettesSucreesBrunch) {
-                    console.log(r.Nom)
                 }
             }
             if(devis.Formule_Brunch.Liste_Id_Recettes_Boissons !== null) {
@@ -698,35 +747,53 @@ router
 // TODO:Update devis
 // modifie un devis
 .patch('/devis/:Id_Devis', async (req, res) => {
-    const postIdDevis = req.params.Id_Devis
+    let postIdDevis = req.params.Id_Devis
     const body = req.body
-
-    console.log('************************************')
-    console.log('id : ', postIdDevis)
-    console.log('body : ', body)
-    console.log('************************************')
 
     let infos = undefined
     let devis = undefined
 
-    // on vérifie si l'on est dans le cas d'une création sans estimation
-    if((postIdDevis === undefined || postIdDevis === 'undefined') && body.isCreation) {
+    try {
+        // on crée d'abord notre devis sans estimation
+        if((postIdDevis === undefined || postIdDevis === 'undefined') && body.isCreation) {
+            try {
+                // on passe une copie du body pour ne pas qu'il soit modifié
+                devis = await createDevis({...body})
+                if(devis !== undefined) {
+                    // on modifie postIdDevis pour pouvoir faire le traitement dans le cas normal ensuite
+                    postIdDevis = devis.Id_Devis
+                }
+                else {
+                    devis = null
+                }
+            }
+            catch(error) {
+                console.log(error)
+                if(devis !== null && devis !== undefined) {
+                    devis.destroy()
+                }
+                throw error
+            }
+        }
 
-    }
-    // cas classique
-    else if(postIdDevis !== undefined && postIdDevis !== 'undefined') {
-        devis = await Devis.findOne({
-            where : {
-                Id_Devis : postIdDevis
-            },
-            include : [
-                { model : Clients },
-                { model : Formules, as : 'Formule_Aperitif' },
-                { model : Formules, as : 'Formule_Cocktail' },
-                { model : Formules, as : 'Formule_Box' },
-                { model : Formules, as : 'Formule_Brunch' }
-            ]
-        })
+        // cas classique
+        if(postIdDevis !== undefined && postIdDevis !== 'undefined') {
+            devis = await Devis.findOne({
+                where : {
+                    Id_Devis : postIdDevis
+                },
+                include : [
+                    { model : Clients },
+                    { model : Formules, as : 'Formule_Aperitif' },
+                    { model : Formules, as : 'Formule_Cocktail' },
+                    { model : Formules, as : 'Formule_Box' },
+                    { model : Formules, as : 'Formule_Brunch' }
+                ]
+            })
+        }
+        else {
+            throw 'Une erreur s\'est produite, veuillez réessayer plus tard'
+        }
 
         if(devis !== null) {
             try {
@@ -751,10 +818,9 @@ router
                         devis.Formule_Aperitif.Liste_Id_Recettes_Salees !== body.Formule_Aperitif.Liste_Id_Recettes_Salees ||
                         devis.Formule_Aperitif.Liste_Id_Recettes_Boissons !== body.Formule_Aperitif.Liste_Id_Recettes_Boissons) 
                     {
-                        const modifs = await modifyFormule(devis.Formule_Aperitif, body.Formule_Aperitif)
-                        infos = modifs.infos
-                        if(modifs.formule !== undefined) {
-                            Id_Formule_Aperitif = modifs.formule.Id_Formule
+                        const formule = await modifyFormule(devis.Formule_Aperitif, body.Formule_Aperitif)
+                        if(formule !== undefined) {
+                            Id_Formule_Aperitif = formule.Id_Formule
                         }
                     }
                     // s'il n'y avait pas de formule Aperitif ou s'il n'y a pas de différence, on assigne simplement l'ID existant
@@ -782,10 +848,9 @@ router
                         devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees !== body.Formule_Cocktail.Liste_Id_Recettes_Sucrees ||
                         devis.Formule_Cocktail.Liste_Id_Recettes_Boissons !== body.Formule_Cocktail.Liste_Id_Recettes_Boissons) 
                     {
-                        const modifs = await modifyFormule(devis.Formule_Cocktail, body.Formule_Cocktail)
-                        infos = modifs.infos
-                        if(modifs.formule !== undefined) {
-                            Id_Formule_Cocktail = modifs.formule.Id_Formule
+                        const formule = await modifyFormule(devis.Formule_Cocktail, body.Formule_Cocktail)
+                        if(formule !== undefined) {
+                            Id_Formule_Cocktail = formule.Id_Formule
                         }
                     }
                     // s'il n'y avait pas de formule Cocktail ou s'il n'y a pas de différence, on assigne simplement l'ID existant
@@ -810,10 +875,9 @@ router
                         devis.Formule_Box.Liste_Id_Recettes_Sucrees !== body.Formule_Box.Liste_Id_Recettes_Sucrees ||
                         devis.Formule_Box.Liste_Id_Recettes_Boissons !== body.Formule_Box.Liste_Id_Recettes_Boissons) 
                     {
-                        const modifs = await modifyFormule(devis.Formule_Box, body.Formule_Box)
-                        infos = modifs.infos
-                        if(modifs.formule !== undefined) {
-                            Id_Formule_Box = modifs.formule.Id_Formule
+                        const formule = await modifyFormule(devis.Formule_Box, body.Formule_Box)
+                        if(formule !== undefined) {
+                            Id_Formule_Box = formule.Id_Formule
                         }
                     }
                     // s'il n'y avait pas de formule Box ou s'il n'y a pas de différence, on assigne simplement l'ID existant
@@ -840,10 +904,13 @@ router
                         devis.Formule_Brunch.Liste_Id_Recettes_Sucrees !== body.Formule_Brunch.Liste_Id_Recettes_Sucrees ||
                         devis.Formule_Brunch.Liste_Id_Recettes_Boissons !== body.Formule_Brunch.Liste_Id_Recettes_Boissons) 
                     {
-                        const modifs = await modifyFormule(devis.Formule_Brunch, body.Formule_Brunch)
-                        infos = modifs.infos
-                        if(modifs.formule !== undefined) {
-                            Id_Formule_Brunch = modifs.formule.Id_Formule
+                        // on initialise les valeurs par défaut si le type de brunch n'est pas sélectionné
+                        if(!body.Formule_Brunch.isBrunchSale) body.Formule_Brunch.Nb_Pieces_Salees = tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min
+                        if(!body.Formule_Brunch.isBrunchSucre) body.Formule_Brunch.Nb_Pieces_Sucrees = tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min
+
+                        const formule = await modifyFormule(devis.Formule_Brunch, body.Formule_Brunch)
+                        if(formule !== undefined) {
+                            Id_Formule_Brunch = formule.Id_Formule
                         }
                     }
                     // s'il n'y avait pas de formule Brunch ou s'il n'y a pas de différence, on assigne simplement l'ID existant
@@ -880,29 +947,34 @@ router
 
 
                 // faire les save ici si tout ok
-                if(infos === undefined || !infos.error) {
-                    devis.save()
-                    devis.Client.save()
+                devis.save()
+                devis.Client.save()
+                let message = ''
+
+                if(body.isCreation) {
+                    message = 'Le devis a bien été créé.'
                 }
+                else {
+                    message = 'Le devis a bien été modifié.'
+                }
+                infos = errorHandler(undefined, message)
             }
             catch(error) {
-                infos = errorHandler(error, undefined)
+                throw error
             }
         }
         else {
-            infos = errorHandler('Le devis n\'existe pas.', undefined)
+            throw 'Le devis n\'existe pas.'
         }
+        
     }
-    else {
-        infos = errorHandler('Une erreur s\'est produite, veuillez réessayer plus tard', undefined)
-    }
-
-    if(infos === undefined || !infos.error) {
-        infos = errorHandler(undefined, 'Le devis a bien été modifié.')
+    catch(error) {
+        infos = errorHandler(error, undefined)
     }
 
     res.send({
-        infos
+        infos,
+        devis
     })
 })
 // FIXME:Archive devis

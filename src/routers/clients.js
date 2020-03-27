@@ -13,6 +13,8 @@ const createOrLoadClient = async (postClient) => {
     // vérification car impossible d'appeler trim() sur undefined
     postClient.Nom_Prenom = postClient.Nom_Prenom === undefined ? '' : postClient.Nom_Prenom.trim()
     postClient.Telephone = postClient.Telephone === undefined ? '' : postClient.Telephone.trim().replace(/ /g, '') // retire également les espaces inutils
+    postClient.Adresse_Facturation = postClient.Adresse_Facturation === undefined ? '' : postClient.Adresse_Facturation.trim()
+    postClient.Type = postClient.Type === undefined ? 'Particulier' : postClient.Type
 
     try {
         // crée un nouveau client où le récupère s'il existe déjà
@@ -22,41 +24,46 @@ const createOrLoadClient = async (postClient) => {
             },
             defaults : {
                 Nom_Prenom : postClient.Nom_Prenom,
+                Adresse_Facturation : postClient.Adresse_Facturation,
                 Telephone : postClient.Telephone
             }
         })
         // récupération de l'objet client
-        client = temp_client.dataValues 
+        client = temp_client
 
         // modifie le client s'il existe déjà et ses informations sont différentes
         if(!created && (
             postClient.Nom_Prenom !== client.Nom_Prenom || 
+            postClient.Adresse_Facturation !== client.Adresse_Facturation ||
             postClient.Telephone !== client.Telephone ||
             postClient.Type !== client.Type
             )) {
             // update renvoie le nombre de lignes modifiées
-            await Clients.update(
-                {
-                    Nom_Prenom : postClient.Nom_Prenom,
-                    Telephone : postClient.Telephone,
-                    Type : postClient.Type
-                },
-                {
-                    where : {
-                        Email : postClient.Email
-                    }
-                }
-            )
+            // await Clients.update(
+            //     {
+            //         Nom_Prenom : postClient.Nom_Prenom,
+            //         Telephone : postClient.Telephone,
+            //         Type : postClient.Type
+            //     },
+            //     {
+            //         where : {
+            //             Email : postClient.Email
+            //         }
+            //     }
+            // )
             // on affecte à client les valeurs du post qui ont été mises en BDD plutôt que de relancer une requête
             client.Nom_Prenom = postClient.Nom_Prenom
+            client.Adresse_Facturation = postClient.Adresse_Facturation
             client.Telephone = postClient.Telephone
-            client.Email = postClient.Email
+            client.Type = postClient.Type
+
+            client.save()
         }
-   }
-   catch(error) {
-    //    infos = errorHandler(error.errors[0].message, undefined)
-    throw error.errors[0].message
-   }
+    }
+    catch(error) {
+        //    infos = errorHandler(error.errors[0].message, undefined)
+        throw error.errors[0].message
+    }
 
 //    return {
 //        infos,

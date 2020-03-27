@@ -79,7 +79,7 @@ const checksFormule = async (postFormule) => {
             // init à zéro si undefined
             postFormule.Nb_Pieces_Salees = postFormule.Nb_Pieces_Salees === undefined ? 0 : postFormule.Nb_Pieces_Salees
             postFormule.Nb_Pieces_Sucrees = postFormule.Nb_Pieces_Sucrees === undefined ? 0 : postFormule.Nb_Pieces_Sucrees
-
+            
             // vérification que le nombre de pièces salées et sucrées soient entre le min et le max
             if(
                 (postFormule.Nb_Pieces_Salees >= tableCorrespondanceTypes[type_formule.Nom].nbPieces['salées'].min && postFormule.Nb_Pieces_Salees <= tableCorrespondanceTypes[type_formule.Nom].nbPieces['salées'].max) 
@@ -627,7 +627,7 @@ const modifyFormule = async (oldFormule, newFormule) => {
             if(newFormule.isBrunch) {
                 // initialise les valeurs pour un brunch
                 params.Id_Type_Formule = 4
-                if(newFormule.Nb_Pieces_Salees == 0 && newFormule.Nb_Pieces_Sucrees == 0) {
+                if(!newFormule.isBrunchSale && !newFormule.isBrunchSucre) {
                     // infos = errorHandler('Un type de brunch doit être sélectionné.')
                     throw 'Un type de brunch doit être sélectionné.'
                 }
@@ -652,6 +652,11 @@ const modifyFormule = async (oldFormule, newFormule) => {
             formule = oldFormule
             // affectation des nouvelles infos présentent lors de la création à l'ancienne formule
             formule.Nb_Convives = newFormule.Nb_Convives
+
+            if(newFormule.isBrunch && !newFormule.isBrunchSale && !newFormule.isBrunchSucre) {
+                // infos = errorHandler('Un type de brunch doit être sélectionné.')
+                throw 'Un type de brunch doit être sélectionné.'
+            }
 
             if(newFormule.isAperitif) {
                 formule.Nb_Pieces_Salees = newFormule.Nb_Pieces_Salees
