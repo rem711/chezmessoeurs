@@ -768,8 +768,26 @@ const createDevis = async () => {
 }
 
 // TODO:archiveDevis
-const archiveDevis = () => {
+const archiveDevis = async () => {
+    const url = `/devis/archive/${global.Id_Devis}`
+    const options = {
+        method : 'PATCH'
+    }
 
+    const response = await fetch(url, options)
+    if(response.ok) {
+        const data = await response.json()
+        const { infos } = data
+        
+        if(infos.message) {
+            alert(infos.message)
+            location.replace('/devis')
+        }
+        if(infos.error) {
+            div.style.color = 'red'
+            div.innerHTML = infos.error
+        }
+    }
 }
 
 // TODO:saveDevis

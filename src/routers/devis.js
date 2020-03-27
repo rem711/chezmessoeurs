@@ -977,7 +977,6 @@ router
         devis
     })
 })
-// FIXME:Archive devis
 // archive un devis
 .patch('/devis/archive/:Id_Devis', async (req, res) => {
     const postIdDevis = req.params.Id_Devis

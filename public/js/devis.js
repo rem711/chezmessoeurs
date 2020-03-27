@@ -43,8 +43,30 @@ const modifyDevis = () => {
     }
 }
 
-const archiveDevis = () => {
-    console.log('archive devis')
+const archiveDevis = async () => {
+    const trSelected = document.getElementsByClassName('selected')[0]
+    if(trSelected) {
+        const Id_Devis = trSelected.getAttribute('id').split('_')[1]
+        const url = `/devis/archive/${Id_Devis}`
+        const options = {
+            method : 'PATCH'
+        }
+
+        const response = await fetch(url, options)
+        if(response.ok) {
+            const data = await response.json()
+            const { infos } = data
+            
+            if(infos.message) {
+                alert(infos.message)
+                location.replace('/devis')
+            }
+            if(infos.error) {
+                div.style.color = 'red'
+                div.innerHTML = infos.error
+            }
+        }
+    }
 }
 
 // affectation du click de bouton
