@@ -1013,7 +1013,6 @@ router
         infos
     })
 })
-// FIXME:Delete devis
 .delete('/devis/:Id_Devis', async (req, res) => {
     const postIdDevis = req.params.Id_Devis
 
