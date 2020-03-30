@@ -749,6 +749,7 @@ router
 .patch('/devis/:Id_Devis', async (req, res) => {
     let postIdDevis = req.params.Id_Devis
     const body = req.body
+    body.isCreation = (body.isCreation == 'true')
 
     let infos = undefined
     let devis = undefined
@@ -951,7 +952,7 @@ router
                 devis.Client.save()
                 let message = ''
 
-                if(body.isCreation === true) {
+                if(body.isCreation) {
                     message = 'Le devis a bien été créé.'
                 }
                 else {
