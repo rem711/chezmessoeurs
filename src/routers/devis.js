@@ -755,7 +755,7 @@ router
 
     try {
         // on crée d'abord notre devis sans estimation
-        if((postIdDevis === undefined || postIdDevis === 'undefined') && body.isCreation) {
+        if((postIdDevis === undefined || postIdDevis === 'undefined') && body.isCreation === true) {
             try {
                 // on passe une copie du body pour ne pas qu'il soit modifié
                 devis = await createDevis({...body})
@@ -951,7 +951,7 @@ router
                 devis.Client.save()
                 let message = ''
 
-                if(body.isCreation) {
+                if(body.isCreation === true) {
                     message = 'Le devis a bien été créé.'
                 }
                 else {
