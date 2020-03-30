@@ -755,7 +755,7 @@ router
 
     try {
         // on crée d'abord notre devis sans estimation
-        if((postIdDevis === undefined || postIdDevis === 'undefined') && body.isCreation === true) {
+        if((postIdDevis === undefined || postIdDevis === 'undefined') && body.isCreation) {
             try {
                 // on passe une copie du body pour ne pas qu'il soit modifié
                 devis = await createDevis({...body})

@@ -211,23 +211,6 @@ const getIdRemise = () => {
     return null
 }
 
-// enregistre la formule Aperitif dans l'objet global et met à jour le prix
-const saveFormuleAperitif = () => {
-    global.Formule_Aperitif = getFormuleAperitif()
-
-    // màj des prix
-    const prixPieceSalee = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === 'Pièce salée').getAttribute('data-montant')
-    const prixParPersonne = global.Formule_Aperitif.isAperitif ? (global.Formule_Aperitif.Nb_Pieces_Salees * prixPieceSalee) : 0
-    prixHT = prixParPersonne * global.Formule_Aperitif.Nb_Convives
-
-    prix.Aperitif = {
-        prixParPersonne,
-        prixHT
-    }
-
-    updateRecap()
-}
-
 // enregistre le client dans l'objet global
 const saveClient = () => {
     global.client = getClient()
@@ -246,6 +229,23 @@ const saveAdresseLivraison = () => {
 // enregistre le commentaire dans l'objet global
 const saveCommentaire = () => {
     global.Commentaire = getCommentaire()
+}
+
+// enregistre la formule Aperitif dans l'objet global et met à jour le prix
+const saveFormuleAperitif = () => {
+    global.Formule_Aperitif = getFormuleAperitif()
+
+    // màj des prix
+    const prixPieceSalee = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === 'Pièce salée').getAttribute('data-montant')
+    const prixParPersonne = global.Formule_Aperitif.isAperitif ? (global.Formule_Aperitif.Nb_Pieces_Salees * prixPieceSalee) : 0
+    prixHT = prixParPersonne * global.Formule_Aperitif.Nb_Convives
+
+    prix.Aperitif = {
+        prixParPersonne,
+        prixHT
+    }
+
+    updateRecap()
 }
 
 // enregistre la formule Cocktail dans l'objet global et met à jour le prix
@@ -831,6 +831,7 @@ const saveDevis = async () => {
 // dans un second temps, envoie par mail
 const sendDevis = () => {
 // appelle save avant de l'envoyer
+// Vérifier que le devis est complètement rempli pour pouvoir l'envoyer (toutes les recettes sont choisies) (pour box que le nombre de recettes soit égal au nombre de recettes salées et sucrée, ou au nombre de convives * le nombre de recettes salées et sucrées)
 }
 
 // TODO:toFacture
