@@ -13,9 +13,9 @@
             <%= infos.error %> 
         </h3>
     <% } else { %>
-        <h1>Devis n°<%= devis.Id_Devis %> </h1>
         <!--  doit être scrollable -->
         <div class="content_inner">
+        <h1>Devis n°<%= devis.Id_Devis %> </h1>
             <!--  INFOS CLIENT -->
             <div>
                 <div class="info_client_devis">
@@ -103,7 +103,7 @@
                 <h3>Formule Apéritif</h3>
                 <div class="moitie">
                     <label for="nbConvivesAperitif">Nombre de personnes :</label>
-                    <input type="text" id="nbConvivesAperitif" placeholder="<%= tableCorrespondanceTypes['Apéritif'].nbMinConvives %>" value="<% if(Formule_Aperitif) { %><%= Formule_Aperitif.Nb_Convives %><% } %>"  >
+                    <input type="text" id="nbConvivesAperitif" placeholder="Minimum <%= tableCorrespondanceTypes['Apéritif'].nbMinConvives %> personnes" value="<% if(Formule_Aperitif) { %><%= Formule_Aperitif.Nb_Convives %><% } %>"  >
                 </div>
                 <!--  RECETTES SALEES -->
                 <div class="select_recette_ctn">
@@ -119,7 +119,7 @@
                         </div>
                         <div>
                             <label for="listeRecettesSaleesAperitif">Mes recettes salées</label>
-                            <ul class="list_selected" id="listeRecettesSaleesAperitif">
+                            <ul class="list_selected custom_scrollbar" id="listeRecettesSaleesAperitif">
                             <% if(Formule_Aperitif && recettesSaleesAperitif) { %> 
                                 <% const diff = Formule_Aperitif.Nb_Pieces_Salees - recettesSaleesAperitif.length %> 
                                 <% for(const recette of recettesSaleesAperitif) { %>
@@ -134,7 +134,7 @@
                     </div>
                     <div class="list_recettes">
                         <label>Recettes salées</label>
-                        <div class="ctn_recettes">
+                        <div class="ctn_recettes custom_scrollbar">
                             <ul id="recettesSaleesAperitif">
                             <% for(const recette of listeRecettesSalees) { %> 
                                 <li id="recette_<%= recette.Id_Recette %>" data-for="SaleAperitif"><%= recette.Nom %> </li>
@@ -151,7 +151,7 @@
                     <div class="select_recette">
                         <div>
                             <label for="listeRecettesBoissonsAperitif">Boissons sélectionnées</label>
-                            <ul class="list_selected" id="listeRecettesBoissonsAperitif">
+                            <ul class="list_selected custom_scrollbar" id="listeRecettesBoissonsAperitif">
                             <% if(Formule_Aperitif) { %> 
                                 <% for(const recette of recettesBoissonsAperitif) { %> 
                                     <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsAperitif"><%= recette.Nom %> </li>
@@ -163,7 +163,7 @@
                     </div>
                     <div class="list_recettes">
                         <label>Boissons</label>
-                        <div class="ctn_recettes">
+                        <div class="ctn_recettes custom_scrollbar">
                             <ul id="recettesBoissonsAperitif">
                             <% for(const recette of listeRecettesBoissons) { %> 
                                 <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsAperitif"><%= recette.Nom %> </li>
@@ -183,7 +183,7 @@
                 <h3>Formule Cocktail</h3>
                 <div class="moitie">
                     <label for="nbConvivesCocktail">Nombre de personnes :</label>
-                    <input type="text" id="nbConvivesCocktail" placeholder="<%= tableCorrespondanceTypes['Cocktail'].nbMinConvives %>" value="<% if(Formule_Cocktail) { %><%= Formule_Cocktail.Nb_Convives %><% } %>" >
+                    <input type="text" id="nbConvivesCocktail" placeholder="Minimum <%= tableCorrespondanceTypes['Cocktail'].nbMinConvives %> personnes" value="<% if(Formule_Cocktail) { %><%= Formule_Cocktail.Nb_Convives %><% } %>" >
                 </div>
                 <!--  RECETTES SALEES -->
                 <div class="select_recette_ctn">
@@ -199,7 +199,7 @@
                         </div>
                         <div>
                             <label for="listeRecettesSaleesCocktail">Mes recettes salées</label>
-                            <ul class="list_selected" id="listeRecettesSaleesCocktail">
+                            <ul class="list_selected custom_scrollbar" id="listeRecettesSaleesCocktail">
                             <% if(Formule_Cocktail && recettesSaleesCocktail) { %> 
                                 <% const diff = Formule_Cocktail.Nb_Pieces_Salees - recettesSaleesCocktail.length %> 
                                 <% for(const recette of recettesSaleesCocktail) { %>
@@ -214,7 +214,7 @@
                     </div>
                     <div class="list_recettes">
                         <label>Recettes salées</label>
-                        <div class="ctn_recettes">
+                        <div class="ctn_recettes custom_scrollbar">
                             <ul id="recettesSaleesCocktail">
                             <% for(const recette of listeRecettesSalees) { %> 
                                 <li id="recette_<%= recette.Id_Recette %>" data-for="SaleCocktail"><%= recette.Nom %> </li>
@@ -239,7 +239,7 @@
                         </div>
                         <div>
                             <label for="listeRecettesSucreesCocktail">Mes recettes sucrées</label>
-                            <ul class="list_selected" id="listeRecettesSucreesCocktail">
+                            <ul class="list_selected custom_scrollbar" id="listeRecettesSucreesCocktail">
                             <% if(Formule_Cocktail && recettesSucreesCocktail) { %> 
                                 <% const diff = Formule_Cocktail.Nb_Pieces_Sucrees - recettesSucreesCocktail.length %> 
                                 <% for(const recette of recettesSucreesCocktail) { %>
@@ -254,7 +254,7 @@
                     </div>
                     <div class="list_recettes">
                         <label>Recettes sucrées</label>
-                        <div class="ctn_recettes">
+                        <div class="ctn_recettes custom_scrollbar">
                             <ul id="recettesSucreesCocktail">
                             <% for(const recette of listeRecettesSucrees) { %> 
                                 <li id="recette_<%= recette.Id_Recette %>" data-for="SucreCocktail"><%= recette.Nom %> </li>
@@ -270,7 +270,7 @@
                     <div class="select_recette">
                         <div>
                             <label for="listeRecettesBoissonsCocktail">Boissons sélectionnées</label>
-                            <ul class="list_selected" id="listeRecettesBoissonsCocktail">
+                            <ul class="list_selected custom_scrollbar" id="listeRecettesBoissonsCocktail">
                             <% if(Formule_Cocktail) { %> 
                                 <% for(const recette of recettesBoissonsCocktail) { %> 
                                     <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsCocktail"><%= recette.Nom %> </li>
@@ -282,7 +282,7 @@
                     </div>
                     <div class="list_recettes">
                         <label>Boissons</label>
-                        <div class="ctn_recettes">
+                        <div class="ctn_recettes custom_scrollbar">
                             <ul id="recettesBoissonsCocktail">
                             <% for(const recette of listeRecettesBoissons) { %> 
                                 <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsCocktail"><%= recette.Nom %> </li>
@@ -303,14 +303,14 @@
                 <h3>Formule Box</h3>
                 <div class="moitie">
                     <label for="nbConvivesBox">Nombre de personnes :</label>
-                    <input type="text" id="nbConvivesBox" placeholder="<%= tableCorrespondanceTypes['Box'].nbMinConvives %>" value="<% if(Formule_Box) { %><%= Formule_Box.Nb_Convives %><% } %>" >
+                    <input type="text" id="nbConvivesBox" placeholder="Minimum <%= tableCorrespondanceTypes['Box'].nbMinConvives %> personnes" value="<% if(Formule_Box) { %><%= Formule_Box.Nb_Convives %><% } %>" >
                 </div>
                 <!--  RECETTES SALEES -->
                 <div class="select_recette_ctn">
                     <div class="select_recette">
                         <div>
                             <label for="listeRecettesSaleesBox">Mes recettes salées</label>
-                            <ul class="list_selected" id="listeRecettesSaleesBox">
+                            <ul class="list_selected custom_scrollbar" id="listeRecettesSaleesBox">
                             <% if(Formule_Box && recettesSaleesBox) { %> 
                                 <% const diff = Formule_Box.Nb_Pieces_Salees - recettesSaleesBox.length %> 
                                 <% for(const recette of recettesSaleesBox) { %>
@@ -327,7 +327,7 @@
                     </div>
                     <div class="list_recettes">
                         <label>Recettes salées</label>
-                        <div class="ctn_recettes">
+                        <div class="ctn_recettes custom_scrollbar">
                             <ul id="recettesSaleesBox">
                             <% for(const recette of listeRecettesSalees) { %> 
                                 <li id="recette_<%= recette.Id_Recette %>" data-for="SaleBox"><%= recette.Nom %> </li>
@@ -343,7 +343,7 @@
                     <div class="select_recette">
                         <div>
                             <label for="listeRecettesSucreesBox">Mes recettes sucrées</label>
-                            <ul class="list_selected" id="listeRecettesSucreesBox">
+                            <ul class="list_selected custom_scrollbar" id="listeRecettesSucreesBox">
                             <% if(Formule_Box && recettesSucreesBox) { %> 
                                 <% const diff = Formule_Box.Nb_Pieces_Sucrees - recettesSucreesBox.length %> 
                                 <% for(const recette of recettesSucreesBox) { %>
@@ -360,7 +360,7 @@
                     </div>
                     <div class="list_recettes">
                         <label>Recettes sucrées</label>
-                        <div class="ctn_recettes">
+                        <div class="ctn_recettes custom_scrollbar">
                             <ul id="recettesSucreesBox">
                             <% for(const recette of listeRecettesSucrees) { %> 
                                 <li id="recette_<%= recette.Id_Recette %>" data-for="SucreBox"><%= recette.Nom %> </li>
@@ -376,7 +376,7 @@
                     <div class="select_recette">
                         <div>
                             <label for="listeRecettesBoissonsBox">Boissons sélectionnées</label>
-                            <ul class="list_selected" id="listeRecettesBoissonsBox">
+                            <ul class="list_selected custom_scrollbar" id="listeRecettesBoissonsBox">
                                 <% if(Formule_Box) { %> 
                                     <% for(const recette of recettesBoissonsBox) { %> 
                                         <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBox"><%= recette.Nom %> </li>
@@ -388,7 +388,7 @@
                     </div>
                     <div class="list_recettes">
                         <label>Boissons</label>
-                        <div class="ctn_recettes">
+                        <div class="ctn_recettes custom_scrollbar">
                             <ul id="recettesBoissonsBox">
                             <% for(const recette of listeRecettesBoissons) { %> 
                                 <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBox"><%= recette.Nom %> </li>
@@ -408,7 +408,7 @@
                 <h3>Formule Brunch</h3>
                 <div>
                     <label for="nbConvivesBrunch">Nombre de personnes :</label>
-                    <input type="text" id="nbConvivesBrunch" placeholder="<%= tableCorrespondanceTypes['Brunch'].nbMinConvives %>" value="<% if(Formule_Brunch) { %><%= Formule_Brunch.Nb_Convives %><% } %>" >
+                    <input type="text" id="nbConvivesBrunch" placeholder="Minimum <%= tableCorrespondanceTypes['Brunch'].nbMinConvives %> personnes" value="<% if(Formule_Brunch) { %><%= Formule_Brunch.Nb_Convives %><% } %>" >
                 </div>
                 <label for="isBrunchSale">Formule Salée : </label>
                 <% let typeBrunchChecked = '' %> 
@@ -425,7 +425,7 @@
                         <div class="select_recette">
                             <div>
                                 <label for="listeRecettesSaleesBrunch">Mes recettes salées</label>
-                                <ul class="list_selected" id="listeRecettesSaleesBrunch">
+                                <ul class="list_selected custom_scrollbar" id="listeRecettesSaleesBrunch">
                                 <% if(Formule_Brunch && recettesSaleesBrunch) { %> 
                                     <% const diff = Formule_Brunch.Nb_Pieces_Salees - recettesSaleesBrunch.length %> 
                                     <% for(const recette of recettesSaleesBrunch) { %>
@@ -440,7 +440,7 @@
                         </div>
                         <div class="list_recettes">
                             <label>Recettes salées</label>
-                            <div class="ctn_recettes">
+                            <div class="ctn_recettes custom_scrollbar">
                                 <ul id="recettesSaleesBrunch">
                                 <% for(const recette of listeRecettesSalees) { %> 
                                     <li id="recette_<%= recette.Id_Recette %>" data-for="SaleBrunch"><%= recette.Nom %> </li>
@@ -466,7 +466,7 @@
                         <div class="select_recette">
                             <div>
                                 <label for="listeRecettesSucreesBrunch">Mes recettes sucrées</label>
-                                <ul class="list_selected" id="listeRecettesSucreesBrunch">
+                                <ul class="list_selected custom_scrollbar" id="listeRecettesSucreesBrunch">
                                 <% if(Formule_Brunch && recettesSucreesBrunch) { %> 
                                     <% const diff = Formule_Brunch.Nb_Pieces_Sucrees - recettesSucreesBrunch.length %> 
                                     <% for(const recette of recettesSucreesBrunch) { %>
@@ -481,7 +481,7 @@
                         </div>
                         <div class="list_recettes">
                             <label>Recettes sucrées</label>
-                            <div class="ctn_recettes">
+                            <div class="ctn_recettes custom_scrollbar">
                                 <ul id="recettesSucreesBrunch">
                                 <% for(const recette of listeRecettesSucrees) { %> 
                                     <li id="recette_<%= recette.Id_Recette %>" data-for="SucreBrunch"><%= recette.Nom %> </li>
@@ -498,7 +498,7 @@
                     <div class="select_recette">
                         <div>
                             <label for="listeRecettesBoissonsBrunch">Boissons sélectionnées</label>
-                            <ul class="list_selected" id="listeRecettesBoissonsBrunch">
+                            <ul class="list_selected custom_scrollbar" id="listeRecettesBoissonsBrunch">
                             <% if(Formule_Brunch) { %> 
                                 <% for(const recette of recettesBoissonsBrunch) { %> 
                                     <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBrunch"><%= recette.Nom %> </li>
@@ -510,7 +510,7 @@
                     </div>
                     <div class="list_recettes">
                         <label>Boissons</label>
-                        <div class="ctn_recettes">
+                        <div class="ctn_recettes custom_scrollbar">
                             <ul id="recettesBoissonsBrunch">
                             <% for(const recette of listeRecettesBoissons) { %> 
                                 <li id="recette_<%= recette.Id_Recette %>" data-for="BoissonsBrunch"><%= recette.Nom %> </li>
@@ -530,7 +530,7 @@
                     <div class="nb_salees">
                         <label>Ajouter une option</label>
                     </div>
-                    <ul class="list_selected" id="listeOptions">
+                    <ul class="list_selected custom_scrollbar" id="listeOptions">
                         <% if(locals.optionsSelectionnees !== undefined) { %> 
                             <% for(const option of optionsSelectionnees) { %>
                                 <li id="option_<%= option.Id_Prix_Unitaire %>" data-for="Options"><%= option.Nom_Type_Prestation %></li>
@@ -541,7 +541,7 @@
                 </div>
                 <div class="list_recettes">
                     <label>Options</label>
-                    <div class="ctn_recettes">
+                    <div class="ctn_recettes custom_scrollbar">
                         <ul id="Options">
                         <% for(const option of listeOptions) { %>
                             <li id="option_<%= option.Id_Prix_Unitaire %>" data-for="Options"><%= option.Nom_Type_Prestation %></li>
@@ -559,7 +559,7 @@
                     <div class="nb_salees">
                         <label>Ajouter une remise</label>
                     </div>
-                    <ul class="list_selected" id="listeRemises">
+                    <ul class="list_selected custom_scrollbar" id="listeRemises">
                         <li>+</li>
                     </ul>
                 </div>
@@ -640,17 +640,17 @@
             <div>
                 <h5 id="divInfos"></h5>
             </div>
-            <div>
+            <div class="traitementDevisBtns">
             <%# si c'est une création on ne peut que créer le nouveau devis %> 
             <% if (locals.isCreation) { %>
                 <button id="btnCreateDevis">Créer le devis</button>
             <% } else { %>
             <%# sinon on accède aux différents traitements d'un devis %> 
-                <button id="btnArchiveDevis">Archiver</button>
-                <button id="btnSaveDevis">Enregistrer</button>
-                <button id="btnSendDevis">Envoyer</button>
+                <button id="btnArchiveDevis" class="defaultBtn">Archiver</button>
+                <button id="btnSaveDevis" class="defaultBtn">Enregistrer</button>
+                <button id="btnSendDevis" class="defaultBtn">Envoyer</button>
                 <%# Valide le devis pour en créer une facture %> 
-                <button id="btnToFacture">Valider</button>
+                <button id="btnToFacture" class="defaultBtn">Valider</button>
             <% } %>                 
             </div>
 

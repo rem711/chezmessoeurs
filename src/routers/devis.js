@@ -130,6 +130,7 @@ const createDevis = async (estimation) => {
             })
         }
         catch(error) {
+            console.log(error)
             throw error.errors[0].message
         }
 

@@ -3,8 +3,8 @@
 
   
    
-        <h1>Devis</h1>
         <div class="content_inner">     
+        <h1>Devis</h1>
             <%# Affiche s'il une erreur est survenue %>      
             <% if (locals.values['Général'].infos) { %>
              <h3>
@@ -17,14 +17,14 @@
                 <input type="text">
 
                 <h2>Devis en cours</h2>
-                <table>
+                <table class="devis_encours">
                     <thead class="devis_list devis_encours">
                         <th class="datedevis">Date even.</th>
                         <th>Client</th>
-                        <th>Téléthhone</th>
+                        <th>Téléphone</th>
                         <th>Email</th>
                         <th>Date estim.</th>                    
-                        <th>Athéritif</th>
+                        <th>Apéritif</th>
                         <th>Cocktail</th>
                         <th>Boxes</th>
                         <th>Brunch</th>
@@ -63,14 +63,14 @@
                 </table>
 
                 <h2>Devis envoyés</h2>
-                <table>
+                <table class="devis_envoyes">
                     <thead class="devis_list devis_envoyes">
                         <th class="datedevis">Date even.</th>
                         <th>Client</th>
-                        <th>Téléthhone</th>
+                        <th>Téléphone</th>
                         <th>Email</th>
                         <th>Date estim.</th>                    
-                        <th>Athéritif</th>
+                        <th>Apéritif</th>
                         <th>Cocktail</th>
                         <th>Boxes</th>
                         <th>Brunch</th>
@@ -109,14 +109,14 @@
                 </table>
 
                 <h2>Devis validés</h2>
-                <table>
+                <table class="devis_valides">
                     <thead class="devis_list devis_valides">
                         <th class="datedevis">Date even.</th>
                         <th>Client</th>
-                        <th>Téléthhone</th>
+                        <th>Téléphone</th>
                         <th>Email</th>
                         <th>Date estim.</th>                    
-                        <th>Athéritif</th>
+                        <th>Apéritif</th>
                         <th>Cocktail</th>
                         <th>Boxes</th>
                         <th>Brunch</th>

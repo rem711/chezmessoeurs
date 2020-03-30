@@ -761,7 +761,7 @@ const createDevis = async () => {
             location.replace(`/devis/${devis.Id_Devis}`)
         }
         if(infos.error) {
-            div.style.color = 'red'
+            div.classList.add('messageError')
             div.innerHTML = infos.error
         }
     }
@@ -784,7 +784,7 @@ const archiveDevis = async () => {
             location.replace('/devis')
         }
         if(infos.error) {
-            div.style.color = 'red'
+            div.classList.add('messageError')
             div.innerHTML = infos.error
         }
     }
@@ -815,11 +815,11 @@ const saveDevis = async () => {
         const { infos } = data
         
         if(infos.message) {
-            div.style.color = 'green'
+            div.classList.add('messageConf')
             div.innerHTML = infos.message
         }
         if(infos.error) {
-            div.style.color = 'red'
+            div.classList.add('messageError')
             div.innerHTML = infos.error
         }
         console.log(infos)

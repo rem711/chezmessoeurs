@@ -1,7 +1,10 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: "helvetica"
+
+}
+*{
+font-family: 'Alegreya Sans', sans-serif;
 }
 
 .main-container {
@@ -80,10 +83,11 @@ body {
 
 h1 {
     margin: auto;
-    align-self: center;
-    position: absolute;
-    top: 50px;
-    left: 45%;
+    /* align-self: center; */
+    /* position: absolute; */
+    /* top: 50px; */
+    /* left: 45%; */
+    margin-bottom: 75px;
     color: #e06128;
 }
 
@@ -94,7 +98,7 @@ ul {
 
 .content_inner {
     width: 100%;
-    padding: 125px 100px 125px 50px;
+    padding: 50px 100px 125px 50px;
     box-sizing: border-box;
 
 }
@@ -135,9 +139,19 @@ tr {
 tr:hover,
 tr:active,
 tr:focus,
-tr:focus-within {
-    cursor: pointer;
+tr:focus-within{
+    color : #e06128;
+    background-color: #f2f2f2;
+    cursor : pointer;
+}
+
+.selected{
     color: #ffffff;
+    background-color: #e06128;
+   
+}
+.selected:hover{
+        color: #ffffff;
     background-color: #e06128;
 }
 
@@ -196,6 +210,23 @@ tr:focus-within {
 
 
 
+.defaultBtn{
+    height: 75px;
+    background: #e06128;
+    color: #ffffff;
+    border: none;
+    font-size: 15px;
+    transition: all 0.2s;
+    padding: 0 50px;
+    border: 3px solid #e06128;
+}
+.defaultBtn:hover {
+    border: 3px solid #e06128;
+    background-color: #ffffff;
+    color: #e06128;
+    cursor: pointer;
+}
+
 
 input {
     border: none;
@@ -222,14 +253,72 @@ input:focus {
 
 
 
+.ui-datepicker td {
+    border: 0;
+    padding: 1px !important;
+}
+.ui-datepicker table {
+    border-bottom: 2px solid #e06128 !important;
+}
+
+.messageConf{
+        color: green;
+    background: rgba(50, 168, 82,0.1);
+    padding: 15px;
+    border: 1px solid green;
+
+}
+
+.messageError{
+    color: crimson;
+    background: rgba(168, 50, 50,0.1);
+    padding: 15px;
+    border: 1px solid crimson;
+
+}
 
 
 
 
 
+/******************************* SCROLL BAR***********************/
 
 
 
+.custom_scrollbar::-webkit-scrollbar-track{
+  border-radius: 10px;
+  background: #fff;
+    border : 1px solid #ffffff;
+    background: #ffffff;
+    z-index: 100;
+    position: absolute;
+}
+
+.custom_scrollbar::-webkit-scrollbar-thumb{
+  border-radius: 10px;
+  z-index: 100;
+    position: relative;
+   background: rgba(0,0,0,0.2);
+}
+
+.custom_scrollbar::-webkit-scrollbar-thumb:hover{
+    background: rgba(0,0,0,0.4);
+        z-index: 100;
+
+}
+
+.custom_scrollbar::-webkit-scrollbar-thumb:active{
+    background: rgba(0,0,0,0.4);
+        z-index: 100;
+
+}
+
+.custom_scrollbar::-webkit-scrollbar{
+	width: 10px;
+    background: #f2f2f2;
+    z-index: 100;
+
+}
 
 
 
