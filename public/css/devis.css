@@ -27,6 +27,7 @@
     margin: 0;
 }
 .devis_encours li{
+        
         border : 2px solid #3c3c3c;
 }
 .devis_envoyes li{
@@ -37,7 +38,8 @@
 }
 
 .devis_encours li:hover{
-    background-color:  #3c3c3c;}
+    background-color:  #3c3c3c;
+}
 .devis_envoyes li:hover{
     background-color:  #e06128;
 }
@@ -45,18 +47,55 @@
     background-color:  green;
 }
 
+.devis_encours th{
+    background-color:  #3c3c3c;
+    border-color:  #3c3c3c;
+}
+.devis_encours .selected{
+    color: #ffffff !important;
+    background-color: #3c3c3c !important; 
+}
+.devis_encours td, .devis_encours tr{
+    border-color:  #3c3c3c;
+}
+.devis_envoyes th{
+    background-color:  #e06128;
+    border-color:  #e06128;
+}
+.devis_envoyes td, .devis_envoyes tr{
+    border-color:  #e06128;
+}
+.devis_valides th{
+    background-color:  green;
+    border-color:  green;
+}
+.devis_valides .selected{
+    color: #ffffff !important;
+    background-color: green !important; 
+}
+.devis_valides td, .devis_valides tr{
+    border-color:  green;
+}
+
+
 
 
 .datedevis{
-    color : #ffffff;
+/*    color : #ffffff;*/
+    font-weight: 600;
 }
-
+/*
 .devis_encours .datedevis{
     background-color:  #3c3c3c;
+            border : 2px solid #3c3c3c;
+
 }
 .devis_envoyes .datedevis{
     background-color:  #e06128;
+            border : 2px solid #e06128;
+
 }
 .devis_valides .datedevis{
     background-color:  green;
-}
+    border : 2px solid green;
+}*/

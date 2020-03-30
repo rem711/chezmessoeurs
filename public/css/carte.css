@@ -12,8 +12,8 @@
     height: 35px;
     width : 30%;
     box-sizing: border-box;
-    background-color : #e06128;
-    color : #ffffff;
+    border : 3px solid #e06128;
+    background-color: #ffffff;
     margin: 10px 5px 0 5px;
     list-style: none;
     display: flex;
@@ -24,7 +24,12 @@
 
 .liste_carte li:hover{
     color : #e06128;
-    border : 3px solid #e06128;
-    background-color: #ffffff;
+    cursor: pointer;
+}
+
+
+.liste_carte .selected{
+    color : #ffffff;
+    background-color : #e06128;
     cursor: pointer;
 }
