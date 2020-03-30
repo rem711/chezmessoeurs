@@ -216,7 +216,7 @@ const saveFormuleAperitif = () => {
     global.Formule_Aperitif = getFormuleAperitif()
 
     // màj des prix
-    const prixPieceSalee = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === 'Pièce Salée').getAttribute('data-montant')
+    const prixPieceSalee = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === 'Pièce salée').getAttribute('data-montant')
     const prixParPersonne = global.Formule_Aperitif.isAperitif ? (global.Formule_Aperitif.Nb_Pieces_Salees * prixPieceSalee) : 0
     prixHT = prixParPersonne * global.Formule_Aperitif.Nb_Convives
 
@@ -253,7 +253,7 @@ const saveFormuleCocktail = () => {
     global.Formule_Cocktail = getFormuleCocktail()
 
     // màj des prix
-    const prixPieceSalee = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === 'Pièce Salée').getAttribute('data-montant')
+    const prixPieceSalee = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === 'Pièce salée').getAttribute('data-montant')
     const prixSaleParPersonne = global.Formule_Cocktail.isCocktail ? (global.Formule_Cocktail.Nb_Pieces_Salees * prixPieceSalee) : 0
 
     const prixPieceSucree = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === 'Pièce sucrée').getAttribute('data-montant')
