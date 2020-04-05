@@ -45,11 +45,11 @@ const tableCorrespondanceTypes = {
         nbMinConvives : 15,
         nbPieces : {
             'salées' : {
-                min : 4,
+                min : 4, 
                 max : 8
             },
             'sucrées' : {
-                min : 2,
+                min : 2, 
                 max : 4
             }
         }
@@ -293,11 +293,19 @@ const createBrunch = async (postFormule) => {
         type_formule = await checksFormule(postFormule)
         if(type_formule !== undefined) {
             let Prix_HT = 0     
+            let Nb_Pieces_Salees = 0
+            let Nb_Pieces_Sucrees = 0
 
             // vérification du/des types de brunchs souhaité
             let prixBrunchSaléParPersonne = 0
             let prixBrunchSucréParPersonne = 0
             if(postFormule.isBrunchSale) {
+                console.log('***************************')
+                console.log('***************************')
+                console.log('isbrunchsalé')
+                console.log('***************************')
+                console.log('***************************')
+                Nb_Pieces_Salees = postFormule.Nb_Pieces_Salees
                 // choix petite ou grande faim, si nb pièces = min alors petit sinon grand brunch
                 let typePrestationSalée = postFormule.Nb_Pieces_Salees == tableCorrespondanceTypes[type_formule.Nom].nbPieces['salées'].min ? 'Petit ' : 'Grand '
                 typePrestationSalée += 'brunch salé'
@@ -312,6 +320,7 @@ const createBrunch = async (postFormule) => {
                 }
             }
             if(postFormule.isBrunchSucre) {
+                Nb_Pieces_Sucrees = postFormule.Nb_Pieces_Sucrees
                 // choix petite ou grande faim, si nb pièces = min alors petit sinon grand brunch
                 let typePrestationSucrée = postFormule.Nb_Pieces_Sucrees == tableCorrespondanceTypes[type_formule.Nom].nbPieces['sucrées'].min ? 'Petit ' : 'Grand '
                 typePrestationSucrée += 'brunch sucré'
@@ -334,9 +343,11 @@ const createBrunch = async (postFormule) => {
                     Id_Type_Formule : type_formule.Id_Type_Formule,
                     Nb_Convives : postFormule.Nb_Convives,
                     Prix_HT,
-                    Nb_Pieces_Salees : postFormule.Nb_Pieces_Salees,
-                    Nb_Pieces_Sucrees : postFormule.Nb_Pieces_Sucrees
+                    Nb_Pieces_Salees : Nb_Pieces_Salees,
+                    Nb_Pieces_Sucrees : Nb_Pieces_Sucrees
                 })
+
+                console.log('formule brunch : ', formule.toJSON())
             }
             catch(error) {
                 // infos = errorHandler(error.errors[0].message, undefined)
@@ -650,6 +661,7 @@ const modifyFormule = async (oldFormule, newFormule) => {
         }
         else {
             formule = oldFormule
+            console.log('old formule : ', oldFormule.toJSON())
             // affectation des nouvelles infos présentent lors de la création à l'ancienne formule
             formule.Nb_Convives = newFormule.Nb_Convives
 
@@ -673,6 +685,13 @@ const modifyFormule = async (oldFormule, newFormule) => {
 
             // on vérifie les modifs apportées
             await checksFormule(formule)
+            if(newFormule.isBrunch && !newFormule.isBrunchSale) {
+                formule.Nb_Pieces_Salees = 0
+            }
+                
+            if(newFormule.isBrunch && !newFormule.isBrunchSucre) {
+                formule.Nb_Pieces_Sucrees = 0
+            }
         }
 
         // s'il n'y a pas d'erreur
