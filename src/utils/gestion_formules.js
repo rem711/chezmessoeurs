@@ -300,11 +300,6 @@ const createBrunch = async (postFormule) => {
             let prixBrunchSaléParPersonne = 0
             let prixBrunchSucréParPersonne = 0
             if(postFormule.isBrunchSale) {
-                console.log('***************************')
-                console.log('***************************')
-                console.log('isbrunchsalé')
-                console.log('***************************')
-                console.log('***************************')
                 Nb_Pieces_Salees = postFormule.Nb_Pieces_Salees
                 // choix petite ou grande faim, si nb pièces = min alors petit sinon grand brunch
                 let typePrestationSalée = postFormule.Nb_Pieces_Salees == tableCorrespondanceTypes[type_formule.Nom].nbPieces['salées'].min ? 'Petit ' : 'Grand '
@@ -346,8 +341,6 @@ const createBrunch = async (postFormule) => {
                     Nb_Pieces_Salees : Nb_Pieces_Salees,
                     Nb_Pieces_Sucrees : Nb_Pieces_Sucrees
                 })
-
-                console.log('formule brunch : ', formule.toJSON())
             }
             catch(error) {
                 // infos = errorHandler(error.errors[0].message, undefined)
@@ -661,7 +654,6 @@ const modifyFormule = async (oldFormule, newFormule) => {
         }
         else {
             formule = oldFormule
-            console.log('old formule : ', oldFormule.toJSON())
             // affectation des nouvelles infos présentent lors de la création à l'ancienne formule
             formule.Nb_Convives = newFormule.Nb_Convives
 
