@@ -311,7 +311,7 @@ const createBrunch = async (postFormule) => {
                     }
                 })
                 if(prixBrunchSalé !== null) {
-                    prixBrunchSaléParPersonne = prixBrunchSalé.Montant * postFormule.Nb_Convives
+                    prixBrunchSaléParPersonne = prixBrunchSalé.Montant
                 }
             }
             if(postFormule.isBrunchSucre) {
@@ -326,11 +326,11 @@ const createBrunch = async (postFormule) => {
                     }
                 })
                 if(prixBrunchSucré !== null) {
-                    prixBrunchSucréParPersonne = prixBrunchSucré.Montant * postFormule.Nb_Convives
+                    prixBrunchSucréParPersonne = prixBrunchSucré.Montant
                 }
             }
             
-            Prix_HT = prixBrunchSaléParPersonne + prixBrunchSucréParPersonne
+            Prix_HT = postFormule.Nb_Convives * (prixBrunchSaléParPersonne + prixBrunchSucréParPersonne)
 
             // on a toutes les infos d'une formule provenant d'une estimation pour créer celle-ci
             try {
@@ -676,17 +676,100 @@ const modifyFormule = async (oldFormule, newFormule) => {
             }
 
             // on vérifie les modifs apportées
-            await checksFormule(formule)
-            if(newFormule.isBrunch && !newFormule.isBrunchSale) {
-                formule.Nb_Pieces_Salees = 0
-            }
-                
-            if(newFormule.isBrunch && !newFormule.isBrunchSucre) {
-                formule.Nb_Pieces_Sucrees = 0
-            }
+            await checksFormule(formule)            
         }
 
         // s'il n'y a pas d'erreur
+        // FIXME:Modification du prix
+        let Prix_HT = 0     
+        if(newFormule.isAperitif) {
+            // récupération des prix 
+            const prixSaléApéritif = await Prix_Unitaire.findOne({
+                where : {
+                    Nom_Type_Prestation : 'Pièce salée'
+                }
+            })        
+            if(prixSaléApéritif !== null) {
+                const prixParPersonne = newFormule.Nb_Pieces_Salees * prixSaléApéritif.Montant
+                Prix_HT = prixParPersonne * newFormule.Nb_Convives
+            }
+        }
+        if(newFormule.isCocktail) {
+            // récupération des prix 
+            const prixSaléCocktail = await Prix_Unitaire.findOne({
+                where : {
+                    Nom_Type_Prestation : 'Pièce salée'
+                }
+            })   
+            const prixSucré = await Prix_Unitaire.findOne({
+                where : {
+                    Nom_Type_Prestation : 'Pièce sucrée'
+                }
+            })   
+            let prixSaléParPersonne = 0
+            let prixsucréParPersonne = 0
+            if(prixSaléCocktail !== null && prixSucré !== null) {
+                prixSaléParPersonne = newFormule.Nb_Pieces_Salees * prixSaléCocktail.Montant
+                prixsucréParPersonne = newFormule.Nb_Pieces_Sucrees * prixSucré.Montant
+                Prix_HT = prixSaléParPersonne * newFormule.Nb_Convives + prixsucréParPersonne * newFormule.Nb_Convives
+            }
+        }
+        if(newFormule.isBox) {
+            // récupération des prix 
+            const prixBox = await Prix_Unitaire.findOne({
+                where : {
+                    Nom_Type_Prestation : 'Box'
+                }
+            })   
+            if(prixBox !== null) {
+                Prix_HT = prixBox.Montant * newFormule.Nb_Convives
+            }
+        }
+        if(newFormule.isBrunch) {
+            let Nb_Pieces_Salees = 0
+            let Nb_Pieces_Sucrees = 0
+
+            // vérification du/des types de brunchs souhaité
+            let prixBrunchSaléParPersonne = 0
+            let prixBrunchSucréParPersonne = 0
+            if(newFormule.isBrunchSale) {
+                Nb_Pieces_Salees = newFormule.Nb_Pieces_Salees
+                // choix petite ou grande faim, si nb pièces = min alors petit sinon grand brunch
+                let typePrestationSalée = newFormule.Nb_Pieces_Salees == tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min ? 'Petit ' : 'Grand '
+                typePrestationSalée += 'brunch salé'
+                // const prixBrunchSalé = prix_unitaire.find(prestation => prestation.Nom_Type_Prestation === typePrestationSalée)
+                const prixBrunchSalé = await Prix_Unitaire.findOne({
+                    where : {
+                        Nom_Type_Prestation : typePrestationSalée
+                    }
+                })
+                if(prixBrunchSalé !== null) {
+                    prixBrunchSaléParPersonne = prixBrunchSalé.Montant
+                }
+            }
+            if(newFormule.isBrunchSucre) {
+                Nb_Pieces_Sucrees = newFormule.Nb_Pieces_Sucrees
+                // choix petite ou grande faim, si nb pièces = min alors petit sinon grand brunch
+                let typePrestationSucrée = newFormule.Nb_Pieces_Sucrees == tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min ? 'Petit ' : 'Grand '
+                typePrestationSucrée += 'brunch sucré'
+                // const prixBrunchSucré = prix_unitaire.find(prestation => prestation.Nom_Type_Prestation === typePrestationSucrée)
+                const prixBrunchSucré = await Prix_Unitaire.findOne({
+                    where: {
+                        Nom_Type_Prestation : typePrestationSucrée
+                    }
+                })
+                if(prixBrunchSucré !== null) {
+                    prixBrunchSucréParPersonne = prixBrunchSucré.Montant
+                }
+            }
+            
+            Prix_HT = newFormule.Nb_Convives * (prixBrunchSaléParPersonne + prixBrunchSucréParPersonne)
+            formule.Nb_Pieces_Salees = Nb_Pieces_Salees
+            formule.Nb_Pieces_Sucrees = Nb_Pieces_Sucrees
+        }
+        // affectation du prix
+        formule.Prix_HT = Prix_HT
+
         // affectation des recettes
         formule.Liste_Id_Recettes_Salees = newFormule.Liste_Id_Recettes_Salees
         formule.Liste_Id_Recettes_Sucrees = newFormule.Liste_Id_Recettes_Sucrees
