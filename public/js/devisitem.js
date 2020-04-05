@@ -257,7 +257,7 @@ const saveFormuleCocktail = () => {
     const prixSaleParPersonne = global.Formule_Cocktail.isCocktail ? (global.Formule_Cocktail.Nb_Pieces_Salees * prixPieceSalee) : 0
 
     const prixPieceSucree = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === 'Pièce sucrée').getAttribute('data-montant')
-    const prixSucreParPersonne = global.Formule_Cocktail.isCocktail ? (global.Formule_Cocktail.Nb_Pieces_Salees * prixPieceSucree) : 0
+    const prixSucreParPersonne = global.Formule_Cocktail.isCocktail ? (global.Formule_Cocktail.Nb_Pieces_Sucrees * prixPieceSucree) : 0
 
     const prixParPersonne = prixSaleParPersonne + prixSucreParPersonne
     const prixHT = prixParPersonne * global.Formule_Cocktail.Nb_Convives
@@ -295,12 +295,12 @@ const saveFormuleBrunch = () => {
     let prixBrunchSucreParPersonne = 0
 
     if(global.Formule_Brunch.isBrunch) {
-        if(global.Formule_Brunch.Nb_Pieces_Salees > 0) {
+        if(global.Formule_Brunch.Nb_Pieces_Salees > 0 && document.getElementById('isBrunchSale').checked) {
             let typePrestationSalee = selectPiecesSaleesBrunch.selectedOptions[0].text === 'Petite Faim' ? 'Petit' : 'Grand'
             typePrestationSalee += ' brunch salé'
             prixBrunchSaleParPersonne = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === typePrestationSalee).getAttribute('data-montant')
         }
-        if(global.Formule_Brunch.Nb_Pieces_Sucrees > 0) {
+        if(global.Formule_Brunch.Nb_Pieces_Sucrees > 0 && document.getElementById('isBrunchSucre').checked) {
             let typePrestationSucree = selectPiecesSucreesBrunch.selectedOptions[0].text === 'Petite Faim' ? 'Petit' : 'Grand'
             typePrestationSucree += ' brunch sucré'
             prixBrunchSucreParPersonne = Array.from(document.getElementById('divPrix_unitaire').children).find(div => div.getAttribute('data-nom') === typePrestationSucree).getAttribute('data-montant')
