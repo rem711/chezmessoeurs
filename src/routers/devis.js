@@ -138,12 +138,12 @@ const createDevis = async (estimation) => {
         if(!estimation.isCreation) {
             // on archive l'estimation
             estimation.Statut = 'Archivé'
-            estimation.save()
+            await estimation.save()
         }
 
         // on met à jour le statut du client
         estimation.Client.Dernier_Statut = 'Devis en cours'
-        estimation.Client.save()        
+        await estimation.Client.save()        
     }
     catch(error) {
         throw error
@@ -1065,8 +1065,8 @@ router
         // changer statut devis à envvoyé
         devis.Client.Dernier_Statut = 'Devis envoyé'
         devis.Statut = 'Envoyé'
-        devis.save()
-        devis.Client.save()
+        await devis.save()
+        await devis.Client.save()
     }
     catch(error) {
         console.log(error)
@@ -1317,8 +1317,8 @@ router
 
 
                 // faire les save ici si tout ok
-                devis.save()
-                devis.Client.save()
+                await devis.save()
+                await devis.Client.save()
                 let message = ''
                 
                 if(body.isCreation) {
@@ -1361,7 +1361,7 @@ router
 
     if(devis !== null) {
         devis.Statut = 'Archivé'
-        devis.save()
+        await devis.save()
 
         await Clients.update(
             {

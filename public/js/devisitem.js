@@ -872,10 +872,7 @@ const sendDevis = async () => {
             div.innerHTML = infos.message
 
             url = `/devis/pdf/${encodeURI('CHEZ MES SOEURS - Devis ')}${global.Id_Devis}.pdf`
-            setTimeout(() => {
-                window.open(url)
-            }, 500)
-            
+            window.open(url)
         }
     }
 }

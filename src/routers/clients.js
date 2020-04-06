@@ -57,7 +57,7 @@ const createOrLoadClient = async (postClient) => {
             client.Telephone = postClient.Telephone
             client.Type = postClient.Type
 
-            client.save()
+            await client.save()
         }
     }
     catch(error) {

@@ -787,7 +787,7 @@ const modifyFormule = async (oldFormule, newFormule) => {
         }
 
         
-        formule.save()
+        await formule.save()
     }
     catch(error) {
         throw error
