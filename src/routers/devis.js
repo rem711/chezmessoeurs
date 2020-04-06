@@ -876,13 +876,14 @@ router
         toPDF.Date_Evenement = devis.Date_Evenement
         toPDF.Adresse_Livraison = devis.Adresse_Livraison
         toPDF.Client = JSON.parse(JSON.stringify(devis.Client))
-        toPDF.Formule_Aperitif = JSON.parse(JSON.stringify(devis.Formule_Aperitif))
+        // la méthode {...} est utilisée pour si la formule est null avoir un objet et pouvoir définir isAperitif etc.
+        toPDF.Formule_Aperitif = {...JSON.parse(JSON.stringify(devis.Formule_Aperitif))} 
         toPDF.Formule_Aperitif.isAperitif = false
-        toPDF.Formule_Cocktail = JSON.parse(JSON.stringify(devis.Formule_Cocktail))
+        toPDF.Formule_Cocktail = {...JSON.parse(JSON.stringify(devis.Formule_Cocktail))}
         toPDF.Formule_Cocktail.isCocktail = false
-        toPDF.Formule_Box = JSON.parse(JSON.stringify(devis.Formule_Box))
+        toPDF.Formule_Box = {...JSON.parse(JSON.stringify(devis.Formule_Box))}
         toPDF.Formule_Box.isBox = false
-        toPDF.Formule_Brunch = JSON.parse(JSON.stringify(devis.Formule_Brunch))
+        toPDF.Formule_Brunch = {...JSON.parse(JSON.stringify(devis.Formule_Brunch))}
         toPDF.Formule_Brunch.isBrunch = false
         toPDF.Commentaire = devis.Commentaire
         toPDF.Liste_Options = []
