@@ -761,8 +761,12 @@ const createDevis = async () => {
             location.replace(`/devis/${devis.Id_Devis}`)
         }
         if(infos.error) {
-            div.classList.add('messageError')
-            div.innerHTML = infos.error
+            if (div.classList.contains('messageError')) {
+                div.innerHTML = infos.error
+            } else {
+                div.classList.add('messageError')
+                div.innerHTML = infos.error
+            }
         }
     }
 }
@@ -784,8 +788,12 @@ const archiveDevis = async () => {
             location.replace('/devis')
         }
         if(infos.error) {
-            div.classList.add('messageError')
-            div.innerHTML = infos.error
+           if (div.classList.contains('messageError')) {
+                div.innerHTML = infos.error
+            } else {
+                div.classList.add('messageError')
+                div.innerHTML = infos.error
+            }
         }
     }
 }
@@ -815,12 +823,24 @@ const saveDevis = async () => {
         const { infos } = data
         
         if(infos.message) {
-            div.classList.add('messageConf')
-            div.innerHTML = infos.message
+            if (div.classList.contains('messageError')) {
+                div.classList.remove('messageError')
+                div.classList.add('messageConf')
+                div.innerHTML = infos.message
+            } else {
+                div.classList.add('messageConf')
+                div.innerHTML = infos.message
+            }
         }
         if(infos.error) {
-            div.classList.add('messageError')
-            div.innerHTML = infos.error
+            if (div.classList.contains('messageConf')) {
+                div.classList.remove('messageConf')
+                div.classList.add('messageError')
+                div.innerHTML = infos.error
+            } else {
+                div.classList.add('messageError')
+                div.innerHTML = infos.error
+            }
         }
         console.log(infos)
     }
