@@ -732,10 +732,11 @@ const updateRecap = () => {
     document.getElementById('prixTotalTTC').innerHTML = `Prix TTC : ${Number.parseFloat(prixTotalTTC).toFixed(2)}€`
 }
 
-// TODO:createDevis
 const createDevis = async () => {
     const div = document.getElementById('divInfos')
     div.innerHTML = ''
+    div.classList.remove('messageError')
+    div.classList.remove('messageConf')
     // enregistrement des infos autres que les formules qui sont actualisées lors d'un changement
     saveClient()
     saveDateEvenement()
@@ -761,18 +762,19 @@ const createDevis = async () => {
             location.replace(`/devis/${devis.Id_Devis}`)
         }
         if(infos.error) {
-            if (div.classList.contains('messageError')) {
-                div.innerHTML = infos.error
-            } else {
-                div.classList.add('messageError')
-                div.innerHTML = infos.error
-            }
+            div.classList.add('messageError')
+            div.innerHTML = infos.error
         }
     }
 }
 
 // TODO:archiveDevis
 const archiveDevis = async () => {
+    const div = document.getElementById('divInfos')
+    div.innerHTML = ''
+    div.classList.remove('messageError')
+    div.classList.remove('messageConf')
+
     const url = `/devis/archive/${global.Id_Devis}`
     const options = {
         method : 'PATCH'
@@ -788,20 +790,17 @@ const archiveDevis = async () => {
             location.replace('/devis')
         }
         if(infos.error) {
-           if (div.classList.contains('messageError')) {
-                div.innerHTML = infos.error
-            } else {
-                div.classList.add('messageError')
-                div.innerHTML = infos.error
-            }
+            div.classList.add('messageError')
+            div.innerHTML = infos.error
         }
     }
 }
 
-// TODO:saveDevis
 const saveDevis = async () => {
     const div = document.getElementById('divInfos')
     div.innerHTML = ''
+    div.classList.remove('messageError')
+    div.classList.remove('messageConf')
     // enregistrement des infos autres que les formules qui sont actualisées lors d'un changement
     saveClient()
     saveDateEvenement()
@@ -823,24 +822,12 @@ const saveDevis = async () => {
         const { infos } = data
         
         if(infos.message) {
-            if (div.classList.contains('messageError')) {
-                div.classList.remove('messageError')
-                div.classList.add('messageConf')
-                div.innerHTML = infos.message
-            } else {
-                div.classList.add('messageConf')
-                div.innerHTML = infos.message
-            }
+            div.classList.add('messageConf')
+            div.innerHTML = infos.message
         }
         if(infos.error) {
-            if (div.classList.contains('messageConf')) {
-                div.classList.remove('messageConf')
-                div.classList.add('messageError')
-                div.innerHTML = infos.error
-            } else {
-                div.classList.add('messageError')
-                div.innerHTML = infos.error
-            }
+            div.classList.add('messageError')
+            div.innerHTML = infos.error
         }
         console.log(infos)
     }
@@ -849,9 +836,48 @@ const saveDevis = async () => {
 // TODO:sendDevis
 // en priorité export en pdf
 // dans un second temps, envoie par mail
-const sendDevis = () => {
-// appelle save avant de l'envoyer
-// Vérifier que le devis est complètement rempli pour pouvoir l'envoyer (toutes les recettes sont choisies) (pour box que le nombre de recettes soit égal au nombre de recettes salées et sucrée, ou au nombre de convives * le nombre de recettes salées et sucrées)
+const sendDevis = async () => {
+    const div = document.getElementById('divInfos')
+    div.innerHTML = ''
+    div.classList.remove('messageError')
+    div.classList.remove('messageConf')
+    // enregistrement des infos autres que les formules qui sont actualisées lors d'un changement
+    saveClient()
+    saveDateEvenement()
+    saveAdresseLivraison()
+    saveCommentaire()
+
+    // enregistre les potentielles modifs
+    let url = `/devis/${global.Id_Devis}`
+    let options = {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        method : 'PATCH',
+        body : JSON.stringify(global)
+    }
+
+    const response = await fetch(url, options)
+    if(response.ok) {
+        const data = await response.json()
+        const { infos } = data
+
+        if(infos.error) {
+            div.classList.add('messageError')
+            div.innerHTML = infos.error
+        }
+        if(infos.message) {
+            //  tout s'est bien passé
+            div.classList.add('messageConf')
+            div.innerHTML = infos.message
+
+            url = `/devis/pdf/${encodeURI('CHEZ MES SOEURS - Devis ')}${global.Id_Devis}.pdf`
+            setTimeout(() => {
+                window.open(url)
+            }, 500)
+            
+        }
+    }
 }
 
 // TODO:toFacture
