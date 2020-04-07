@@ -1074,7 +1074,7 @@ const drawLastPage = () => {
     }
     yPos += paddingContent.top
     width = largeurPage - (paddingPageContent.left + paddingPageContent.right + paddingContent.left + paddingContent.right)
-    doc.font(fontContent).fontSize(fontSizeContent).text(devis.Commentaire, xPos, yPos, { width })
+    doc.font(fontContent).fontSize(fontSizeContent).text(content, xPos, yPos, { width })
     yPos += paddingContent.bottom
 
     // **** infos paiement
