@@ -104,8 +104,11 @@ const generalHeaderHeight = paddingGeneralHeader + heightLogo + paddingGeneralHe
 const generalFooterHeight = 67.176 //97.176 // calculé dans le draw puis output en Times
 
 const pageDrawingSpace = {
-    top : (generalHeaderHeight + paddingPageContent.top),
-    bottom : (A4.hauteur - generalFooterHeight - paddingPageContent.bottom)
+    // top : (generalHeaderHeight + paddingPageContent.top),
+    // bottom : (A4.hauteur - doc.page.margins.bottom - generalFooterHeight - paddingPageContent.bottom)
+    top : 0,
+    bottom : 0,
+    width : 0
 }
 
 let devis = undefined
@@ -136,7 +139,9 @@ module.exports = (res, devis) => {
         largeurPage = (doc.page.width - (doc.page.margins.left + doc.page.margins.right))
         hauteurPage = (A4.hauteur - (doc.page.margins.top + doc.page.margins.bottom))
 
-        
+        pageDrawingSpace.top = generalHeaderHeight + paddingPageContent.top
+        pageDrawingSpace.bottom = A4.hauteur - doc.page.margins.bottom - generalFooterHeight - paddingPageContent.bottom
+        pageDrawingSpace.width = largeurPage - (paddingPageContent.left + paddingPageContent.right)
 
         
 
@@ -255,7 +260,7 @@ const drawGeneralFooter = () => {
     height += padding
 
     let tempY = hauteurPage - height + doc.page.margins.bottom
-    // console.log('generalFooterHeight : ', height)
+    // console.log('generalFooterHeight : ', height, 'tempY : ', tempY)
     doc.rect(doc.page.margins.left, tempY, largeurPage, height).fillAndStroke(backgroundColor)
     tempY += padding + (padding * 0.5)
     // doc.fontSize(fontSizeFooter).fillColor('black')
@@ -804,6 +809,7 @@ const drawLastPage = () => {
     newPage('Récapitulatif')
     
     let height = 0
+    let width = 0
     let content = ''
     let options = {}
     let currentHeight = 0
@@ -1028,26 +1034,61 @@ const drawLastPage = () => {
     yPos = doc.y
     xPos = doc.page.margins.left + paddingPageContent.left + paddingContent.left
 
+    // FIXME:
     // **** Commentaire
-    if(devis.Commentaire !== '') {        
-        yPos += paddingTitles.top
-        doc.font(fontTitles).fontSize(fontSizeTitles).text('Commentaire lié à la commande : ', xPos, yPos)
-        yPos += paddingTitles.bottom
-        yPos += paddingContent.top
-        doc.font(fontContent).fontSize(fontSizeContent).text(devis.Commentaire, xPos, yPos)
-        yPos += paddingContent.bottom
+    height = paddingTitles.top    
+    doc.font(fontTitles).fontSize(fontSizeTitles)
+    height += doc.heightOfString('Commentaire lié à la commande : ')    
+    height += paddingTitles.bottom
+    
+    doc.font(fontContent).fontSize(fontSizeContent)
+    if(devis.Commentaire !== '') {      
+        content = devis.Commentaire
+    }
+    else {
+        content = 'Aucun'
+    }
+    height += paddingContent.top    
+    width = pageDrawingSpace.width - (paddingContent.left + paddingContent.right)
+    height += doc.heightOfString(content, { width })       
+    height += paddingContent.bottom   
+
+    height += paddingContent.top    
+    doc.font(fontContent).fontSize(10)
+    content = 'Le réglement est à effectuer à la réception de la facture.\nUn acompte de 30% sera demandé pour tout devis excédant 150€.'
+    height += doc.heightOfString(content, { align : 'center', oblique : true, width })    
+    height += paddingPageContent.bottom
+
+    console.log('yPOs + height :', yPos + height, 'bottom :', pageDrawingSpace.bottom)
+    if((yPos + height) > pageDrawingSpace.bottom) {
+        newPage()
     }
 
-    doc.moveDown(2)
-    yPos = doc.y
+    console.log('début commentaire :', yPos, doc.y)
+    yPos += paddingTitles.top
+    doc.font(fontTitles).fontSize(fontSizeTitles).text('Commentaire lié à la commande : ', xPos, yPos)
+    yPos += paddingTitles.bottom
+    if(devis.Commentaire !== '') {  
+        content = devis.Commentaire
+    }
+    else {
+        content = 'Aucun'
+    }
+    yPos += paddingContent.top
+    width = largeurPage - (paddingPageContent.left + paddingPageContent.right + paddingContent.left + paddingContent.right)
+    doc.font(fontContent).fontSize(fontSizeContent).text(devis.Commentaire, xPos, yPos, { width })
+    yPos += paddingContent.bottom
+    console.log('fin commentaire : ', yPos, doc.y)
 
     // **** infos paiement
     doc.font(fontContent).fontSize(10)
     content = 'Le réglement est à effectuer à la réception de la facture.\nUn acompte de 30% sera demandé pour tout devis excédant 150€.'
-    options = { align : 'center', oblique : true }
+    options = { align : 'center', oblique : true, width : (pageDrawingSpace.width - (paddingContent.left + paddingContent.right)) }
     height = doc.heightOfString(content, options)
     yPos = (pageDrawingSpace.bottom - height)
+    console.log('début réglement : ', yPos, doc.y)
     doc.text(content, xPos, yPos, options)
+    console.log('fin réglement : ', yPos, doc.y)
 
     // **** Bon pour accord 
     newPage()
@@ -1069,7 +1110,7 @@ const drawLastPage = () => {
     yPos += paddingContent.top
     content = `Valable à partir du ${moment.utc().format('DD/MM/YYYY')} et jusqu'à exécution du devis, sous condition de modification de la part du client.`
     doc.text(content, xPos, yPos)
-    yPos += doc.heightOfString(content)
+    yPos += doc.heightOfString(content, { width : pageDrawingSpace.width - (paddingContent.left + paddingContent.right) })
 
     doc.moveDown()
     yPos = doc.y
