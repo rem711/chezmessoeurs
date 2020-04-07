@@ -16,12 +16,24 @@ module.exports = (sequelize, DataTypes) => {
 		Nom: {
 			field : 'Nom',
 			type: DataTypes.STRING(256),
-			allowNull: false
+			allowNull: false,
+			validate : {
+				len : {
+					args : [2, 256],
+					msg : 'Le nom de la recette doit être compris entre 2 et 256 caractères.'
+				}
+			}
 		},
 		Description: {
 			field : 'Description',
 			type: DataTypes.STRING(1000),
-			allowNull: true
+			allowNull: true,
+			validate : {
+				len : {
+					args : [0, 1000],
+					msg : 'La description est trop longue, maximum 1000 caractères.'
+				}
+			}
 		}
     }, {})
 

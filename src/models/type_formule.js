@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
 					if(value === undefined || value === '') {
 						throw new Error('Le nom ne peut pas être vide')
 					}
+				},
+				len : {
+					args : [2, 100],
+					msg : 'Le nom du type de formule doit être compris entre 2 et 100 caractères.'
 				}
 			},
 			unique : {

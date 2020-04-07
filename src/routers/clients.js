@@ -1,7 +1,7 @@
 const express = require('express')
 const router = new express.Router()
 const { Clients } = global.db
-const errorHandler = require('../utils/errorHandler')
+const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 
 const createOrLoadClient = async (postClient) => {
     // init valeurs retour
@@ -61,8 +61,8 @@ const createOrLoadClient = async (postClient) => {
         }
     }
     catch(error) {
-        //    infos = errorHandler(error.errors[0].message, undefined)
-        throw error.errors[0].message
+        //    infos = clientInformationObject(getErrorMessage(error), undefined)
+        throw getErrorMessage(error)
     }
 
 //    return {
@@ -85,7 +85,7 @@ router
         client = await createOrLoadClient(postClient)
     }
     catch(error) {
-        infos = errorHandler(error, undefined)
+        infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
    // la création d'un client se fait automatiquement depuis une estimation
@@ -101,10 +101,10 @@ router
 
     const clients = await Clients.findAll()
     if(clients === null) {
-        infos = errorHandler('Une erreur s\'est produite, impossible de charger les clients.', undefined)
+        infos = clientInformationObject('Une erreur s\'est produite, impossible de charger les clients.', undefined)
     }
     else if(clients.length === 0) {
-        infos = errorHandler(undefined, 'Aucun client')
+        infos = clientInformationObject(undefined, 'Aucun client')
     }
     
     res.render('index', {
@@ -131,13 +131,13 @@ router
         })
     }
     else {
-        infos = errorHandler('L\'identifiant du client est invalide.', undefined)
+        infos = clientInformationObject('L\'identifiant du client est invalide.', undefined)
         client = undefined
     }
 
     // aucun client trouvé
     if(client === null) {
-        infos = errorHandler('Le client n\'existe pas.', undefined)
+        infos = clientInformationObject('Le client n\'existe pas.', undefined)
         client = undefined
     }
 
@@ -188,14 +188,14 @@ router
                     }
                 }
             )
-            infos = errorHandler(undefined, 'Le client a bien été modifié.')
+            infos = clientInformationObject(undefined, 'Le client a bien été modifié.')
         }
         else {
-            infos = errorHandler('Le client n\'existe pas.')
+            infos = clientInformationObject('Le client n\'existe pas.')
         }
     }
     catch(error) {
-        infos = errorHandler(error.errors[0].message, undefined)
+        infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
     res.send({
@@ -220,10 +220,10 @@ router
                 Id_Client : getId_Client
             }
         })
-        infos = errorHandler(undefined, 'Le client a bien été supprimé')
+        infos = clientInformationObject(undefined, 'Le client a bien été supprimé')
     }
     catch(error) {
-        infos = errorHandler('Le client n\'existe pas.', undefined)
+        infos = clientInformationObject('Le client n\'existe pas.', undefined)
     }
 
     res.send({

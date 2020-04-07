@@ -7,7 +7,7 @@ const { createOrLoadClient }  = require('./clients')
 const { checksListeOptions } = require('../utils/gestion_prix_unitaire')
 const createPDF = require('../utils/pdf_devis')
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
+const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 const moment = require('moment')
 const formatDateHeure = 'DD/MM/YYYY HH:mm'
 
@@ -130,8 +130,7 @@ const createDevis = async (estimation) => {
             })
         }
         catch(error) {
-            console.log(error)
-            throw error.errors[0].message
+            throw getErrorMessage(error)
         }
 
         // si l'on avait un devis, on l'archive
@@ -146,7 +145,7 @@ const createDevis = async (estimation) => {
         await estimation.Client.save()        
     }
     catch(error) {
-        throw error
+        throw getErrorMessage(error)
     }
 
     return devis
@@ -398,7 +397,7 @@ router
             res.send(html)
         }
         else {
-            infos = errorHandler(err, undefined)
+            infos = clientInformationObject(err, undefined)
             res.render('index', values)
         }
     })
@@ -472,18 +471,18 @@ router
 
     // il y a un problème pour récupérer les devis
     if(temp_devisEnCours === null || temp_devisValidés === null || temp_devisEnvoyés === null) {
-        values['Général'].infos = errorHandler('Une erreur s\'est produite, impossible de charger les devis.', undefined)        
+        values['Général'].infos = clientInformationObject('Une erreur s\'est produite, impossible de charger les devis.', undefined)        
     }
     else {
         // indique s'il n'y a pas de devis dans la catégorie
         if(temp_devisEnCours.length === 0) {
-            values['En cours'].infos = errorHandler(undefined, 'Aucun devis')
+            values['En cours'].infos = clientInformationObject(undefined, 'Aucun devis')
         }
         if(temp_devisEnvoyés.length === 0) {
-            values['Envoyés'].infos = errorHandler(undefined, 'Aucun devis')
+            values['Envoyés'].infos = clientInformationObject(undefined, 'Aucun devis')
         }
         if(temp_devisValidés.length === 0) {
-            values['Validés'].infos = errorHandler(undefined, 'Aucun devis')
+            values['Validés'].infos = clientInformationObject(undefined, 'Aucun devis')
         }
 
         // récupération et formatage des informations des devis
@@ -838,7 +837,7 @@ router
         values.listePrix_unitaire = listePrix_unitaire
     }
     else {
-        infos = errorHandler(`Le devis n°${getId} n'existe pas.`)
+        infos = clientInformationObject(`Le devis n°${getId} n'existe pas.`)
     }
 
     values.infos = infos
@@ -852,7 +851,7 @@ router
             res.send(html)
         }
         else {
-            infos = errorHandler(err, undefined)
+            infos = clientInformationObject(err, undefined)
             res.render('index', values)
         }
     })
@@ -1066,12 +1065,12 @@ router
         // changer statut devis à envvoyé
         devis.Client.Dernier_Statut = 'Devis envoyé'
         devis.Statut = 'Envoyé'
+        
         await devis.save()
         await devis.Client.save()
     }
     catch(error) {
-        console.log(error)
-        res.send(error)
+        res.send(getErrorMessage(error))
     }
 })
 // TODO:Devis vers facture
@@ -1103,11 +1102,10 @@ router
                 }
             }
             catch(error) {
-                console.log(error)
                 if(devis !== null && devis !== undefined) {
                     devis.destroy()
                 }
-                throw error
+                throw getErrorMessage(error)
             }
         }
 
@@ -1328,10 +1326,10 @@ router
                 else {
                     message = 'Le devis a bien été modifié.'
                 }
-                infos = errorHandler(undefined, message)
+                infos = clientInformationObject(undefined, message)
             }
             catch(error) {
-                throw error
+                throw getErrorMessage(error)
             }
         }
         else {
@@ -1340,8 +1338,7 @@ router
         
     }
     catch(error) {
-        console.log(error)
-        infos = errorHandler(error, undefined)
+        infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
     res.send({
@@ -1375,10 +1372,10 @@ router
             }
         )
 
-        infos = errorHandler(undefined, 'Le devis a bien été archivé')
+        infos = clientInformationObject(undefined, 'Le devis a bien été archivé')
     }
     else {
-        infos = errorHandler('Le devis n\'existe pas', undefined)
+        infos = clientInformationObject('Le devis n\'existe pas', undefined)
     }
 
     res.send({
@@ -1399,14 +1396,14 @@ router
 
         if(devis !== null) {
             await devis.destroy()
-            infos = errorHandler(undefined, 'Le devis a bien été supprimé.')
+            infos = clientInformationObject(undefined, 'Le devis a bien été supprimé.')
         }
         else {
-            infos = errorHandler('Le devis n\'existe pas.', undefined)
+            infos = clientInformationObject('Le devis n\'existe pas.', undefined)
         }
     }
     catch(error) {
-        infos = errorHandler(error, undefined)
+        infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
     res.send({

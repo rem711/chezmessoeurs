@@ -57,7 +57,13 @@ module.exports = (sequelize, DataTypes) => {
 		Commentaire: {
 			field : 'Commentaire',
 			type: DataTypes.STRING(1000),
-			allowNull: true
+			allowNull: true,
+			validate : {
+				len : {
+					args : [0, 1000],
+					msg : 'Le commentaire est trop long, maximum 1000 caractères.'
+				}
+			}
 		},
 		Statut: {
 			field : 'Statut',

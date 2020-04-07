@@ -7,7 +7,7 @@ const gestionTypeFormule = require('../utils/gestion_type_formule')
 const gestionFormules = require('../utils/gestion_formules')
 const createDevis = require('./devis').createDevis
 const { Op } = require('sequelize')
-const errorHandler = require('../utils/errorHandler')
+const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 const moment = require('moment')
 const formatDateHeure = 'DD/MM/YYYY HH:mm'
 
@@ -83,17 +83,17 @@ router
                     }
                 )
 
-                infos = errorHandler(undefined, 'ok')
+                infos = clientInformationObject(undefined, 'ok')
             }
             catch(error) {
-                // infos = errorHandler(error.errors[0].message, undefined)
+                // infos = clientInformationObject(getErrorMessage(error), undefined)
                 console.log(error)
-                throw error.errors[0].message
+                throw getErrorMessage(error)
             }
         }
     }
     catch(error) {
-        infos = errorHandler(error, undefined)
+        infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
     // renvoie à la calculette s'il y a des erreurs
@@ -121,10 +121,10 @@ router
     })
 
     if(temp_estimations === null) {
-        infos = errorHandler('Une erreur s\'est produite, impossible de charger les estimations.', undefined)        
+        infos = clientInformationObject('Une erreur s\'est produite, impossible de charger les estimations.', undefined)        
     }
     else if(temp_estimations.length === 0) {
-        infos = errorHandler(undefined, 'Aucune estimation')
+        infos = clientInformationObject(undefined, 'Aucune estimation')
     }
     else {
         estimations = []
@@ -223,14 +223,14 @@ router
             devis = await createDevis(temp_estimation)
 
             // le devis a bien été créé
-            infos = errorHandler(undefined, `Le devis pour l'évènement du ${moment(devis.Date_Evenement).format(formatDateHeure)} vient d'être créé.`)
+            infos = clientInformationObject(undefined, `Le devis pour l'évènement du ${moment(devis.Date_Evenement).format(formatDateHeure)} vient d'être créé.`)
         }
         else {
             throw 'Une erreur s\'est produite, veuillez actualiser la page et réessayer.'
         }
     }
     catch(error) {
-        infos = errorHandler(error, undefined)
+        infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
     res.send({
@@ -265,14 +265,14 @@ router
                 }
             )
 
-            infos = errorHandler(undefined, 'L\'estimation a bien été archivée.')
+            infos = clientInformationObject(undefined, 'L\'estimation a bien été archivée.')
         }
         else {
-            infos = errorHandler('L\'estimation n\'existe pas.', undefined)
+            infos = clientInformationObject('L\'estimation n\'existe pas.', undefined)
         }
     }
     catch(error) {
-        infos = errorHandler(error, undefined)
+        infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
     res.send({
@@ -295,14 +295,14 @@ router
 
         if(estimation !== null) {
             await estimation.destroy()
-            infos = errorHandler(undefined, 'L\'estimation a bien été supprimée.')
+            infos = clientInformationObject(undefined, 'L\'estimation a bien été supprimée.')
         }
         else {
-            infos = errorHandler('L\'estimation n\'existe pas.', undefined)
+            infos = clientInformationObject('L\'estimation n\'existe pas.', undefined)
         }
     }
     catch(error) {
-        infos = errorHandler(error, undefined)
+        infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
     res.send({

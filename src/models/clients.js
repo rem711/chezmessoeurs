@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
 			validate : {
 				notNull : {
 					msg : 'Le nom et prénom doivent être indiqués.'
+				},
+				len : {
+					args : [2, 350],
+					msg : 'Le nom ne peut pas contenir plus de 350 cractères.'
 				}
 			}
 		},
@@ -22,7 +26,13 @@ module.exports = (sequelize, DataTypes) => {
 			field : 'Adresse_Facturation',
 			type: DataTypes.STRING(1000),
 			allowNull: true,
-			defaultValue: ''
+			defaultValue: '',
+			validate : {
+				len : {
+					args : [0, 1000],
+					msg : 'L\'adresse de facturation est limité à 1000 caractères.'
+				}
+			}
 		},
 		Email: {
 			field : 'Email',
@@ -34,6 +44,10 @@ module.exports = (sequelize, DataTypes) => {
 				},
 				notNull : {
 					msg : 'L\'adresse e-mail doit être renseignée.'
+				},
+				len : {
+					args : [6, 320],
+					msg : 'L\'adresse e-mail est incorrecte.'
 				}
 			}
 		},

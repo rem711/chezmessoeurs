@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "nodemon --inspect src/app.js -e js,html",
+    "dev": "nodemon src/app.js -e js,html",
+    "dev --inspect": "nodemon --inspect src/app.js -e js,html",
     "test": "env-cmd ./src/config/test.env jest --watch --runInBand"
   },
   "author": "",

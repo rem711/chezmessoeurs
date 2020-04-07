@@ -1,5 +1,5 @@
 const { Formules, Type_Formule, Prix_Unitaire, Recettes } = global.db
-const errorHandler = require('../utils/errorHandler')
+const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 
 const tableCorrespondanceTypes = {
     'Apéritif' : {
@@ -87,20 +87,20 @@ const checksFormule = async (postFormule) => {
                 (postFormule.Nb_Pieces_Sucrees >= tableCorrespondanceTypes[type_formule.Nom].nbPieces['sucrées'].min && postFormule.Nb_Pieces_Sucrees <= tableCorrespondanceTypes[type_formule.Nom].nbPieces['sucrées'].max)
                 ) {
                 
-                    // infos = errorHandler(undefined, 'ok')
+                    // infos = clientInformationObject(undefined, 'ok')
             }
             else {
-                // infos = errorHandler(`Le nombre de pièces par personne pour la formule ${type_formule.Nom} est incorrect.`)
+                // infos = clientInformationObject(`Le nombre de pièces par personne pour la formule ${type_formule.Nom} est incorrect.`)
                 throw `Le nombre de pièces par personne pour la formule ${type_formule.Nom} est incorrect.`
             }
         }
         else {
-            // infos = errorHandler(`Le nombre de convives pour la formule ${type_formule.Nom} est insuffisant.`, undefined)
+            // infos = clientInformationObject(`Le nombre de convives pour la formule ${type_formule.Nom} est insuffisant.`, undefined)
             throw `Le nombre de convives pour la formule ${type_formule.Nom} est insuffisant.`
         }
     }
     else {
-        // infos = errorHandler('Le type de formule est invalide.', undefined)
+        // infos = clientInformationObject('Le type de formule est invalide.', undefined)
         throw 'Le type de formule est invalide.'
     }
 
@@ -147,13 +147,13 @@ const createAperitif = async (postFormule) => {
                 })
             }
             catch(error) {
-                // infos = errorHandler(error.errors[0].message, undefined)
-                throw error.errors[0].message
+                // infos = clientInformationObject(getErrorMessage(error), undefined)
+                throw getErrorMessage(error)
             }
         }
     }
     catch(error) {
-        throw error
+        throw getErrorMessage(error)
     }
 
 
@@ -209,13 +209,13 @@ const createCocktail = async (postFormule) => {
                 })
             }
             catch(error) {
-                // infos = errorHandler(error.errors[0].message, undefined)
-                throw error.errors[0].message
+                // infos = clientInformationObject(getErrorMessage(error), undefined)
+                throw getErrorMessage(error)
             }
         }
     }
     catch(error) {
-        throw error
+        throw getErrorMessage(error)
     }
 
     // return {
@@ -262,13 +262,13 @@ const createBox = async (postFormule) => {
                 })
             }
             catch(error) {
-                // infos = errorHandler(error.errors[0].message, undefined)
-                throw error.errors[0].message
+                // infos = clientInformationObject(getErrorMessage(error), undefined)
+                throw getErrorMessage(error)
             }
         }
     }
     catch(error) {
-        throw error
+        throw getErrorMessage(error)
     }
 
     // return {
@@ -343,13 +343,13 @@ const createBrunch = async (postFormule) => {
                 })
             }
             catch(error) {
-                // infos = errorHandler(error.errors[0].message, undefined)
-                throw error.errors[0].message
+                // infos = clientInformationObject(getErrorMessage(error), undefined)
+                throw getErrorMessage(error)
             }
         }
     }
     catch(error) {
-        throw error
+        throw getErrorMessage(error)
     }
 
     // return {
@@ -462,7 +462,7 @@ const createFormules = async (post) => {
         }
     }
     catch(error) {
-        throw error
+        throw getErrorMessage(error)
     }
 
     return {
@@ -557,19 +557,19 @@ const createFormules = async (post) => {
 //                     })
 //                 }
 //                 catch(error) {
-//                     infos = errorHandler(error.errors[0].message, undefined)
+//                     infos = clientInformationObject(getErrorMessage(error), undefined)
 //                 }
 //             }
 //             else {
-//                 infos = errorHandler(`Le nombre de pièces par personne pour la formule ${type_formule.Nom} est incorrect.`)
+//                 infos = clientInformationObject(`Le nombre de pièces par personne pour la formule ${type_formule.Nom} est incorrect.`)
 //             }
 //         }
 //         else {
-//             infos = errorHandler(`Le nombre de convives pour la formule ${type_formule.Nom} est insuffisant.`, undefined)
+//             infos = clientInformationObject(`Le nombre de convives pour la formule ${type_formule.Nom} est insuffisant.`, undefined)
 //         }
 //     }
 //     else {
-//         infos = errorHandler('Le type de formule est invalide.', undefined)
+//         infos = clientInformationObject('Le type de formule est invalide.', undefined)
 //     }
 
 //     return {
@@ -632,7 +632,7 @@ const modifyFormule = async (oldFormule, newFormule) => {
                 // initialise les valeurs pour un brunch
                 params.Id_Type_Formule = 4
                 if(!newFormule.isBrunchSale && !newFormule.isBrunchSucre) {
-                    // infos = errorHandler('Un type de brunch doit être sélectionné.')
+                    // infos = clientInformationObject('Un type de brunch doit être sélectionné.')
                     throw 'Un type de brunch doit être sélectionné.'
                 }
                 else {
@@ -658,7 +658,7 @@ const modifyFormule = async (oldFormule, newFormule) => {
             formule.Nb_Convives = newFormule.Nb_Convives
 
             if(newFormule.isBrunch && !newFormule.isBrunchSale && !newFormule.isBrunchSucre) {
-                // infos = errorHandler('Un type de brunch doit être sélectionné.')
+                // infos = clientInformationObject('Un type de brunch doit être sélectionné.')
                 throw 'Un type de brunch doit être sélectionné.'
             }
 
@@ -790,7 +790,7 @@ const modifyFormule = async (oldFormule, newFormule) => {
         await formule.save()
     }
     catch(error) {
-        throw error
+        throw getErrorMessage(error)
     }
 
     // return {

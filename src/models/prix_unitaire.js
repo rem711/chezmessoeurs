@@ -11,7 +11,13 @@ module.exports = (sequelize, DataTypes) => {
 		Nom_Type_Prestation: {
 			field : 'Nom_Type_Prestation',
 			type: DataTypes.STRING(100),
-			allowNull: false
+			allowNull: false,
+			validate : {
+				len : {
+					args : [2, 100],
+					msg : 'Le nom du type de prestation doit être compris entre 2 et 100 caractères.'
+				}
+			}
 		},
 		IsOption: {
 			field : 'IsOption',

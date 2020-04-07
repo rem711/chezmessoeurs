@@ -11,7 +11,13 @@ module.exports = (sequelize, DataTypes) => {
 		Nom: {
 			field : 'Nom',
 			type: DataTypes.STRING(1000),
-			allowNull: false
+			allowNull: false,
+			validate : {
+				len : {
+					args : [3, 1000],
+					msg : 'Le nom de la remise doit être compris entre 3 et 1000 caractères.'
+				}
+			}
 		},
 		IsPourcent: {
 			field : 'IsPourcent',

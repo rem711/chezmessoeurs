@@ -24,7 +24,7 @@ const create = async (postType_Formule) => {
                 })
             }
             catch(error) {
-                throw error.errors[0].message
+                throw getErrorMessage(error)
             }
         }
         // sinon erreur
@@ -33,7 +33,7 @@ const create = async (postType_Formule) => {
         }
     }
     catch(error) {
-        throw error
+        throw getErrorMessage(error)
     }
 
     return type_formule
