@@ -1059,12 +1059,10 @@ const drawLastPage = () => {
     height += doc.heightOfString(content, { align : 'center', oblique : true, width })    
     height += paddingPageContent.bottom
 
-    console.log('yPOs + height :', yPos + height, 'bottom :', pageDrawingSpace.bottom)
     if((yPos + height) > pageDrawingSpace.bottom) {
         newPage()
     }
 
-    console.log('début commentaire :', yPos, doc.y)
     yPos += paddingTitles.top
     doc.font(fontTitles).fontSize(fontSizeTitles).text('Commentaire lié à la commande : ', xPos, yPos)
     yPos += paddingTitles.bottom
@@ -1078,7 +1076,6 @@ const drawLastPage = () => {
     width = largeurPage - (paddingPageContent.left + paddingPageContent.right + paddingContent.left + paddingContent.right)
     doc.font(fontContent).fontSize(fontSizeContent).text(devis.Commentaire, xPos, yPos, { width })
     yPos += paddingContent.bottom
-    console.log('fin commentaire : ', yPos, doc.y)
 
     // **** infos paiement
     doc.font(fontContent).fontSize(10)
@@ -1086,9 +1083,7 @@ const drawLastPage = () => {
     options = { align : 'center', oblique : true, width : (pageDrawingSpace.width - (paddingContent.left + paddingContent.right)) }
     height = doc.heightOfString(content, options)
     yPos = (pageDrawingSpace.bottom - height)
-    console.log('début réglement : ', yPos, doc.y)
     doc.text(content, xPos, yPos, options)
-    console.log('fin réglement : ', yPos, doc.y)
 
     // **** Bon pour accord 
     newPage()
