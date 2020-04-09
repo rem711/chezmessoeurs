@@ -14,139 +14,129 @@ const formatDateHeure = 'DD/MM/YYYY HH:mm'
 const createDevis = async (estimation) => {
     let devis = undefined
 
-    try {
-        // cas où le devis est créé directement, en dehors d'une estimation
-        if(estimation.isCreation) {
-            //  créer les formules
-            // paramètres pour la création des formules
-            const params = {} 
+    // cas où le devis est créé directement, en dehors d'une estimation
+    if(estimation.isCreation) {
+        //  créer les formules
+        // paramètres pour la création des formules
+        const params = {} 
 
-            // Aperitif
-            if(estimation.Formule_Aperitif.isAperitif) {
-                params.isAperitif = estimation.Formule_Aperitif.isAperitif
-                params.nbConvivesAperitif = estimation.Formule_Aperitif.Nb_Convives
-                params.nbPiecesSaleesAperitif = estimation.Formule_Aperitif.Nb_Pieces_Salees
-            }
-            // Cocktail
-            if(estimation.Formule_Cocktail.isCocktail) {
-                params.isCocktail = estimation.Formule_Cocktail.isCocktail
-                params.nbConvivesCocktail = estimation.Formule_Cocktail.Nb_Convives
-                params.nbPiecesSaleesCocktail = estimation.Formule_Cocktail.Nb_Pieces_Salees
-                params.nbPiecesSucreesCocktail = estimation.Formule_Cocktail.Nb_Pieces_Sucrees
-            }
-            // Box
-            if(estimation.Formule_Box.isBox) {
-                params.isBox = estimation.Formule_Box.isBox
-                params.nbConvivesBox = estimation.Formule_Box.Nb_Convives
-            }
-            // Brunch
-            if(estimation.Formule_Brunch.isBrunch) {
-                params.isBrunch = estimation.Formule_Brunch.isBrunch
-                params.typeBrunchSale = undefined
-                params.typeBrunchSucre = undefined
-                params.nbConvivesBrunch = estimation.Formule_Brunch.Nb_Convives
-                params.isBrunchSale = estimation.Formule_Brunch.isBrunchSale
-                params.isBrunchSucre = estimation.Formule_Brunch.isBrunchSucre
-                if(estimation.Formule_Brunch.isBrunchSale) {                    
-                    params.typeBrunchSale = estimation.Formule_Brunch.Nb_Pieces_Salees == tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min ? 'Petite Faim' : 'Grande Faim'
-                }
-                if(estimation.Formule_Brunch.isBrunchSucre) {
-                    params.typeBrunchSucre = estimation.Formule_Brunch.Nb_Pieces_Sucrees == tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min ? 'Petite Faim' : 'Grande Faim'
-                }
-            }
-            
-            const formules = await createFormules(params)
-
-            // créer ou trouver client
-            let client = await createOrLoadClient( {
-                Nom_Prenom : estimation.client.Nom_Prenom.trim(),
-                Adresse_Facturation : estimation.client.Adresse_Facturation.trim(),
-                Email : estimation.client.Email.trim(),
-                Telephone : estimation.client.Telephone.trim(),
-                Type : estimation.client.Type
-            })
-
-            // ajout des nouvelles informations à la fausse estimation
-            estimation.Id_Estimation = null
-            estimation.Id_Client = client.Id_Client
-            estimation.Id_Formule_Aperitif = formules.Formule_Aperitif ? formules.Formule_Aperitif.Id_Formule : formules.Formule_Aperitif
-            estimation.Id_Formule_Cocktail = formules.Formule_Cocktail ? formules.Formule_Cocktail.Id_Formule : formules.Formule_Cocktail
-            estimation.Id_Formule_Box = formules.Formule_Box ? formules.Formule_Box.Id_Formule : formules.Formule_Box
-            estimation.Id_Formule_Brunch = formules.Formule_Brunch ? formules.Formule_Brunch.Id_Formule : formules.Formule_Brunch
-
-            estimation.Formule_Aperitif = formules.Formule_Aperitif
-            estimation.Formule_Cocktail = formules.Formule_Cocktail
-            estimation.Formule_Box = formules.Formule_Box
-            estimation.Formule_Brunch = formules.Formule_Brunch
-            estimation.Client = client
+        // Aperitif
+        if(estimation.Formule_Aperitif.isAperitif) {
+            params.isAperitif = estimation.Formule_Aperitif.isAperitif
+            params.nbConvivesAperitif = estimation.Formule_Aperitif.Nb_Convives
+            params.nbPiecesSaleesAperitif = estimation.Formule_Aperitif.Nb_Pieces_Salees
         }
-
+        // Cocktail
+        if(estimation.Formule_Cocktail.isCocktail) {
+            params.isCocktail = estimation.Formule_Cocktail.isCocktail
+            params.nbConvivesCocktail = estimation.Formule_Cocktail.Nb_Convives
+            params.nbPiecesSaleesCocktail = estimation.Formule_Cocktail.Nb_Pieces_Salees
+            params.nbPiecesSucreesCocktail = estimation.Formule_Cocktail.Nb_Pieces_Sucrees
+        }
+        // Box
+        if(estimation.Formule_Box.isBox) {
+            params.isBox = estimation.Formule_Box.isBox
+            params.nbConvivesBox = estimation.Formule_Box.Nb_Convives
+        }
+        // Brunch
+        if(estimation.Formule_Brunch.isBrunch) {
+            params.isBrunch = estimation.Formule_Brunch.isBrunch
+            params.typeBrunchSale = undefined
+            params.typeBrunchSucre = undefined
+            params.nbConvivesBrunch = estimation.Formule_Brunch.Nb_Convives
+            params.isBrunchSale = estimation.Formule_Brunch.isBrunchSale
+            params.isBrunchSucre = estimation.Formule_Brunch.isBrunchSucre
+            if(estimation.Formule_Brunch.isBrunchSale) {                    
+                params.typeBrunchSale = estimation.Formule_Brunch.Nb_Pieces_Salees == tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min ? 'Petite Faim' : 'Grande Faim'
+            }
+            if(estimation.Formule_Brunch.isBrunchSucre) {
+                params.typeBrunchSucre = estimation.Formule_Brunch.Nb_Pieces_Sucrees == tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min ? 'Petite Faim' : 'Grande Faim'
+            }
+        }
         
-        // gestion des prix
-        let prixHT = 0
-        let prixTTC = 0
+        const formules = await createFormules(params)
 
-        if(estimation.Formule_Aperitif !== null) {
-            prixHT += estimation.Formule_Aperitif.Prix_HT
-        }
-        if(estimation.Formule_Cocktail !== null) {
-            prixHT += estimation.Formule_Cocktail.Prix_HT
-        }
-        if(estimation.Formule_Box !== null) {
-            prixHT += estimation.Formule_Box.Prix_HT
-        }
-        if(estimation.Formule_Brunch !== null) {
-            prixHT += estimation.Formule_Brunch.Prix_HT
-        }
+        // créer ou trouver client
+        let client = await createOrLoadClient( {
+            Nom_Prenom : estimation.client.Nom_Prenom.trim(),
+            Adresse_Facturation : estimation.client.Adresse_Facturation.trim(),
+            Email : estimation.client.Email.trim(),
+            Telephone : estimation.client.Telephone.trim(),
+            Type : estimation.client.Type
+        })
 
-        prixTTC = prixHT * 1.1
+        // ajout des nouvelles informations à la fausse estimation
+        estimation.Id_Estimation = null
+        estimation.Id_Client = client.Id_Client
+        estimation.Id_Formule_Aperitif = formules.Formule_Aperitif ? formules.Formule_Aperitif.Id_Formule : formules.Formule_Aperitif
+        estimation.Id_Formule_Cocktail = formules.Formule_Cocktail ? formules.Formule_Cocktail.Id_Formule : formules.Formule_Cocktail
+        estimation.Id_Formule_Box = formules.Formule_Box ? formules.Formule_Box.Id_Formule : formules.Formule_Box
+        estimation.Id_Formule_Brunch = formules.Formule_Brunch ? formules.Formule_Brunch.Id_Formule : formules.Formule_Brunch
 
-        let Adresse_Livraison = estimation.Client.Adresse_Facturation
-        if(estimation.isCreation) {
-            Adresse_Livraison = estimation.Adresse_Livraison
-        }
-
-        const Liste_Options = estimation.Liste_Options !== undefined ? estimation.Liste_Options : null      
-
-        const Id_Remise = estimation.Id_Remise !== undefined ? estimation.Id_Remise : null
-
-        try {
-            // création du devis
-            devis = await Devis.create({
-                Id_Estimation : estimation.Id_Estimation,
-                Id_Client : estimation.Id_Client,
-                Date_Evenement : estimation.Date_Evenement,
-                Adresse_Livraison : Adresse_Livraison,
-                Id_Formule_Aperitif : estimation.Id_Formule_Aperitif,
-                Id_Formule_Cocktail : estimation.Id_Formule_Cocktail,
-                Id_Formule_Box : estimation.Id_Formule_Box,
-                Id_Formule_Brunch : estimation.Id_Formule_Brunch,
-                Commentaire : estimation.Commentaire,
-                Statut : 'En cours',
-                Liste_Options : Liste_Options,
-                Id_Remise : Id_Remise,
-                Prix_HT : prixHT,
-                Prix_TTC : prixTTC
-            })
-        }
-        catch(error) {
-            throw getErrorMessage(error)
-        }
-
-        // si l'on avait un devis, on l'archive
-        if(!estimation.isCreation) {
-            // on archive l'estimation
-            estimation.Statut = 'Archivé'
-            await estimation.save()
-        }
-
-        // on met à jour le statut du client
-        estimation.Client.Dernier_Statut = 'Devis en cours'
-        await estimation.Client.save()        
+        estimation.Formule_Aperitif = formules.Formule_Aperitif
+        estimation.Formule_Cocktail = formules.Formule_Cocktail
+        estimation.Formule_Box = formules.Formule_Box
+        estimation.Formule_Brunch = formules.Formule_Brunch
+        estimation.Client = client
     }
-    catch(error) {
-        throw getErrorMessage(error)
+
+    
+    // gestion des prix
+    let prixHT = 0
+    let prixTTC = 0
+
+    if(estimation.Formule_Aperitif !== null) {
+        prixHT += estimation.Formule_Aperitif.Prix_HT
     }
+    if(estimation.Formule_Cocktail !== null) {
+        prixHT += estimation.Formule_Cocktail.Prix_HT
+    }
+    if(estimation.Formule_Box !== null) {
+        prixHT += estimation.Formule_Box.Prix_HT
+    }
+    if(estimation.Formule_Brunch !== null) {
+        prixHT += estimation.Formule_Brunch.Prix_HT
+    }
+
+    prixTTC = prixHT * 1.1
+
+    let Adresse_Livraison = estimation.Client.Adresse_Facturation
+    if(estimation.isCreation) {
+        Adresse_Livraison = estimation.Adresse_Livraison
+    }
+
+    const Liste_Options = estimation.Liste_Options !== undefined ? estimation.Liste_Options : null      
+
+    const Id_Remise = estimation.Id_Remise !== undefined ? estimation.Id_Remise : null
+
+    // création du devis
+    devis = await Devis.create({
+        Id_Estimation : estimation.Id_Estimation,
+        Id_Client : estimation.Id_Client,
+        Date_Evenement : estimation.Date_Evenement,
+        Adresse_Livraison : Adresse_Livraison,
+        Id_Formule_Aperitif : estimation.Id_Formule_Aperitif,
+        Id_Formule_Cocktail : estimation.Id_Formule_Cocktail,
+        Id_Formule_Box : estimation.Id_Formule_Box,
+        Id_Formule_Brunch : estimation.Id_Formule_Brunch,
+        Commentaire : estimation.Commentaire,
+        Statut : 'En cours',
+        Liste_Options : Liste_Options,
+        Id_Remise : Id_Remise,
+        Prix_HT : prixHT,
+        Prix_TTC : prixTTC
+    })
+
+    // si l'on avait un devis, on l'archive
+    if(!estimation.isCreation) {
+        // on archive l'estimation
+        estimation.Statut = 'Archivé'
+        await estimation.save()
+    }
+
+    // on met à jour le statut du client
+    estimation.Client.Dernier_Statut = 'Devis en cours'
+    await estimation.Client.save()      
 
     return devis
 }
@@ -215,7 +205,7 @@ const getListInfosDevis = async (listDevis) => {
 
     return listInfosDevis
 }
-// TODO:Validation d'un devis
+
 const validate = async (postIdDevis) => {
     const devis = await Devis.findOne({
         where : {
@@ -768,7 +758,7 @@ router
         let optionsSelectionnees = undefined
         let IdoptionsSelectionnees = []
         if(devis.Liste_Options !== null) {
-            tabOptions = devis.Liste_Options.split(';')
+            const tabOptions = devis.Liste_Options.split(';')
             // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
             tabOptions.pop()
 
@@ -856,12 +846,6 @@ router
         }
     })
 })
-// TODO: exporte le devis au format pdf
-// vérifie si le devis est bien complet
-// récupère les infos du devis
-// crée le pdf
-// renvoie le pdf ou le message d'erreur s'il y en a un
-// .get('/devis/pdf/:Id_Devis', async (req, res) => {
 .get(`/devis/pdf/${encodeURI('CHEZ MES SOEURS - Devis ')}:Id_Devis.pdf`, async (req, res) => {
     const postIdDevis = req.params.Id_Devis    
 
@@ -1105,7 +1089,7 @@ router
                 if(devis !== null && devis !== undefined) {
                     devis.destroy()
                 }
-                throw getErrorMessage(error)
+                throw error
             }
         }
 
@@ -1129,208 +1113,203 @@ router
         }
 
         if(devis !== null) {
-            try {
-                // vérification des formules
-                let Formule_Aperitif = null
-                let Formule_Cocktail = null
-                let Formule_Box = null
-                let Formule_Brunch = null
+            // vérification des formules
+            let Formule_Aperitif = null
+            let Formule_Cocktail = null
+            let Formule_Box = null
+            let Formule_Brunch = null
 
-                if(body.Formule_Aperitif.isAperitif) {
-                    // on vérifie que nos listes se terminent par un ';'
-                    if(body.Formule_Aperitif.Liste_Id_Recettes_Salees.length > 1 && body.Formule_Aperitif.Liste_Id_Recettes_Salees[body.Formule_Aperitif.Liste_Id_Recettes_Salees.length - 1] !== ';') {
-                        body.Formule_Aperitif.Liste_Id_Recettes_Salees += ';'
-                    }
-                    if(body.Formule_Aperitif.Liste_Id_Recettes_Boissons.length > 1 && body.Formule_Aperitif.Liste_Id_Recettes_Boissons[body.Formule_Aperitif.Liste_Id_Recettes_Boissons.length - 1] !== ';') {
-                        body.Formule_Aperitif.Liste_Id_Recettes_Boissons += ';'
-                    }
-
-                    // vérification d'une modification de la formule
-                    if(devis.Formule_Aperitif === null || devis.Formule_Aperitif.Nb_Convives != body.Formule_Aperitif.Nb_Convives ||
-                        devis.Formule_Aperitif.Nb_Pieces_Salees != body.Formule_Aperitif.Nb_Pieces_Salees ||
-                        devis.Formule_Aperitif.Liste_Id_Recettes_Salees !== body.Formule_Aperitif.Liste_Id_Recettes_Salees ||
-                        devis.Formule_Aperitif.Liste_Id_Recettes_Boissons !== body.Formule_Aperitif.Liste_Id_Recettes_Boissons) 
-                    {
-                        const formule = await modifyFormule(devis.Formule_Aperitif, body.Formule_Aperitif)
-                        if(formule !== undefined) {
-                            Formule_Aperitif = formule
-                        }
-                    }
-                    // s'il n'y avait pas de formule Aperitif ou s'il n'y a pas de différence, on récupère la formule existante
-                    else {
-                        Formule_Aperitif = devis.Formule_Aperitif
-                    }
+            if(body.Formule_Aperitif.isAperitif) {
+                // on vérifie que nos listes se terminent par un ';'
+                if(body.Formule_Aperitif.Liste_Id_Recettes_Salees.length > 1 && body.Formule_Aperitif.Liste_Id_Recettes_Salees[body.Formule_Aperitif.Liste_Id_Recettes_Salees.length - 1] !== ';') {
+                    body.Formule_Aperitif.Liste_Id_Recettes_Salees += ';'
                 }
-                if(body.Formule_Cocktail.isCocktail) {
-                    // on vérifie que nos listes se terminent par un ';'
-                    if(body.Formule_Cocktail.Liste_Id_Recettes_Salees.length > 1 && body.Formule_Cocktail.Liste_Id_Recettes_Salees[body.Formule_Cocktail.Liste_Id_Recettes_Salees.length - 1] !== ';') {
-                        body.Formule_Cocktail.Liste_Id_Recettes_Salees += ';'
-                    }
-                    if(body.Formule_Cocktail.Liste_Id_Recettes_Sucrees.length > 1 && body.Formule_Cocktail.Liste_Id_Recettes_Sucrees[body.Formule_Cocktail.Liste_Id_Recettes_Sucrees.length - 1] !== ';') {
-                        body.Formule_Cocktail.Liste_Id_Recettes_Sucrees += ';'
-                    }
-                    if(body.Formule_Cocktail.Liste_Id_Recettes_Boissons.length > 1 && body.Formule_Cocktail.Liste_Id_Recettes_Boissons[body.Formule_Cocktail.Liste_Id_Recettes_Boissons.length - 1] !== ';') {
-                        body.Formule_Cocktail.Liste_Id_Recettes_Boissons += ';'
-                    }
-
-                    // vérification d'une modification de la formule
-                    if(devis.Formule_Cocktail === null || devis.Formule_Cocktail.Nb_Convives != body.Formule_Cocktail.Nb_Convives ||
-                        devis.Formule_Cocktail.Nb_Pieces_Salees != body.Formule_Cocktail.Nb_Pieces_Salees ||
-                        devis.Formule_Cocktail.Nb_Pieces_Sucrees != body.Formule_Cocktail.Nb_Pieces_Sucrees ||
-                        devis.Formule_Cocktail.Liste_Id_Recettes_Salees !== body.Formule_Cocktail.Liste_Id_Recettes_Salees ||
-                        devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees !== body.Formule_Cocktail.Liste_Id_Recettes_Sucrees ||
-                        devis.Formule_Cocktail.Liste_Id_Recettes_Boissons !== body.Formule_Cocktail.Liste_Id_Recettes_Boissons) 
-                    {
-                        const formule = await modifyFormule(devis.Formule_Cocktail, body.Formule_Cocktail)
-                        if(formule !== undefined) {
-                            Formule_Cocktail = formule
-                        }
-                    }
-                    // s'il n'y avait pas de formule Cocktail ou s'il n'y a pas de différence, on récupère la formule existante
-                    else {
-                        Formule_Cocktail = devis.Formule_Cocktail
-                    }
-                }
-                if(body.Formule_Box.isBox) {
-                    if(body.Formule_Box.Liste_Id_Recettes_Salees.length > 1 && body.Formule_Box.Liste_Id_Recettes_Salees[body.Formule_Box.Liste_Id_Recettes_Salees.length - 1] !== ';') {
-                        body.Formule_Box.Liste_Id_Recettes_Salees += ';'
-                    }
-                    if(body.Formule_Box.Liste_Id_Recettes_Sucrees.length > 1 && body.Formule_Box.Liste_Id_Recettes_Sucrees[body.Formule_Box.Liste_Id_Recettes_Sucrees.length - 1] !== ';') {
-                        body.Formule_Box.Liste_Id_Recettes_Sucrees += ';'
-                    }
-                    if(body.Formule_Box.Liste_Id_Recettes_Boissons.length > 1 && body.Formule_Box.Liste_Id_Recettes_Boissons[body.Formule_Box.Liste_Id_Recettes_Boissons.length - 1] !== ';') {
-                        body.Formule_Box.Liste_Id_Recettes_Boissons += ';'
-                    }
-
-                    // vérification d'une modification de la formule
-                    if(devis.Formule_Box === null || devis.Formule_Box.Nb_Convives != body.Formule_Box.Nb_Convives ||
-                        devis.Formule_Box.Liste_Id_Recettes_Salees !== body.Formule_Box.Liste_Id_Recettes_Salees ||
-                        devis.Formule_Box.Liste_Id_Recettes_Sucrees !== body.Formule_Box.Liste_Id_Recettes_Sucrees ||
-                        devis.Formule_Box.Liste_Id_Recettes_Boissons !== body.Formule_Box.Liste_Id_Recettes_Boissons) 
-                    {
-                        const formule = await modifyFormule(devis.Formule_Box, body.Formule_Box)
-                        if(formule !== undefined) {
-                            Formule_Box = formule
-                        }
-                    }
-                    // s'il n'y avait pas de formule Box ou s'il n'y a pas de différence, on récupère la formule existante
-                    else {
-                        Formule_Box = devis.Formule_Box
-                    }
-                }
-                if(body.Formule_Brunch.isBrunch) {
-                    if(body.Formule_Brunch.Liste_Id_Recettes_Salees.length > 1 && body.Formule_Brunch.Liste_Id_Recettes_Salees[body.Formule_Brunch.Liste_Id_Recettes_Salees.length - 1] !== ';') {
-                        body.Formule_Brunch.Liste_Id_Recettes_Salees += ';'
-                    }
-                    if(body.Formule_Brunch.Liste_Id_Recettes_Sucrees.length > 1 && body.Formule_Brunch.Liste_Id_Recettes_Sucrees[body.Formule_Brunch.Liste_Id_Recettes_Sucrees.length - 1] !== ';') {
-                        body.Formule_Brunch.Liste_Id_Recettes_Sucrees += ';'
-                    }
-                    if(body.Formule_Brunch.Liste_Id_Recettes_Boissons.length > 1 && body.Formule_Brunch.Liste_Id_Recettes_Boissons[body.Formule_Brunch.Liste_Id_Recettes_Boissons.length - 1] !== ';') {
-                        body.Formule_Brunch.Liste_Id_Recettes_Boissons += ';'
-                    }
-
-                    // vérification d'une modification de la formule
-                    if(devis.Formule_Brunch === null || devis.Formule_Brunch.Nb_Convives != body.Formule_Brunch.Nb_Convives ||
-                        devis.Formule_Brunch.Nb_Pieces_Salees != body.Formule_Brunch.Nb_Pieces_Salees ||
-                        devis.Formule_Brunch.Nb_Pieces_Sucrees != body.Formule_Brunch.Nb_Pieces_Sucrees ||
-                        devis.Formule_Brunch.Liste_Id_Recettes_Salees !== body.Formule_Brunch.Liste_Id_Recettes_Salees ||
-                        devis.Formule_Brunch.Liste_Id_Recettes_Sucrees !== body.Formule_Brunch.Liste_Id_Recettes_Sucrees ||
-                        devis.Formule_Brunch.Liste_Id_Recettes_Boissons !== body.Formule_Brunch.Liste_Id_Recettes_Boissons) 
-                    {
-                        // on initialise les valeurs par défaut si le type de brunch n'est pas sélectionné
-                        if(!body.Formule_Brunch.isBrunchSale) body.Formule_Brunch.Nb_Pieces_Salees = tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min
-                        if(!body.Formule_Brunch.isBrunchSucre) body.Formule_Brunch.Nb_Pieces_Sucrees = tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min
-
-                        const formule = await modifyFormule(devis.Formule_Brunch, body.Formule_Brunch)
-                        if(formule !== undefined) {
-                            Formule_Brunch = formule
-                        }
-                    }
-                    // s'il n'y avait pas de formule Brunch ou s'il n'y a pas de différence, on récupère la formule existante
-                    else {
-                        Formule_Brunch = devis.Formule_Brunch
-                    }
+                if(body.Formule_Aperitif.Liste_Id_Recettes_Boissons.length > 1 && body.Formule_Aperitif.Liste_Id_Recettes_Boissons[body.Formule_Aperitif.Liste_Id_Recettes_Boissons.length - 1] !== ';') {
+                    body.Formule_Aperitif.Liste_Id_Recettes_Boissons += ';'
                 }
 
-                // vérification des options
-                if(devis.Liste_Options !== body.Liste_Options) {
-                    if(body.Liste_Options.length > 1 && body.Liste_Options[body.Liste_Options.length - 1] !== ';') {
-                        body.Liste_Options += ';'
-                    }
-                    body.Liste_Options = await checksListeOptions(body.Liste_Options)
-                }
-
-
-                // gestion des prix
-                let prixHT = 0
-                let prixTTC = 0
-
-                if(Formule_Aperitif !== null) {
-                    prixHT += Formule_Aperitif.Prix_HT
-                }
-                if(Formule_Cocktail !== null) {
-                    prixHT += Formule_Cocktail.Prix_HT
-                }
-                if(Formule_Box !== null) {
-                    prixHT += Formule_Box.Prix_HT
-                }
-                if(Formule_Brunch !== null) {
-                    prixHT += Formule_Brunch.Prix_HT
-                }
-
-                // options
-                if(!(body.Liste_Options === null || body.Liste_Options === '')) {
-                    const tabOptions = body.Liste_Options.split(';')
-                    for(let id of tabOptions) {
-                        if(id === '') continue
-                        const option = await Prix_Unitaire.findOne({
-                            where : {
-                                Id_Prix_Unitaire : Number(id)
-                            }
-                        })
-                        if(option !== null) prixHT += option.Montant
+                // vérification d'une modification de la formule
+                if(devis.Formule_Aperitif === null || devis.Formule_Aperitif.Nb_Convives != body.Formule_Aperitif.Nb_Convives ||
+                    devis.Formule_Aperitif.Nb_Pieces_Salees != body.Formule_Aperitif.Nb_Pieces_Salees ||
+                    devis.Formule_Aperitif.Liste_Id_Recettes_Salees !== body.Formule_Aperitif.Liste_Id_Recettes_Salees ||
+                    devis.Formule_Aperitif.Liste_Id_Recettes_Boissons !== body.Formule_Aperitif.Liste_Id_Recettes_Boissons) 
+                {
+                    const formule = await modifyFormule(devis.Formule_Aperitif, body.Formule_Aperitif)
+                    if(formule !== undefined) {
+                        Formule_Aperitif = formule
                     }
                 }
-
-                prixTTC = prixHT * 1.1
-
-
-                // màj des infos client
-                devis.Client.Nom_Prenom = body.client.Nom_Prenom.trim()
-                devis.Client.Adresse_Facturation = body.client.Adresse_Facturation.trim()
-                devis.Client.Email = body.client.Email.trim()
-                devis.Client.Telephone = body.client.Telephone.trim()
-                devis.Client.Type = body.client.Type
-
-                devis.Date_Evenement = moment.utc(body.Date_Evenement)
-                devis.Adresse_Livraison = body.Adresse_Livraison.trim()
-                devis.Commentaire = body.Commentaire.trim()
-                devis.Liste_Options = body.Liste_Options
-                devis.Id_Remise = body.Id_Remise
-                devis.Id_Formule_Aperitif = Formule_Aperitif !== null ? Formule_Aperitif.Id_Formule : null
-                devis.Id_Formule_Cocktail = Formule_Cocktail !== null ? Formule_Cocktail.Id_Formule : null
-                devis.Id_Formule_Box = Formule_Box !== null ? Formule_Box.Id_Formule : null
-                devis.Id_Formule_Brunch = Formule_Brunch !== null ? Formule_Brunch.Id_Formule : null
-                devis.Prix_HT = prixHT
-                devis.Prix_TTC = prixTTC
-
-
-                // faire les save ici si tout ok
-                await devis.save()
-                await devis.Client.save()
-                let message = ''
-                
-                if(body.isCreation) {
-                    message = 'Le devis a bien été créé.'
-                }
+                // s'il n'y avait pas de formule Aperitif ou s'il n'y a pas de différence, on récupère la formule existante
                 else {
-                    message = 'Le devis a bien été modifié.'
+                    Formule_Aperitif = devis.Formule_Aperitif
                 }
-                infos = clientInformationObject(undefined, message)
             }
-            catch(error) {
-                throw getErrorMessage(error)
+            if(body.Formule_Cocktail.isCocktail) {
+                // on vérifie que nos listes se terminent par un ';'
+                if(body.Formule_Cocktail.Liste_Id_Recettes_Salees.length > 1 && body.Formule_Cocktail.Liste_Id_Recettes_Salees[body.Formule_Cocktail.Liste_Id_Recettes_Salees.length - 1] !== ';') {
+                    body.Formule_Cocktail.Liste_Id_Recettes_Salees += ';'
+                }
+                if(body.Formule_Cocktail.Liste_Id_Recettes_Sucrees.length > 1 && body.Formule_Cocktail.Liste_Id_Recettes_Sucrees[body.Formule_Cocktail.Liste_Id_Recettes_Sucrees.length - 1] !== ';') {
+                    body.Formule_Cocktail.Liste_Id_Recettes_Sucrees += ';'
+                }
+                if(body.Formule_Cocktail.Liste_Id_Recettes_Boissons.length > 1 && body.Formule_Cocktail.Liste_Id_Recettes_Boissons[body.Formule_Cocktail.Liste_Id_Recettes_Boissons.length - 1] !== ';') {
+                    body.Formule_Cocktail.Liste_Id_Recettes_Boissons += ';'
+                }
+
+                // vérification d'une modification de la formule
+                if(devis.Formule_Cocktail === null || devis.Formule_Cocktail.Nb_Convives != body.Formule_Cocktail.Nb_Convives ||
+                    devis.Formule_Cocktail.Nb_Pieces_Salees != body.Formule_Cocktail.Nb_Pieces_Salees ||
+                    devis.Formule_Cocktail.Nb_Pieces_Sucrees != body.Formule_Cocktail.Nb_Pieces_Sucrees ||
+                    devis.Formule_Cocktail.Liste_Id_Recettes_Salees !== body.Formule_Cocktail.Liste_Id_Recettes_Salees ||
+                    devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees !== body.Formule_Cocktail.Liste_Id_Recettes_Sucrees ||
+                    devis.Formule_Cocktail.Liste_Id_Recettes_Boissons !== body.Formule_Cocktail.Liste_Id_Recettes_Boissons) 
+                {
+                    const formule = await modifyFormule(devis.Formule_Cocktail, body.Formule_Cocktail)
+                    if(formule !== undefined) {
+                        Formule_Cocktail = formule
+                    }
+                }
+                // s'il n'y avait pas de formule Cocktail ou s'il n'y a pas de différence, on récupère la formule existante
+                else {
+                    Formule_Cocktail = devis.Formule_Cocktail
+                }
             }
+            if(body.Formule_Box.isBox) {
+                if(body.Formule_Box.Liste_Id_Recettes_Salees.length > 1 && body.Formule_Box.Liste_Id_Recettes_Salees[body.Formule_Box.Liste_Id_Recettes_Salees.length - 1] !== ';') {
+                    body.Formule_Box.Liste_Id_Recettes_Salees += ';'
+                }
+                if(body.Formule_Box.Liste_Id_Recettes_Sucrees.length > 1 && body.Formule_Box.Liste_Id_Recettes_Sucrees[body.Formule_Box.Liste_Id_Recettes_Sucrees.length - 1] !== ';') {
+                    body.Formule_Box.Liste_Id_Recettes_Sucrees += ';'
+                }
+                if(body.Formule_Box.Liste_Id_Recettes_Boissons.length > 1 && body.Formule_Box.Liste_Id_Recettes_Boissons[body.Formule_Box.Liste_Id_Recettes_Boissons.length - 1] !== ';') {
+                    body.Formule_Box.Liste_Id_Recettes_Boissons += ';'
+                }
+
+                // vérification d'une modification de la formule
+                if(devis.Formule_Box === null || devis.Formule_Box.Nb_Convives != body.Formule_Box.Nb_Convives ||
+                    devis.Formule_Box.Liste_Id_Recettes_Salees !== body.Formule_Box.Liste_Id_Recettes_Salees ||
+                    devis.Formule_Box.Liste_Id_Recettes_Sucrees !== body.Formule_Box.Liste_Id_Recettes_Sucrees ||
+                    devis.Formule_Box.Liste_Id_Recettes_Boissons !== body.Formule_Box.Liste_Id_Recettes_Boissons) 
+                {
+                    const formule = await modifyFormule(devis.Formule_Box, body.Formule_Box)
+                    if(formule !== undefined) {
+                        Formule_Box = formule
+                    }
+                }
+                // s'il n'y avait pas de formule Box ou s'il n'y a pas de différence, on récupère la formule existante
+                else {
+                    Formule_Box = devis.Formule_Box
+                }
+            }
+            if(body.Formule_Brunch.isBrunch) {
+                if(body.Formule_Brunch.Liste_Id_Recettes_Salees.length > 1 && body.Formule_Brunch.Liste_Id_Recettes_Salees[body.Formule_Brunch.Liste_Id_Recettes_Salees.length - 1] !== ';') {
+                    body.Formule_Brunch.Liste_Id_Recettes_Salees += ';'
+                }
+                if(body.Formule_Brunch.Liste_Id_Recettes_Sucrees.length > 1 && body.Formule_Brunch.Liste_Id_Recettes_Sucrees[body.Formule_Brunch.Liste_Id_Recettes_Sucrees.length - 1] !== ';') {
+                    body.Formule_Brunch.Liste_Id_Recettes_Sucrees += ';'
+                }
+                if(body.Formule_Brunch.Liste_Id_Recettes_Boissons.length > 1 && body.Formule_Brunch.Liste_Id_Recettes_Boissons[body.Formule_Brunch.Liste_Id_Recettes_Boissons.length - 1] !== ';') {
+                    body.Formule_Brunch.Liste_Id_Recettes_Boissons += ';'
+                }
+
+                // vérification d'une modification de la formule
+                if(devis.Formule_Brunch === null || devis.Formule_Brunch.Nb_Convives != body.Formule_Brunch.Nb_Convives ||
+                    devis.Formule_Brunch.Nb_Pieces_Salees != body.Formule_Brunch.Nb_Pieces_Salees ||
+                    devis.Formule_Brunch.Nb_Pieces_Sucrees != body.Formule_Brunch.Nb_Pieces_Sucrees ||
+                    devis.Formule_Brunch.Liste_Id_Recettes_Salees !== body.Formule_Brunch.Liste_Id_Recettes_Salees ||
+                    devis.Formule_Brunch.Liste_Id_Recettes_Sucrees !== body.Formule_Brunch.Liste_Id_Recettes_Sucrees ||
+                    devis.Formule_Brunch.Liste_Id_Recettes_Boissons !== body.Formule_Brunch.Liste_Id_Recettes_Boissons) 
+                {
+                    // on initialise les valeurs par défaut si le type de brunch n'est pas sélectionné
+                    if(!body.Formule_Brunch.isBrunchSale) body.Formule_Brunch.Nb_Pieces_Salees = tableCorrespondanceTypes['Brunch'].nbPieces['salées'].min
+                    if(!body.Formule_Brunch.isBrunchSucre) body.Formule_Brunch.Nb_Pieces_Sucrees = tableCorrespondanceTypes['Brunch'].nbPieces['sucrées'].min
+
+                    const formule = await modifyFormule(devis.Formule_Brunch, body.Formule_Brunch)
+                    if(formule !== undefined) {
+                        Formule_Brunch = formule
+                    }
+                }
+                // s'il n'y avait pas de formule Brunch ou s'il n'y a pas de différence, on récupère la formule existante
+                else {
+                    Formule_Brunch = devis.Formule_Brunch
+                }
+            }
+
+            // vérification des options
+            if(devis.Liste_Options !== body.Liste_Options) {
+                if(body.Liste_Options.length > 1 && body.Liste_Options[body.Liste_Options.length - 1] !== ';') {
+                    body.Liste_Options += ';'
+                }
+                body.Liste_Options = await checksListeOptions(body.Liste_Options)
+            }
+
+
+            // gestion des prix
+            let prixHT = 0
+            let prixTTC = 0
+
+            if(Formule_Aperitif !== null) {
+                prixHT += Formule_Aperitif.Prix_HT
+            }
+            if(Formule_Cocktail !== null) {
+                prixHT += Formule_Cocktail.Prix_HT
+            }
+            if(Formule_Box !== null) {
+                prixHT += Formule_Box.Prix_HT
+            }
+            if(Formule_Brunch !== null) {
+                prixHT += Formule_Brunch.Prix_HT
+            }
+
+            // options
+            if(!(body.Liste_Options === null || body.Liste_Options === '')) {
+                const tabOptions = body.Liste_Options.split(';')
+                for(let id of tabOptions) {
+                    if(id === '') continue
+                    const option = await Prix_Unitaire.findOne({
+                        where : {
+                            Id_Prix_Unitaire : Number(id)
+                        }
+                    })
+                    if(option !== null) prixHT += option.Montant
+                }
+            }
+
+            prixTTC = prixHT * 1.1
+
+
+            // màj des infos client
+            devis.Client.Nom_Prenom = body.client.Nom_Prenom.trim()
+            devis.Client.Adresse_Facturation = body.client.Adresse_Facturation.trim()
+            devis.Client.Email = body.client.Email.trim()
+            devis.Client.Telephone = body.client.Telephone.trim()
+            devis.Client.Type = body.client.Type
+
+            devis.Date_Evenement = moment.utc(body.Date_Evenement)
+            devis.Adresse_Livraison = body.Adresse_Livraison.trim()
+            devis.Commentaire = body.Commentaire.trim()
+            devis.Liste_Options = body.Liste_Options
+            devis.Id_Remise = body.Id_Remise
+            devis.Id_Formule_Aperitif = Formule_Aperitif !== null ? Formule_Aperitif.Id_Formule : null
+            devis.Id_Formule_Cocktail = Formule_Cocktail !== null ? Formule_Cocktail.Id_Formule : null
+            devis.Id_Formule_Box = Formule_Box !== null ? Formule_Box.Id_Formule : null
+            devis.Id_Formule_Brunch = Formule_Brunch !== null ? Formule_Brunch.Id_Formule : null
+            devis.Prix_HT = prixHT
+            devis.Prix_TTC = prixTTC
+
+
+            // faire les save ici si tout ok
+            await devis.save()
+            await devis.Client.save()
+            let message = ''
+            
+            if(body.isCreation) {
+                message = 'Le devis a bien été créé.'
+            }
+            else {
+                message = 'Le devis a bien été modifié.'
+            }
+            infos = clientInformationObject(undefined, message)
         }
         else {
             throw 'Le devis n\'existe pas.'

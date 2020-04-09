@@ -834,7 +834,6 @@ const saveDevis = async () => {
 }
 
 // TODO:sendDevis
-// en priorité export en pdf
 // dans un second temps, envoie par mail
 const sendDevis = async () => {
     const div = document.getElementById('divInfos')

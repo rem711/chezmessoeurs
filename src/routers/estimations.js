@@ -88,7 +88,7 @@ router
             catch(error) {
                 // infos = clientInformationObject(getErrorMessage(error), undefined)
                 console.log(error)
-                throw getErrorMessage(error)
+                throw error
             }
         }
     }

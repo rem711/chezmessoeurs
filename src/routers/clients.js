@@ -16,60 +16,50 @@ const createOrLoadClient = async (postClient) => {
     postClient.Adresse_Facturation = postClient.Adresse_Facturation === undefined ? '' : postClient.Adresse_Facturation.trim()
     postClient.Type = postClient.Type === undefined ? 'Particulier' : postClient.Type
 
-    try {
-        // crée un nouveau client où le récupère s'il existe déjà
-        const [ temp_client, created ] = await Clients.findOrCreate({
-            where : {
-                Email : postClient.Email
-            },
-            defaults : {
-                Nom_Prenom : postClient.Nom_Prenom,
-                Adresse_Facturation : postClient.Adresse_Facturation,
-                Telephone : postClient.Telephone
-            }
-        })
-        // récupération de l'objet client
-        client = temp_client
-
-        // modifie le client s'il existe déjà et ses informations sont différentes
-        if(!created && (
-            postClient.Nom_Prenom !== client.Nom_Prenom || 
-            postClient.Adresse_Facturation !== client.Adresse_Facturation ||
-            postClient.Telephone !== client.Telephone ||
-            postClient.Type !== client.Type
-            )) {
-            // update renvoie le nombre de lignes modifiées
-            // await Clients.update(
-            //     {
-            //         Nom_Prenom : postClient.Nom_Prenom,
-            //         Telephone : postClient.Telephone,
-            //         Type : postClient.Type
-            //     },
-            //     {
-            //         where : {
-            //             Email : postClient.Email
-            //         }
-            //     }
-            // )
-            // on affecte à client les valeurs du post qui ont été mises en BDD plutôt que de relancer une requête
-            client.Nom_Prenom = postClient.Nom_Prenom
-            client.Adresse_Facturation = postClient.Adresse_Facturation
-            client.Telephone = postClient.Telephone
-            client.Type = postClient.Type
-
-            await client.save()
+    // crée un nouveau client où le récupère s'il existe déjà
+    const [ temp_client, created ] = await Clients.findOrCreate({
+        where : {
+            Email : postClient.Email
+        },
+        defaults : {
+            Nom_Prenom : postClient.Nom_Prenom,
+            Adresse_Facturation : postClient.Adresse_Facturation,
+            Telephone : postClient.Telephone
         }
-    }
-    catch(error) {
-        //    infos = clientInformationObject(getErrorMessage(error), undefined)
-        throw getErrorMessage(error)
+    })
+    // récupération de l'objet client
+    client = temp_client
+
+    // modifie le client s'il existe déjà et ses informations sont différentes
+    if(!created && (
+        postClient.Nom_Prenom !== client.Nom_Prenom || 
+        postClient.Adresse_Facturation !== client.Adresse_Facturation ||
+        postClient.Telephone !== client.Telephone ||
+        postClient.Type !== client.Type
+        )) {
+        // update renvoie le nombre de lignes modifiées
+        // await Clients.update(
+        //     {
+        //         Nom_Prenom : postClient.Nom_Prenom,
+        //         Telephone : postClient.Telephone,
+        //         Type : postClient.Type
+        //     },
+        //     {
+        //         where : {
+        //             Email : postClient.Email
+        //         }
+        //     }
+        // )
+        // on affecte à client les valeurs du post qui ont été mises en BDD plutôt que de relancer une requête
+        client.Nom_Prenom = postClient.Nom_Prenom
+        client.Adresse_Facturation = postClient.Adresse_Facturation
+        client.Telephone = postClient.Telephone
+        client.Type = postClient.Type
+
+        await client.save()
     }
 
-//    return {
-//        infos,
-//        client
-//    }
-   return client
+    return client
 }
 
 router
@@ -90,10 +80,10 @@ router
 
    // la création d'un client se fait automatiquement depuis une estimation
    // on n'affiche donc pas de vue ensuite
-   res.send({
-       infos,
-       client
-   })
+    res.send({
+        infos,
+        client
+    })
 })
 // tableau clients
 .get('/clients', async (req, res) => {  

@@ -1,5 +1,14 @@
 // les paramètres sont la string à afficher 
 // celui qui n'est pas utile est undefined
+
+/**
+ * Create information object to send to the client to give feedback
+ * @param {string} [error = undefined] String error
+ * @param {string} [message = undefined] String message
+ * @returns {Object} infos
+ * @returns {string} error - Error message if there is one
+ * @returns {string} message - Message if there is one
+ */
 const clientInformationObject = (error = undefined, message = undefined) => {
     // mauvaise utilisation
     if(error === undefined && message === undefined) {
@@ -19,9 +28,11 @@ const clientInformationObject = (error = undefined, message = undefined) => {
     return infos
 }
 
-// prend une erreur et retourne le message de celle-ci
-// @params : ErrorObject
-// @retrun : String message
+/**
+ * Returns error message from an Error
+ * @param {Object | string} error - ErrorObject thrown or string
+ * @returns {string} Error message
+ */
 const getErrorMessage = (error) => {
     let message = 'Une erreur est survenue sur le serveur, veuillez en informer votre Webmaster.'
     console.log(error)
@@ -41,9 +52,8 @@ const getErrorMessage = (error) => {
     catch(e) {
         console.log(e)
     }
-    finally {
-        return message
-    }
+
+    return message
 }
 
 module.exports = {
