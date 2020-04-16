@@ -17,31 +17,31 @@ module.exports = (sequelize, DataTypes) => {
 			field : 'Nb_Convives',
 			type: DataTypes.INTEGER(4),
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Prix_HT: {
 			field : 'Prix_HT',
 			type: DataTypes.FLOAT,
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Nb_Pieces_Salees: {
 			field : 'Nb_Pieces_Salees',
 			type: DataTypes.INTEGER(4),
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Nb_Pieces_Sucrees: {
 			field : 'Nb_Pieces_Sucrees',
 			type: DataTypes.INTEGER(4),
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Nb_Boissons: {
 			field : 'Nb_Boissons',
 			type: DataTypes.INTEGER(4),
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Liste_Id_Recettes_Salees: {
 			field : 'Liste_Id_Recettes_Salees',

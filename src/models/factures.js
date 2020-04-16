@@ -90,25 +90,25 @@ module.exports = (sequelize, DataTypes) => {
 			field : 'Prix_HT',
 			type: DataTypes.FLOAT,
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Prix_TTC: {
 			field : 'Prix_TTC',
 			type: DataTypes.FLOAT,
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Acompte: {
 			field : 'Acompte',
 			type: DataTypes.FLOAT,
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Reste_A_Payer: {
 			field : 'Reste_A_Payer',
 			type: DataTypes.FLOAT,
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Paiement_En_Retard: {
 			field : 'Paiement_En_Retard',
@@ -119,7 +119,7 @@ module.exports = (sequelize, DataTypes) => {
 			field : 'Nb_Relances',
 			type: DataTypes.INTEGER(4),
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Date_Derniere_Relance: {
 			field : 'Date_Derniere_Relance',

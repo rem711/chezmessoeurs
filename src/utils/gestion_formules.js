@@ -1,5 +1,4 @@
 const { Formules, Type_Formule, Prix_Unitaire, Recettes } = global.db
-const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 
 const tableCorrespondanceTypes = {
     'Apéritif' : {
@@ -604,6 +603,12 @@ const checksListeRecettes = async (listeRecettes) => {
 
 module.exports = {
     tableCorrespondanceTypes,
+    checksFormule,
+    createAperitif,
+    createCocktail,
+    createBox,
+    createBrunch,
     createFormules,
-    modifyFormule
+    modifyFormule,
+    checksListeRecettes
 }

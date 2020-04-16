@@ -23,13 +23,13 @@ module.exports = (sequelize, DataTypes) => {
 			field : 'IsOption',
 			type: DataTypes.INTEGER(1),
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Montant: {
 			field : 'Montant',
 			type: DataTypes.FLOAT,
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		}
     }, {})
 

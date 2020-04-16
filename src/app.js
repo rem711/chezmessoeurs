@@ -1,5 +1,6 @@
 // Chargement des bibliothèques
 const path = require('path')
+const compression = require('compression')
 const express = require('express')
 const bodyParser = require('body-parser')
 // const hbs = require('hbs') pour handlebars
@@ -21,9 +22,9 @@ const menuRouter = require('./routers/menu')
 const statistiquesRouter = require('./routers/statistiques')
 
 const app = express()
+app.use(compression())
 app.use(bodyParser.urlencoded({ extended : true }))
 app.use(bodyParser.json())
-const port = 3000
 
 // chemins pour config Express
 const publicDirectoryPath = path.join(__dirname, '../public')
@@ -61,6 +62,4 @@ app
     })
 })
 
-app.listen(port,  () => {
-    console.log('Server up on port ' + port)
-})
+module.exports = app

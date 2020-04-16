@@ -86,7 +86,7 @@ module.exports = (sequelize, DataTypes) => {
 			field : 'Nombre_Prestations',
 			type: DataTypes.INTEGER(4).UNSIGNED,
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Dernier_Statut: {
 			field : 'Dernier_Statut',
@@ -98,7 +98,7 @@ module.exports = (sequelize, DataTypes) => {
 			field : 'Paiement_En_Retard',
 			type: DataTypes.INTEGER(4).UNSIGNED,
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		}
   }, {});
   Clients.associate = function(models) {

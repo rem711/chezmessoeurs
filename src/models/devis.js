@@ -85,13 +85,13 @@ module.exports = (sequelize, DataTypes) => {
 			field : 'Prix_HT',
 			type: DataTypes.FLOAT,
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		},
 		Prix_TTC: {
 			field : 'Prix_TTC',
 			type: DataTypes.FLOAT,
 			allowNull: false,
-			defaultValue: '0'
+			defaultValue: 0
 		}
     }, {})
     Devis.associate = models => {
