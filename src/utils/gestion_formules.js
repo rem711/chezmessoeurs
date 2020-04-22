@@ -168,7 +168,7 @@ const createCocktail = async (postFormule) => {
         if(prixSaléCocktail !== null && prixSucré !== null) {
             prixSaléParPersonne = postFormule.Nb_Pieces_Salees * prixSaléCocktail.Montant
             prixsucréParPersonne = postFormule.Nb_Pieces_Sucrees * prixSucré.Montant
-            Prix_HT = prixSaléParPersonne * postFormule.Nb_Convives + prixsucréParPersonne * postFormule.Nb_Convives
+            Prix_HT = (prixSaléParPersonne * postFormule.Nb_Convives) + (prixsucréParPersonne * postFormule.Nb_Convives)
         }
 
         // on a toutes les infos d'une formule provenant d'une estimation pour créer celle-ci
@@ -264,7 +264,7 @@ const createBrunch = async (postFormule) => {
         }
         
         Prix_HT = postFormule.Nb_Convives * (prixBrunchSaléParPersonne + prixBrunchSucréParPersonne)
-
+        
         // on a toutes les infos d'une formule provenant d'une estimation pour créer celle-ci
         formule = await Formules.create({
             Id_Type_Formule : type_formule.Id_Type_Formule,
@@ -497,7 +497,7 @@ const modifyFormule = async (oldFormule, newFormule) => {
         if(prixSaléCocktail !== null && prixSucré !== null) {
             prixSaléParPersonne = newFormule.Nb_Pieces_Salees * prixSaléCocktail.Montant
             prixsucréParPersonne = newFormule.Nb_Pieces_Sucrees * prixSucré.Montant
-            Prix_HT = prixSaléParPersonne * newFormule.Nb_Convives + prixsucréParPersonne * newFormule.Nb_Convives
+            Prix_HT = (prixSaléParPersonne * newFormule.Nb_Convives) + (prixsucréParPersonne * newFormule.Nb_Convives)
         }
     }
     if(newFormule.isBox) {

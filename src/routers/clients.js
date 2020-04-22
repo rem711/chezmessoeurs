@@ -17,7 +17,7 @@ const createOrLoadClient = async (postClient) => {
     postClient.Type = postClient.Type === undefined ? 'Particulier' : postClient.Type
 
     // crée un nouveau client où le récupère s'il existe déjà
-    const [ temp_client, created ] = await Clients.findOrCreate({
+    const [temp_client, created] = await Clients.findOrCreate({
         where : {
             Email : postClient.Email
         },

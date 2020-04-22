@@ -101,7 +101,7 @@ const createDevis = async (estimation) => {
     prixTTC = prixHT * 1.1
 
     let Adresse_Livraison = estimation.Client.Adresse_Facturation
-    if(estimation.isCreation) {
+    if(estimation.isCreation && estimation.Adresse_Livraison != '') {
         Adresse_Livraison = estimation.Adresse_Livraison
     }
 
@@ -113,7 +113,7 @@ const createDevis = async (estimation) => {
     devis = await Devis.create({
         Id_Estimation : estimation.Id_Estimation,
         Id_Client : estimation.Id_Client,
-        Date_Evenement : estimation.Date_Evenement,
+        Date_Evenement : moment.utc(estimation.Date_Evenement),
         Adresse_Livraison : Adresse_Livraison,
         Id_Formule_Aperitif : estimation.Id_Formule_Aperitif,
         Id_Formule_Cocktail : estimation.Id_Formule_Cocktail,
@@ -123,8 +123,8 @@ const createDevis = async (estimation) => {
         Statut : 'En cours',
         Liste_Options : Liste_Options,
         Id_Remise : Id_Remise,
-        Prix_HT : prixHT,
-        Prix_TTC : prixTTC
+        Prix_HT : Number.parseFloat(prixHT).toFixed(2),
+        Prix_TTC : Number.parseFloat(prixTTC).toFixed(2)
     })
 
     // si l'on avait un devis, on l'archive
@@ -226,14 +226,16 @@ const validate = async (postIdDevis) => {
     // vérifier que le nombre de pièces correspond au nombre de recettes (exception pour box qui est soit égal soit nbconvives * nb recettesSalees = listeRecettes)
     if(devis.Id_Formule_Aperitif !== null) {
         // retrait du ';' final s'il y en a un
+        if(devis.Formule_Aperitif.Liste_Id_Recettes_Salees === null) devis.Formule_Aperitif.Liste_Id_Recettes_Salees = ''
         if(devis.Formule_Aperitif.Liste_Id_Recettes_Salees[devis.Formule_Aperitif.Liste_Id_Recettes_Salees.length-1] === ';') devis.Formule_Aperitif.Liste_Id_Recettes_Salees = devis.Formule_Aperitif.Liste_Id_Recettes_Salees.substr(0, devis.Formule_Aperitif.Liste_Id_Recettes_Salees.length - 1)
         const tab_Id_Recettes_Salees = devis.Formule_Aperitif.Liste_Id_Recettes_Salees.split(';')
         // vérification que les recettes salées sont choisies
-        if(devis.Formule_Aperitif.Liste_Id_Recettes_Salees!== '' && tab_Id_Recettes_Salees.length !== devis.Formule_Aperitif.Nb_Pieces_Salees) {
+        if(devis.Formule_Aperitif.Liste_Id_Recettes_Salees === '' || tab_Id_Recettes_Salees.length !== devis.Formule_Aperitif.Nb_Pieces_Salees) {
             throw message + 'Les recettes de la formule Apéritif ne sont pas toutes renseignées.'
         }
 
         // retrait du ';' final s'il y en a un
+        if(devis.Formule_Aperitif.Liste_Id_Recettes_Boissons === null) devis.Formule_Aperitif.Liste_Id_Recettes_Boissons = ''
         if(devis.Formule_Aperitif.Liste_Id_Recettes_Boissons[devis.Formule_Aperitif.Liste_Id_Recettes_Boissons.length-1] === ';') devis.Formule_Aperitif.Liste_Id_Recettes_Boissons = devis.Formule_Aperitif.Liste_Id_Recettes_Boissons.substr(0, devis.Formule_Aperitif.Liste_Id_Recettes_Boissons.length - 1)
         const tab_Id_Recettes_Boissons = devis.Formule_Aperitif.Liste_Id_Recettes_Boissons.split(';')
         // vérification que les boissons sont choisies
@@ -243,22 +245,25 @@ const validate = async (postIdDevis) => {
     }
     if(devis.Id_Formule_Cocktail !== null) {
         // retrait du ';' final s'il y en a un
+        if(devis.Formule_Cocktail.Liste_Id_Recettes_Salees === null) devis.Formule_Cocktail.Liste_Id_Recettes_Salees = ''
         if(devis.Formule_Cocktail.Liste_Id_Recettes_Salees[devis.Formule_Cocktail.Liste_Id_Recettes_Salees.length-1] === ';') devis.Formule_Cocktail.Liste_Id_Recettes_Salees = devis.Formule_Cocktail.Liste_Id_Recettes_Salees.substr(0, devis.Formule_Cocktail.Liste_Id_Recettes_Salees.length - 1)
         const tab_Id_Recettes_Salees = devis.Formule_Cocktail.Liste_Id_Recettes_Salees.split(';')
         // vérification que les recettes salées sont choisies
-        if(devis.Formule_Cocktail.Liste_Id_Recettes_Salees !== '' && tab_Id_Recettes_Salees.length !== devis.Formule_Cocktail.Nb_Pieces_Salees) {
+        if(devis.Formule_Cocktail.Liste_Id_Recettes_Salees === '' || tab_Id_Recettes_Salees.length !== devis.Formule_Cocktail.Nb_Pieces_Salees) {
             throw message + 'Les recettes salées de la formule Cocktail ne sont pas toutes renseignées.'
         }
 
         // retrait du ';' final s'il y en a un
+        if(devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees === null) devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees = ''
         if(devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees[devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees.length-1] === ';') devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees = devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees.substr(0, devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees.length - 1)
         const tab_Id_Recettes_Sucrees = devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees.split(';')
         // vérification que les recettes sucrées sont choisies
-        if(devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees !== '' && tab_Id_Recettes_Sucrees.length !== devis.Formule_Cocktail.Nb_Pieces_Sucrees) {
+        if(devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees === '' || tab_Id_Recettes_Sucrees.length !== devis.Formule_Cocktail.Nb_Pieces_Sucrees) {
             throw message + 'Les recettes sucrées de la formule Cocktail ne sont pas toutes renseignées.'
         }
 
         // retrait du ';' final s'il y en a un
+        if(devis.Formule_Cocktail.Liste_Id_Recettes_Boissons === null) devis.Formule_Cocktail.Liste_Id_Recettes_Boissons = ''
         if(devis.Formule_Cocktail.Liste_Id_Recettes_Boissons[devis.Formule_Cocktail.Liste_Id_Recettes_Boissons.length-1] === ';') devis.Formule_Cocktail.Liste_Id_Recettes_Boissons = devis.Formule_Cocktail.Liste_Id_Recettes_Boissons.substr(0, devis.Formule_Cocktail.Liste_Id_Recettes_Boissons.length - 1)
         const tab_Id_Recettes_Boissons = devis.Formule_Cocktail.Liste_Id_Recettes_Boissons.split(';')
         // vérification que les recettes boissons sont choisies
@@ -268,24 +273,27 @@ const validate = async (postIdDevis) => {
     }
     if(devis.Id_Formule_Box !== null) {
         // retrait du ';' final s'il y en a un
+        if(devis.Formule_Box.Liste_Id_Recettes_Salees === null) devis.Formule_Box.Liste_Id_Recettes_Salees = ''
         if(devis.Formule_Box.Liste_Id_Recettes_Salees[devis.Formule_Box.Liste_Id_Recettes_Salees.length-1] === ';') devis.Formule_Box.Liste_Id_Recettes_Salees = devis.Formule_Box.Liste_Id_Recettes_Salees.substr(0, devis.Formule_Box.Liste_Id_Recettes_Salees.length - 1)
         const tab_Id_Recettes_Salees = devis.Formule_Box.Liste_Id_Recettes_Salees.split(';')
         // vérification que les recettes salées sont choisies
         // pour une box il faut que le nb de recettes soit : soit égal au nombre de pièces, soit égal au nombre de pièces * le nombre de convives
-        if(devis.Formule_Box.Liste_Id_Recettes_Salees !== '' && !(tab_Id_Recettes_Salees.length === devis.Formule_Box.Nb_Pieces_Salees || tab_Id_Recettes_Salees.length === (devis.Formule_Box.Nb_Convives * devis.Formule_Box.Nb_Pieces_Salees))) {
+        if(devis.Formule_Box.Liste_Id_Recettes_Salees === '' || !(tab_Id_Recettes_Salees.length === devis.Formule_Box.Nb_Pieces_Salees || tab_Id_Recettes_Salees.length === (devis.Formule_Box.Nb_Convives * devis.Formule_Box.Nb_Pieces_Salees))) {
             throw message + 'Les recettes salées de la formule Box ne sont pas toutes renseignées.'
         }
 
         // retrait du ';' final s'il y en a un
+        if(devis.Formule_Box.Liste_Id_Recettes_Sucrees === null) devis.Formule_Box.Liste_Id_Recettes_Sucrees = ''
         if(devis.Formule_Box.Liste_Id_Recettes_Sucrees[devis.Formule_Box.Liste_Id_Recettes_Sucrees.length-1] === ';') devis.Formule_Box.Liste_Id_Recettes_Sucrees = devis.Formule_Box.Liste_Id_Recettes_Sucrees.substr(0, devis.Formule_Box.Liste_Id_Recettes_Sucrees.length - 1)
         const tab_Id_Recettes_Sucrees = devis.Formule_Box.Liste_Id_Recettes_Sucrees.split(';')
         // vérification que les recettes sucrées sont choisies
         // pour une box il faut que le nb de recettes soit : soit égal au nombre de pièces, soit égal au nombre de pièces * le nombre de convives
-        if(devis.Formule_Box.Liste_Id_Recettes_Sucrees !== '' && !(tab_Id_Recettes_Sucrees.length === devis.Formule_Box.Nb_Pieces_Sucrees || tab_Id_Recettes_Sucrees.length === (devis.Formule_Box.Nb_Convives * devis.Formule_Box.Nb_Pieces_Sucrees))) {
+        if(devis.Formule_Box.Liste_Id_Recettes_Sucrees === '' || !(tab_Id_Recettes_Sucrees.length === devis.Formule_Box.Nb_Pieces_Sucrees || tab_Id_Recettes_Sucrees.length === (devis.Formule_Box.Nb_Convives * devis.Formule_Box.Nb_Pieces_Sucrees))) {
             throw message + 'Les recettes sucrées de la formule Box ne sont pas toutes renseignées.'
         }
 
         // retrait du ';' final s'il y en a un
+        if(devis.Formule_Box.Liste_Id_Recettes_Boissons === null) devis.Formule_Box.Liste_Id_Recettes_Boissons = ''
         if(devis.Formule_Box.Liste_Id_Recettes_Boissons[devis.Formule_Box.Liste_Id_Recettes_Boissons.length-1] === ';') devis.Formule_Box.Liste_Id_Recettes_Boissons = devis.Formule_Box.Liste_Id_Recettes_Boissons.substr(0, devis.Formule_Box.Liste_Id_Recettes_Boissons.length - 1)
         const tab_Id_Recettes_Boissons = devis.Formule_Box.Liste_Id_Recettes_Boissons.split(';')
         // vérification que les recettes boissons sont choisies
@@ -296,22 +304,25 @@ const validate = async (postIdDevis) => {
     }
     if(devis.Id_Formule_Brunch !== null) {
         // retrait du ';' final s'il y en a un
+        if(devis.Formule_Brunch.Liste_Id_Recettes_Salees === null) devis.Formule_Brunch.Liste_Id_Recettes_Salees = ''
         if(devis.Formule_Brunch.Liste_Id_Recettes_Salees[devis.Formule_Brunch.Liste_Id_Recettes_Salees.length-1] === ';') devis.Formule_Brunch.Liste_Id_Recettes_Salees = devis.Formule_Brunch.Liste_Id_Recettes_Salees.substr(0, devis.Formule_Brunch.Liste_Id_Recettes_Salees.length - 1)
         const tab_Id_Recettes_Salees = devis.Formule_Brunch.Liste_Id_Recettes_Salees.split(';')
         // vérification que les recettes salées sont choisies
-        if(devis.Formule_Brunch.Liste_Id_Recettes_Salees !== '' && devis.Formule_Brunch.Liste_Id_Recettes_Salees !== '' && tab_Id_Recettes_Salees.length !== devis.Formule_Brunch.Nb_Pieces_Salees) {
+        if(devis.Formule_Brunch.Liste_Id_Recettes_Salees === '' || devis.Formule_Brunch.Liste_Id_Recettes_Salees !== '' && tab_Id_Recettes_Salees.length !== devis.Formule_Brunch.Nb_Pieces_Salees) {
             throw message + 'Les recettes salées de la formule Brunch ne sont pas toutes renseignées.'
         }
 
         // retrait du ';' final s'il y en a un
+        if(devis.Formule_Brunch.Liste_Id_Recettes_Sucrees === null) devis.Formule_Brunch.Liste_Id_Recettes_Sucrees = ''
         if(devis.Formule_Brunch.Liste_Id_Recettes_Sucrees[devis.Formule_Brunch.Liste_Id_Recettes_Sucrees.length-1] === ';') devis.Formule_Brunch.Liste_Id_Recettes_Sucrees = devis.Formule_Brunch.Liste_Id_Recettes_Sucrees.substr(0, devis.Formule_Brunch.Liste_Id_Recettes_Sucrees.length - 1)
         const tab_Id_Recettes_Sucrees = devis.Formule_Brunch.Liste_Id_Recettes_Sucrees.split(';')
         // vérification que les recettes sucrées sont choisies
-        if(devis.Formule_Brunch.Liste_Id_Recettes_Sucrees !== '' && devis.Formule_Brunch.Liste_Id_Recettes_Sucrees !== '' && tab_Id_Recettes_Sucrees.length !== devis.Formule_Brunch.Nb_Pieces_Sucrees) {
+        if(devis.Formule_Brunch.Liste_Id_Recettes_Sucrees === '' || tab_Id_Recettes_Sucrees.length !== devis.Formule_Brunch.Nb_Pieces_Sucrees) {
             throw message + 'Les recettes sucrées de la formule Brunch ne sont pas toutes renseignées.'
         }
 
         // retrait du ';' final s'il y en a un
+        if(devis.Formule_Brunch.Liste_Id_Recettes_Boissons === null) devis.Formule_Brunch.Liste_Id_Recettes_Boissons = ''
         if(devis.Formule_Brunch.Liste_Id_Recettes_Boissons[devis.Formule_Brunch.Liste_Id_Recettes_Boissons.length-1] === ';') devis.Formule_Brunch.Liste_Id_Recettes_Boissons = devis.Formule_Brunch.Liste_Id_Recettes_Boissons.substr(0, devis.Formule_Brunch.Liste_Id_Recettes_Boissons.length - 1)
         const tab_Id_Recettes_Boissons = devis.Formule_Brunch.Liste_Id_Recettes_Boissons.split(';')
         // vérification que les recettes boissons sont choisies
@@ -1237,9 +1248,6 @@ router
 
             // vérification des options
             if(devis.Liste_Options !== body.Liste_Options) {
-                if(body.Liste_Options.length > 1 && body.Liste_Options[body.Liste_Options.length - 1] !== ';') {
-                    body.Liste_Options += ';'
-                }
                 body.Liste_Options = await checksListeOptions(body.Liste_Options)
             }
 
@@ -1277,6 +1285,13 @@ router
 
             prixTTC = prixHT * 1.1
 
+            // adresses
+            if(body.client.Adresse_Facturation === '' && devis.Client.Adresse_Facturation === '') {
+                throw "L'adresse de facturation doit être renseignée."
+            }
+            if(body.client.Adresse_Facturation === '') body.client.Adresse_Facturation = devis.Client.Adresse_Facturation
+            if(body.Adresse_Livraison === '') body.Adresse_Livraison = body.client.Adresse_Facturation
+
 
             // màj des infos client
             devis.Client.Nom_Prenom = body.client.Nom_Prenom.trim()
@@ -1294,8 +1309,8 @@ router
             devis.Id_Formule_Cocktail = Formule_Cocktail !== null ? Formule_Cocktail.Id_Formule : null
             devis.Id_Formule_Box = Formule_Box !== null ? Formule_Box.Id_Formule : null
             devis.Id_Formule_Brunch = Formule_Brunch !== null ? Formule_Brunch.Id_Formule : null
-            devis.Prix_HT = prixHT
-            devis.Prix_TTC = prixTTC
+            devis.Prix_HT = Number.parseFloat(prixHT).toFixed(2)
+            devis.Prix_TTC = Number.parseFloat(prixTTC).toFixed(2)
 
 
             // faire les save ici si tout ok
@@ -1392,5 +1407,7 @@ router
 
 module.exports = {
     router,
-    createDevis
+    createDevis,
+    getListInfosDevis,
+    validate
 }
