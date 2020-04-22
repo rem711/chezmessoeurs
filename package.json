@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "start": "env-cmd src/config/production.env node index.js",
-    "create-app": ".\\install.sh",
+    "deploy": ".\\install.sh",
     "dev": "env-cmd src/config/dev.env nodemon index.js -e js,html",
     "dev-inspect": "env-cmd src/config/dev.env nodemon --inspect index.js -e js,html",
-    "test": "env-cmd src/config/test.env jest --runInBand --collectCoverage --env=node",
-    "test-watch": "env-cmd src/config/test.env jest --watch --runInBand"
+    "test": "env-cmd src/config/test.env jest --lastCommit --verbose",
+    "test-collectCoverage": "env-cmd src/config/test.env jest --verbose --collectCoverage",
+    "test-watch": "env-cmd src/config/test.env jest --watch --onlyChanged"
   },
   "jest": {
     "testEnvironment": "node"
