@@ -16,16 +16,22 @@ module.exports = {
         validate : {
           notNull : {
             msg : 'Le nom et prénom doivent être indiqués.'
+          },
+          len : {
+            args : [2, 350],
+            msg : 'Le nom ne peut pas contenir plus de 350 cractères.'
           }
         }
       },
       Adresse_Facturation: {
         field : 'Adresse_Facturation',
         type: Sequelize.STRING(1000),
-        allowNull: false,
+        allowNull: true,
+        defaultValue: '',
         validate : {
-          notNull : {
-            msg : 'L\'adresse de facturation doit être renseignée.'
+          len : {
+            args : [0, 1000],
+            msg : 'L\'adresse de facturation est limité à 1000 caractères.'
           }
         }
       },
@@ -39,6 +45,10 @@ module.exports = {
           },
           notNull : {
             msg : 'L\'adresse e-mail doit être renseignée.'
+          },
+          len : {
+            args : [6, 320],
+            msg : 'L\'adresse e-mail est incorrecte.'
           }
         }
       },
@@ -62,6 +72,7 @@ module.exports = {
         // type: Sequelize.STRING(13),
         type : Sequelize.ENUM('Professionnel', 'Particulier'),
         allowNull: false,
+        defaultValue: 'Particulier',
         validate : {
           notNull : {
             msg : 'Le type doit être renseigné.'
@@ -76,7 +87,7 @@ module.exports = {
         field : 'Nombre_Prestations',
         type: Sequelize.INTEGER(4).UNSIGNED,
         allowNull: false,
-        defaultValue: '0'
+        defaultValue: 0
       },
       Dernier_Statut: {
         field : 'Dernier_Statut',
@@ -88,7 +99,7 @@ module.exports = {
         field : 'Paiement_En_Retard',
         type: Sequelize.INTEGER(4).UNSIGNED,
         allowNull: false,
-        defaultValue: '0'
+        defaultValue: 0
       }
     });
   },

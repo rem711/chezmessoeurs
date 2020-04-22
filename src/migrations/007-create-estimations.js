@@ -26,34 +26,41 @@ module.exports = {
         allowNull: false
       },
       Id_Formule_Aperitif: {
-      	field : 'Id_Formule_Aperitif',
-      	type: Sequelize.INTEGER(11),
-      	allowNull: true
+        field : 'Id_Formule_Aperitif',
+        type: Sequelize.INTEGER(11),
+        allowNull: true
       },
       Id_Formule_Cocktail: {
-      	field : 'Id_Formule_Cocktail',
-      	type: Sequelize.INTEGER(11),
-      	allowNull: true
+        field : 'Id_Formule_Cocktail',
+        type: Sequelize.INTEGER(11),
+        allowNull: true
       },
       Id_Formule_Box: {
-      	field : 'Id_Formule_Box',
-      	type: Sequelize.INTEGER(11),
-      	allowNull: true
+        field : 'Id_Formule_Box',
+        type: Sequelize.INTEGER(11),
+        allowNull: true
       },
       Id_Formule_Brunch: {
-      	field : 'Id_Formule_Brunch',
-      	type: Sequelize.INTEGER(11),
-      	allowNull: true
+        field : 'Id_Formule_Brunch',
+        type: Sequelize.INTEGER(11),
+        allowNull: true
       },
       Commentaire: {
         field : 'Commentaire',
         type: Sequelize.STRING(1000),
-        allowNull: true
+        allowNull: true,
+        validate : {
+          len : {
+            args : [0, 1000],
+            msg : 'Le commentaire est trop long, maximum 1000 caractères.'
+          }
+        }
       },
       Statut: {
         field : 'Statut',
         type: Sequelize.STRING(10),
-        allowNull: true
+        allowNull: true,
+        defaultValue : 'En cours'
       }
     })
     .then(() => {
