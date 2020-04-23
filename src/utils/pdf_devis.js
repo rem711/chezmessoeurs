@@ -1,76 +1,11 @@
+/* eslint-disable max-params */
+/* eslint-disable no-param-reassign */
 const PDFDocument = require('pdfkit')
 const moment = require('moment')
 
 const pixelsToPoints = (px) => {
     return Math.round(px * 0.75)
 }
-
-
-// const devis = {
-//     Formule_Cocktail: {
-//       isCocktail: true,
-//       Nb_Convives: '8',
-//       Nb_Pieces_Salees: '8',
-//       Nb_Pieces_Sucrees: '4',
-//       Liste_Recettes_Salees: ['Gougère à l’Époisse','Gougère à l’Époisse','Cannelé au chorizo','Cannelé au chorizo','Bun au sésame noir avec sa garniture du moment','Bun au sésame noir avec sa garniture du moment','Verrine de tartare de légumes et sa brochette d’edamame','Verrine de tartare de légumes et sa brochette d’edamame','Gougère à l’Époisse','Gougère à l’Époisse','Cannelé au chorizo','Cannelé au chorizo','Bun au sésame noir avec sa garniture du moment','Bun au sésame noir avec sa garniture du moment','Verrine de tartare de légumes et sa brochette d’edamame','Verrine de tartare de légumes et sa brochette d’edamame'],
-//     //   Liste_Recettes_Salees: ['Gougère à l’Époisse','Gougère à l’Époisse','Cannelé au chorizo','Cannelé au chorizo','Bun au sésame noir avec sa garniture du moment','Bun au sésame noir avec sa garniture du moment','Verrine de tartare de légumes et sa brochette d’edamame','Verrine de tartare de légumes et sa brochette d’edamame'],
-//       Liste_Recettes_Sucrees: ['Petit cake au citron','Petit carrot cake','Brochette de fruits frais','Verrine de saison','Petit cake au citron','Petit carrot cake','Brochette de fruits frais','Verrine de saison','Petit cake au citron','Petit carrot cake','Brochette de fruits frais','Verrine de saison'],
-//     //   Liste_Recettes_Sucrees: ['Petit cake au citron','Petit carrot cake','Brochette de fruits frais','Verrine de saison']
-//       Liste_Recettes_Boissons: ['Coca-Cola','Coca-Cola','Jus d\'orange','Jus d\'orange']
-//     // Liste_Recettes_Boissons: ['Coca-Cola','Coca-Cola','Jus d\'orange','Jus d\'orange', 'Coca-Cola','Coca-Cola','Jus d\'orange','Jus d\'orange']
-//     },
-//     isCreation: 'false',
-//     Id_Devis: '24',
-//     client: {
-//       Nom_Prenom: 'Rémi Courvoisier',
-//       Adresse_Facturation: '123 Strathcona Ave ',
-//       Email: 'remi.courvoisier94@gmail.com',
-//       Telephone: '6478199204',
-//       Type: 'Particulier'
-//     },
-//     Date_Evenement: '2020-04-15 13:00',
-//     Adresse_Livraison: '123 Strathcona Ave ',
-//     Formule_Aperitif: {
-//       isAperitif: true,
-//       Nb_Convives: '8',
-//       Nb_Pieces_Salees: '4',
-//       Liste_Recettes_Salees: ['Gougère à l’Époisse','Cannelé au chorizo','Cannelé au chorizo','Verrine de tartare de légumes et sa brochette d’edamame'],
-//       Liste_Recettes_Boissons: []
-//     },
-//     Formule_Box: {
-//       isBox: true,
-//       Nb_Convives: '6',
-//       Liste_Recettes_Salees: ['Gougère à l’Époisse','Bun au sésame noir avec sa garniture du moment','Verrine de tartare de légumes et sa brochette d’edamame','Cannelé au chorizo','Bun au sésame noir avec sa garniture du moment','Verrine de tartare de légumes et sa brochette d’edamame','Cannelé au chorizo','Bun au sésame noir avec sa garniture du moment','Verrine de tartare de légumes et sa brochette d’edamame','Gougère à l’Époisse','Bun au sésame noir avec sa garniture du moment','Verrine de tartare de légumes et sa brochette d’edamame','Gougère à l’Époisse','Bun au sésame noir avec sa garniture du moment','Verrine de tartare de légumes et sa brochette d’edamame','Cannelé au chorizo','Bun au sésame noir avec sa garniture du moment','Verrine de tartare de légumes et sa brochette d’edamame',],
-//       Liste_Recettes_Sucrees: ['Petit cake au citron','Petit cake au citron','Petit cake au citron','Petit carrot cake','Brochette de fruits frais','Verrine de saison'],
-//       Liste_Recettes_Boissons: ['Jus d\'orange','Coca-Cola','Coca-Cola','Coca-Cola','Coca-Cola','Jus d\'orange']
-//     },
-//     Formule_Brunch: {
-//       isBrunch: true,
-//       isBrunchSale: false,
-//       isBrunchSucre: true,
-//       Nb_Convives: '15',
-//       Nb_Pieces_Salees: '0',
-//       Nb_Pieces_Sucrees: '4',
-//       Liste_Recettes_Salees: [],
-//       Liste_Recettes_Sucrees: ['Petit cake au citron','Petit carrot cake','Brochette de fruits frais','Verrine de saison'],
-//       Liste_Recettes_Boissons: ['Jus d\'orange']
-//     },
-//     Commentaire: 'blablabla commentaire',
-//     Liste_Options: ['Livraison sur-place'],
-//     Id_Remise: null
-// }
-
-// const prix = {
-//     Cocktail: { prixParPersonne: 24.4, prixHT: 195.2 },
-//     Aperitif: { prixParPersonne: 6.4, prixHT: 51.2 },
-//     Box: { prixParPersonne: '15', prixHT: 90 },
-//     Brunch: { prixParPersonne: 11.36, prixHT: 170.39999999999998 },
-//     Liste_Options: { prixHT: 40 }
-// }
-
-
-
-
 
 // **** init des valeurs globals
 //  création objet pdf
@@ -293,14 +228,15 @@ const drawTitleFormule = (title) => {
 const drawPagesNumber = () => {
     const range = doc.bufferedPageRange()
     doc.fontSize(pixelsToPoints(12)).fillColor('black')
-    let i, end
+    let i = 0
+    let end = 0
     for(i = range.start + 1, end = range.start + range.count, range.start <= end; i < end; i++) {
         doc.switchToPage(i)
         const string = `Page ${i + 1} / ${range.count}`
         const options = { align : 'right' }
         const width = doc.widthOfString(string, options) + pixelsToPoints(10)
         // const height = doc.heightOfString(string, { ...options, width : width })
-        doc.text(string, (largeurPage + doc.page.margins.right - width), (doc.page.margins.top + generalHeaderHeight + paddingGeneralHeader * 2) * 0.5)
+        doc.text(string, (largeurPage + doc.page.margins.right - width), (doc.page.margins.top + generalHeaderHeight + (paddingGeneralHeader * 2)) * 0.5)
     }
 }
 
@@ -549,8 +485,6 @@ const drawFormuleCocktail = () => {
 const drawFormuleBox = () => {
     newPage('Formule Box Déjeuner')
     // init des variables
-    let nbElementsContent = 0
-    let calculated_yPos = 0
     let title = ''
     let content = ''
 
@@ -602,8 +536,8 @@ const drawFormuleBox = () => {
             if(i === 2) {
                 content += ' '
             }
-            numRecetteSalee++
-            i++
+            numRecetteSalee += 1
+            i += 1
         }
 
         // dessert + boisson
@@ -778,30 +712,33 @@ const drawFormuleBrunch = () => {
     }
 }
 
-const tabRecapWriteFirstCol = (content, align = 'left', maxHeightRow, sizeCol1, gap) => {
+const tabRecapWriteFirstCol = (content, maxHeightRow, sizeCol1, gap, align = 'left') => {
     const options = {width : sizeCol1 - paddingContent.left - paddingContent.right, align}
     xPos = gap + paddingContent.left
     doc.text(content, xPos, yPos, options)
     const currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
     maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+
     return maxHeightRow
 }
 
-const tabRecapWriteSecondCol = (content, align = 'left', maxHeightRow, sizeCol2, gap) => {
+const tabRecapWriteSecondCol = (content, maxHeightRow, sizeCol2, gap, align = 'left') => {
     const options = {width : sizeCol2 - paddingContent.left - paddingContent.right, align}
     xPos += gap
     doc.text(content, xPos, yPos, options)
     const currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
     maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+    
     return maxHeightRow
 }
 
-const tabRecapWriteThirdCol = (content, align = 'left', maxHeightRow, sizeCol3, gap) => {
+const tabRecapWriteThirdCol = (content, maxHeightRow, sizeCol3, gap, align = 'left') => {
     const options = {width : sizeCol3 - paddingContent.left - paddingContent.right, align : 'center'}
     xPos += gap
     doc.text(content, xPos, yPos, options)
     const currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
     maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+
     return maxHeightRow
 }
 
@@ -828,19 +765,21 @@ const drawLastPage = () => {
     // **** Ecriture ligne d'entête
     // l'écriture se fait par ligne en se décalant vers la droite afin de remplir chaque case
     doc.font(fontTitles).fontSize(fontSizeTitles)    
-    tabPositions.push({x : pageLeft, y : yPos}) // top ligne entête gauche
-    tabPositions.push({x : pageRight, y : yPos}) // top ligne entête droite   
+    // top ligne entête gauche
+    tabPositions.push({x : pageLeft, y : yPos}) 
+    // top ligne entête droite
+    tabPositions.push({x : pageRight, y : yPos}) 
     const tableTop = yPos
     yPos += paddingContent.top
 
     // col1
-    maxHeightRow = tabRecapWriteFirstCol('Désignation\n(/pers = par personne)', 'center', maxHeightRow, sizeCol1, pageLeft)
+    maxHeightRow = tabRecapWriteFirstCol('Désignation\n(/pers = par personne)', maxHeightRow, sizeCol1, pageLeft, 'center')
 
     // col2
-    maxHeightRow = tabRecapWriteSecondCol('Prix / Personne HT', 'center', maxHeightRow, sizeCol2, sizeCol1)
+    maxHeightRow = tabRecapWriteSecondCol('Prix / Personne HT', maxHeightRow, sizeCol2, sizeCol1, 'center')
 
     // col3
-    maxHeightRow = tabRecapWriteThirdCol('Total HT', 'center', maxHeightRow, sizeCol3, sizeCol2)
+    maxHeightRow = tabRecapWriteThirdCol('Total HT', maxHeightRow, sizeCol3, sizeCol2, 'center')
 
     yPos += maxHeightRow
     // tabPositions.push({x : pageLeft, y : yPos}) // top 1ère ligne gauche
@@ -858,9 +797,9 @@ const drawLastPage = () => {
         const { Formule_Aperitif } = devis
         maxHeightRow = 0
         content = `Formule Apéritif pour ${Formule_Aperitif.Nb_Convives} (${Formule_Aperitif.Nb_Pieces_Salees} pièces /pers)`
-        maxHeightRow = tabRecapWriteFirstCol(content, 'left', maxHeightRow, sizeCol1, pageLeft)
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Aperitif.Prix_HT / Formule_Aperitif.Nb_Convives).toFixed(2)}€`, 'center', maxHeightRow, sizeCol2, sizeCol1)
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Aperitif.Prix_HT).toFixed(2)}€`, 'center', maxHeightRow, sizeCol3, sizeCol2)
+        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Aperitif.Prix_HT / Formule_Aperitif.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Aperitif.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
 
         // on ajoute le padding bottom
         yPos += maxHeightRow
@@ -875,9 +814,9 @@ const drawLastPage = () => {
         const { Formule_Cocktail } = devis
         maxHeightRow = 0
         content = `Formule Cocktail pour ${Formule_Cocktail.Nb_Convives} (${Formule_Cocktail.Nb_Pieces_Salees} pièces salées /pers, ${Formule_Cocktail.Nb_Pieces_Sucrees} pièces sucrée(s) /pers)`
-        maxHeightRow = tabRecapWriteFirstCol(content, 'left', maxHeightRow, sizeCol1, pageLeft)
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Cocktail.Prix_HT / Formule_Cocktail.Nb_Convives).toFixed(2)}€`, 'center', maxHeightRow, sizeCol2, sizeCol1)
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Cocktail.Prix_HT).toFixed(2)}€`, 'center', maxHeightRow, sizeCol3, sizeCol2)
+        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Cocktail.Prix_HT / Formule_Cocktail.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Cocktail.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
 
         // on ajoute le padding bottom
         yPos += maxHeightRow
@@ -891,9 +830,9 @@ const drawLastPage = () => {
 
         const { Formule_Box } = devis
         maxHeightRow = 0
-        maxHeightRow = tabRecapWriteFirstCol(`Formule Box Déjeuner pour ${Formule_Box.Nb_Convives}`, 'left', maxHeightRow, sizeCol1, pageLeft)
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Box.Prix_HT / Formule_Box.Nb_Convives).toFixed(2)}€`, 'center', maxHeightRow, sizeCol2, sizeCol1)
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Box.Prix_HT).toFixed(2)}€`, 'center', maxHeightRow, sizeCol3, sizeCol2)
+        maxHeightRow = tabRecapWriteFirstCol(`Formule Box Déjeuner pour ${Formule_Box.Nb_Convives}`, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Box.Prix_HT / Formule_Box.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Box.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
 
         // on ajoute le padding bottom
         yPos += maxHeightRow
@@ -908,9 +847,9 @@ const drawLastPage = () => {
         const { Formule_Brunch } = devis
         maxHeightRow = 0
         content = `Formule Brunch Privé pour ${Formule_Brunch.Nb_Convives} (${Formule_Brunch.Nb_Pieces_Salees} pièces salées /pers, ${Formule_Brunch.Nb_Pieces_Sucrees} pièces sucrée(s) /pers)`
-        maxHeightRow = tabRecapWriteFirstCol(content, 'left', maxHeightRow, sizeCol1, pageLeft)
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Brunch.Prix_HT / Formule_Brunch.Nb_Convives).toFixed(2)}€`, 'center', maxHeightRow, sizeCol2, sizeCol1)
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Brunch.Prix_HT).toFixed(2)}€`, 'center', maxHeightRow, sizeCol3, sizeCol2)
+        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Brunch.Prix_HT / Formule_Brunch.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Brunch.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
 
         // on ajoute le padding bottom
         yPos += maxHeightRow
@@ -924,14 +863,31 @@ const drawLastPage = () => {
         yPos += paddingContent.top
 
         maxHeightRow = 0
-        maxHeightRow = tabRecapWriteFirstCol(devis.Liste_Options[i].Nom, 'left', maxHeightRow, sizeCol1, pageLeft)
-        maxHeightRow = tabRecapWriteSecondCol('-', 'center', maxHeightRow, sizeCol2, sizeCol1)
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(devis.Liste_Options[i].Montant).toFixed(2)}€`, 'center', maxHeightRow, sizeCol3, sizeCol2)
+        maxHeightRow = tabRecapWriteFirstCol(devis.Liste_Options[i].Nom, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol('-', maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(devis.Liste_Options[i].Montant).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
 
         // on ajoute le padding bottom
         yPos += maxHeightRow
     }
     // remise
+    if(devis.Remise !== null) {
+        // on ajoute la ligne du dessus de la row
+        tabPositions.push({x : pageLeft, y : yPos}) 
+        tabPositions.push({x : pageRight, y : yPos})   
+        // on ajoute la padding top
+        yPos += paddingContent.top
+        maxHeightRow = 0
+        maxHeightRow = tabRecapWriteFirstCol(devis.Remise.Nom, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol('-', maxHeightRow, sizeCol2, sizeCol1, 'center')
+        let prixRemise = devis.Remise.Valeur
+        if(devis.Remise.IsPourcent) {
+            prixRemise = devis.Prix_HT * (devis.Remise.Valeur / 100)
+        }
+        maxHeightRow = tabRecapWriteThirdCol(`${Number(prixRemise).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
+        // on ajoute le padding bottom
+        yPos += maxHeightRow
+    }
 
     // on ferme le tableau
     tabPositions.push({x : pageLeft, y : yPos}) 

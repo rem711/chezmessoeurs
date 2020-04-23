@@ -889,6 +889,7 @@ router
         toPDF.Formule_Brunch.isBrunch = false
         toPDF.Commentaire = devis.Commentaire
         toPDF.Liste_Options = []
+        toPDF.Remise = devis.Remise
         toPDF.Prix_HT = devis.Prix_HT
         toPDF.Prix_TTC = devis.Prix_TTC
         
