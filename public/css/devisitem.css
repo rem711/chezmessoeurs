@@ -125,7 +125,7 @@ padding: 25px 0 0 25px;
     border : none;
     transition : all 0.2s;
 }
-.btnRetireRecette{
+.btnRetireRecette, .btnRetireRemise{
     right : 70px !important;
 }
 

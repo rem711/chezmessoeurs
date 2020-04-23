@@ -5,6 +5,7 @@ const { Devis, Clients, Estimations, Formules, Recettes, Prix_Unitaire } = globa
 const { tableCorrespondanceTypes, modifyFormule, createFormules } = require('../utils/gestion_formules')
 const { createOrLoadClient }  = require('./clients')
 const { checksListeOptions } = require('../utils/gestion_prix_unitaire')
+const { createOrLoadRemise, getRemise } = require('../utils/gestion_remise')
 const createPDF = require('../utils/pdf_devis')
 const { Op } = require('sequelize')
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
@@ -788,6 +789,13 @@ router
             }
         }
 
+        // remise
+        // let remiseSelectionnee = undefined
+        // if(devis.Id_Remise !== null) {
+        //     remiseSelectionnee = await getRemise(devis.Id_Remise)
+        //     if(remiseSelectionnee === null) remiseSelectionnee = undefined
+        // }
+
         // récupération des recettes
         const listeRecettesSalees = await Recettes.findAll({
             where : {
@@ -1110,13 +1118,10 @@ router
                 where : {
                     Id_Devis : postIdDevis
                 },
-                include : [
-                    { model : Clients },
-                    { model : Formules, as : 'Formule_Aperitif' },
-                    { model : Formules, as : 'Formule_Cocktail' },
-                    { model : Formules, as : 'Formule_Box' },
-                    { model : Formules, as : 'Formule_Brunch' }
-                ]
+                include : {
+                    all : true,
+                    nested : true
+                }
             })
         }
         else {
@@ -1251,6 +1256,17 @@ router
                 body.Liste_Options = await checksListeOptions(body.Liste_Options)
             }
 
+            // vérifiacation de la remise
+            if(body.Remise !== null) {
+                body.Remise = await createOrLoadRemise(body.Remise)
+            }
+            else {
+                body.Remise = {
+                    Id_Remise : null,
+                    IsPourcent : false,
+                    Valeur : 0
+                }
+            }
 
             // gestion des prix
             let prixHT = 0
@@ -1283,6 +1299,18 @@ router
                 }
             }
 
+            // remise
+            if(body.Remise.IsPourcent) {
+                prixHT -= prixHT * (body.Remise.Valeur / 100)
+            }
+            else {
+                prixHT -= body.Remise.Valeur
+            }
+
+            if(prixHT < 0) {
+                throw 'Le prix ne peut pas être négatif.'
+            }
+
             prixTTC = prixHT * 1.1
 
             // adresses
@@ -1304,7 +1332,7 @@ router
             devis.Adresse_Livraison = body.Adresse_Livraison.trim()
             devis.Commentaire = body.Commentaire.trim()
             devis.Liste_Options = body.Liste_Options
-            devis.Id_Remise = body.Id_Remise
+            devis.Id_Remise = body.Remise.Id_Remise
             devis.Id_Formule_Aperitif = Formule_Aperitif !== null ? Formule_Aperitif.Id_Formule : null
             devis.Id_Formule_Cocktail = Formule_Cocktail !== null ? Formule_Cocktail.Id_Formule : null
             devis.Id_Formule_Box = Formule_Box !== null ? Formule_Box.Id_Formule : null

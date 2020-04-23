@@ -70,7 +70,7 @@ describe("Router devis", () => {
                         },
                         Commentaire: "",
                         Liste_Options: "",
-                        Id_Remise: null
+                        Remise: null
                     }
                 })
 
@@ -780,7 +780,7 @@ describe("Router devis", () => {
                     },
                     Commentaire: "",
                     Liste_Options: "",
-                    Id_Remise: null
+                    Remise: null
                 }
             })
 
@@ -796,6 +796,30 @@ describe("Router devis", () => {
                 })
 
                 test("Crée un devis complet", async () => {
+                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+
+                    const devisSent = response.body.devis
+                    const infos = response.body.infos
+                    devisCreated.push(devisSent.Id_Devis)
+
+                    expect(infos.message).toBe('Le devis a bien été créé.')
+                    expect(devisSent.Id_Client).toBe(5)
+                    expect(moment.utc(devisSent.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00').toString())
+                    expect(devisSent.Adresse_Livraison).toBe('adresse Facturation Client Test')
+                    expect(devisSent.Id_Estimation).toBe(null)
+                    expect(typeof devisSent.Id_Formule_Aperitif).toBe("number")
+                    expect(typeof devisSent.Id_Formule_Cocktail).toBe("number")
+                    expect(typeof devisSent.Id_Formule_Box).toBe("number")
+                    expect(typeof devisSent.Id_Formule_Brunch).toBe("number")
+                    expect(devisSent.Commentaire).toBe('')
+                    expect(devisSent.Statut).toBe('En cours')
+                    expect(devisSent.Liste_Options).toBe('')
+                    expect(devisSent.Id_Remise).toBe(null)
+                    expect(Number(devisSent.Prix_HT)).toBe(1016.73)
+                    expect(Number(devisSent.Prix_TTC)).toBe(1118.4)
+                })
+
+                test("Crée un devis complet avec options", async () => {
                     devis.Liste_Options = '8;10'
 
                     const response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
@@ -819,6 +843,65 @@ describe("Router devis", () => {
                     expect(devisSent.Id_Remise).toBe(null)
                     expect(Number(devisSent.Prix_HT)).toBe(1206.73)
                     expect(Number(devisSent.Prix_TTC)).toBe(1327.4)
+                })
+
+                test("Crée un devis complet avec remise", async () => {
+                    devis.Remise = {
+                        Nom : "Réduction client régulier (50€)",
+                        IsPourcent : false,
+                        Valeur : 50
+                    }
+
+                    let response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+
+                    let devisSent = response.body.devis
+                    let infos = response.body.infos
+                    devisCreated.push(devisSent.Id_Devis)
+
+                    expect(infos.message).toBe('Le devis a bien été créé.')
+                    expect(devisSent.Id_Client).toBe(5)
+                    expect(moment.utc(devisSent.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00').toString())
+                    expect(devisSent.Adresse_Livraison).toBe('adresse Facturation Client Test')
+                    expect(devisSent.Id_Estimation).toBe(null)
+                    expect(typeof devisSent.Id_Formule_Aperitif).toBe("number")
+                    expect(typeof devisSent.Id_Formule_Cocktail).toBe("number")
+                    expect(typeof devisSent.Id_Formule_Box).toBe("number")
+                    expect(typeof devisSent.Id_Formule_Brunch).toBe("number")
+                    expect(devisSent.Commentaire).toBe('')
+                    expect(devisSent.Statut).toBe('En cours')
+                    expect(devisSent.Liste_Options).toBe('')
+                    expect(typeof devisSent.Id_Remise).toBe("number")
+                    expect(Number(devisSent.Prix_HT)).toBe(966.73)
+                    expect(Number(devisSent.Prix_TTC)).toBe(1063.4)
+
+
+                    devis.Remise = {
+                        Nom : "Remise de Pâcques",
+                        IsPourcent : true,
+                        Valeur : 10
+                    }
+
+                    response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+
+                    devisSent = response.body.devis
+                    infos = response.body.infos
+                    devisCreated.push(devisSent.Id_Devis)
+
+                    expect(infos.message).toBe('Le devis a bien été créé.')
+                    expect(devisSent.Id_Client).toBe(5)
+                    expect(moment.utc(devisSent.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00').toString())
+                    expect(devisSent.Adresse_Livraison).toBe('adresse Facturation Client Test')
+                    expect(devisSent.Id_Estimation).toBe(null)
+                    expect(typeof devisSent.Id_Formule_Aperitif).toBe("number")
+                    expect(typeof devisSent.Id_Formule_Cocktail).toBe("number")
+                    expect(typeof devisSent.Id_Formule_Box).toBe("number")
+                    expect(typeof devisSent.Id_Formule_Brunch).toBe("number")
+                    expect(devisSent.Commentaire).toBe('')
+                    expect(devisSent.Statut).toBe('En cours')
+                    expect(devisSent.Liste_Options).toBe('')
+                    expect(typeof devisSent.Id_Remise).toBe("number")
+                    expect(Number(devisSent.Prix_HT)).toBe(915.06)
+                    expect(Number(devisSent.Prix_TTC)).toBe(1006.56)
                 })
 
                 test("Erreur pour créer un devis complet", async () => {

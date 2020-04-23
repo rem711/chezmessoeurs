@@ -1,4 +1,6 @@
+/* eslint-disable no-undef */
 // objet contenant toutes les informations qui devront être envoyées
+// eslint-disable-next-line no-global-assign
 global = {}
 
 // objet contenant les prix
@@ -38,36 +40,42 @@ const tabBtnRetireRecette = Array.from(document.getElementsByClassName('btnRetir
 
 const toggle = event => {
     switch(event.target.getAttribute('id')) {
-        case 'isAperitif' : 
+        case 'isAperitif' : {
             const divAperitif = document.getElementById('divAperitif')
             divAperitif.style.display = divAperitif.style.display === 'block' ? 'none' : 'block'
             changeAperitif()
             break;
-        case 'isCocktail' :
+        }
+        case 'isCocktail' : {
             const divCocktail = document.getElementById('divCocktail')
             divCocktail.style.display = divCocktail.style.display === 'block' ? 'none' : 'block'
             changeCocktail()
             break;
-        case 'isBox' :
+        }
+        case 'isBox' : {
             const divBox = document.getElementById('divBox')
             divBox.style.display = divBox.style.display === 'block' ? 'none' : 'block'
             changeBox()
             break;
-        case 'isBrunch' :
+        }
+        case 'isBrunch' : {
             const divBrunch = document.getElementById('divBrunch')
             divBrunch.style.display = divBrunch.style.display === 'block' ? 'none' : 'block'
             changeBrunch()
             break;
-        case 'isBrunchSale' :
+        }
+        case 'isBrunchSale' : {
             const divBrunchSale = document.getElementById('divBrunchSale')
             divBrunchSale.style.display = divBrunchSale.style.display === 'block' ? 'none' : 'block'
             changeBrunch()
             break;
-        case 'isBrunchSucre' :
+        }
+        case 'isBrunchSucre' : {
             const divBrunchSucre = document.getElementById('divBrunchSucre')
             divBrunchSucre.style.display = divBrunchSucre.style.display === 'block' ? 'none' : 'block'
             changeBrunch()
             break;
+        }
     }
 }
 
@@ -206,9 +214,21 @@ const getListeOptions = () => {
     return Array.from(document.getElementById('listeOptions').children).map(elt => elt.getAttribute('id') !== null ? elt.getAttribute('id').split('_')[1] : '').toString().replace(/,/g,';')
 }
 
-//  récupère l'ID de la remise
-const getIdRemise = () => {
-    return null
+//  récupère les infos de la remise
+const getRemise = () => {
+    // pas de remise
+    if(document.getElementById('nomRemise') === null) {
+        return null
+    }
+
+    let valeur = document.getElementById('valeurRemise').value
+    valeur = valeur.replace(',', '.')
+
+    return {
+        Nom : document.getElementById('nomRemise').value,
+        IsPourcent : document.getElementById('IsRemisePourcentage').checked,
+        Valeur : Number(valeur)
+    }
 }
 
 // enregistre le client dans l'objet global
@@ -339,10 +359,10 @@ const saveListeOptions = () => {
     updateRecap()
 }
 
-// TODO:saveRemise
-// enregistre la remise dans l'objet global et met à jour le prix
+// enregistre la remise dans l'objet global
+// le prix est mis à jour dans updateRecap() car s'il est en % il dépend du prix total
 const saveRemise = () => {
-    global.Id_Remise = getIdRemise()
+    global.Remise = getRemise()
 
     updateRecap()
 }
@@ -665,6 +685,61 @@ const retireRecette = (event) => {
     }
 }
 
+const ajouteRemise = (event) => {
+    const btn = event.target
+    const { recette } = selectedElements
+    const div = document.getElementById('divCurrentRemise')
+
+    if(recette !== null && recette.getAttribute('data-for') === 'Remises' && btn.getAttribute('data-for') === 'Remises') {
+        // remise à null de l'objet de gestion
+        selectedElements.recette = null
+        // retire de la class selected
+        recette.setAttribute('class', '')
+        
+        // les valeurs sont initialisées pour la remise custom
+        let nom = ''
+        let pourcent = ''
+        let euros = 'checked'
+        let valeur = ''
+
+        // pour une remise prédéfinie on récupère les valeurs
+        if(recette.getAttribute('id') !== 'remiseCustom') {
+            nom = recette.innerHTML
+
+            if(recette.getAttribute('data-isPourcent') === 'true') {
+                pourcent = 'checked'
+                euros = ''
+            }
+            
+            valeur = Number(recette.getAttribute('data-valeur'))
+            attrDisabled = 'disabled'
+        }
+
+        div.innerHTML = `
+            <p>
+                <label for="nomRemise">Nom : </label><input id="nomRemise" type="text" placeholder="Remise de 5€ (fidélité)" value="${nom}"><br>                
+                <label>Valeur : </label><input id="valeurRemise" type="number" placeholder="5" min="0" step=".01" value="${valeur}">
+                <label for="IsRemiseValeur">€</label><input type="radio" id="IsRemiseValeur" name="IsPourcent" ${euros}>
+                <label for="IsRemisePourcentage">%</label><input type="radio" id="IsRemisePourcentage" name="IsPourcent" ${pourcent}><br>
+            </p>
+        `
+        // gestion du changement de la valeur ou du type de remise
+        document.getElementById('nomRemise').onchange = saveRemise
+        document.getElementById('valeurRemise').onchange = saveRemise
+        document.getElementById('IsRemiseValeur').onchange = saveRemise
+        document.getElementById('IsRemisePourcentage').onchange = saveRemise
+        
+        saveRemise()
+    }
+}
+
+const retireRemise = (event) => {
+    const div = document.getElementById('divCurrentRemise')
+    div.innerHTML = "<p>Aucune</p>"
+
+    saveRemise()
+}
+
 // met à jour l'affichage des prix depuis l'objet prix
 const updateRecap = () => {
     let prixAperitifHT = 0
@@ -719,14 +794,32 @@ const updateRecap = () => {
         prixOptionsHT = prix.Liste_Options.prixHT
         document.getElementById('affichageListeOptions').innerHTML = stringOptions
         document.getElementById('prixOptions').innerHTML = `${Number.parseFloat(prixOptionsHT).toFixed(2)} HT`
-    }
-
-    // TODO:updateRecap gestion remise
-    // remise
-
+    }   
 
     // total
     prixTotalHT += prixAperitifHT + prixCocktailHT + prixBoxHT + prixBrunchHT + prixOptionsHT
+
+    // remise
+    // s'il y a une remise
+    let prixRemise = 0
+    let affichageTextRemise = ''
+    let affichagePrixRemise = Number(prixRemise).toFixed(2) + ' HT'
+    if(global.Remise && global.Remise !== null) {
+        // cas pourcentage
+        if(global.Remise.IsPourcent) {
+            prixRemise = prixTotalHT * (global.Remise.Valeur / 100)
+        }
+        // cas valeur
+        else {
+            prixRemise = global.Remise.Valeur
+        }
+        affichageTextRemise = global.Remise.Nom
+        affichagePrixRemise = Number(prixRemise).toFixed(2) + ' HT'
+    }    
+    document.getElementById('affichageRemise').innerHTML = affichageTextRemise
+    document.getElementById('prixRemise').innerHTML =  affichagePrixRemise
+    prixTotalHT -= prixRemise
+
     prixTotalTTC = prixTotalHT * 1.1
     document.getElementById('prixTotalHT').innerHTML = `Prix HT : ${Number.parseFloat(prixTotalHT).toFixed(2)}€`
     document.getElementById('prixTotalTTC').innerHTML = `Prix TTC : ${Number.parseFloat(prixTotalTTC).toFixed(2)}€`
@@ -743,28 +836,35 @@ const createDevis = async () => {
     saveAdresseLivraison()
     saveCommentaire()
 
-    const url = `/devis/${global.Id_Devis}`
-    const options = {
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        method : 'PATCH',
-        body : JSON.stringify(global)
-    }
+    const prixTotalTTC = Number(document.getElementById('prixTotalTTC').innerHTML.replace('Prix TTC : ', '').replace('€', ''))
+    if(prixTotalTTC > 0) {
+        const url = `/devis/${global.Id_Devis}`
+        const options = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method : 'PATCH',
+            body : JSON.stringify(global)
+        }
 
-    const response = await fetch(url, options)
-    if(response.ok) {
-        const data = await response.json()
-        const { infos, devis } = data
-        
-        if(infos.message) {
-            alert(`${infos.message} Vous allez être redirigé vers celui-ci.`)
-            location.replace(`/devis/${devis.Id_Devis}`)
+        const response = await fetch(url, options)
+        if(response.ok) {
+            const data = await response.json()
+            const { infos, devis } = data
+            
+            if(infos.message) {
+                alert(`${infos.message} Vous allez être redirigé vers celui-ci.`)
+                location.replace(`/devis/${devis.Id_Devis}`)
+            }
+            if(infos.error) {
+                div.classList.add('messageError')
+                div.innerHTML = infos.error
+            }
         }
-        if(infos.error) {
-            div.classList.add('messageError')
-            div.innerHTML = infos.error
-        }
+    }
+    else {
+        div.classList.add('messageError')
+        div.innerHTML = 'Le prix ne peut pas être négatif.'
     }
 }
 
@@ -807,33 +907,38 @@ const saveDevis = async () => {
     saveAdresseLivraison()
     saveCommentaire()
 
-    const url = `/devis/${global.Id_Devis}`
-    const options = {
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        method : 'PATCH',
-        body : JSON.stringify(global)
-    }
+    const prixTotalTTC = Number(document.getElementById('prixTotalTTC').innerHTML.replace('Prix TTC : ', '').replace('€', ''))
+    if(prixTotalTTC > 0) {
+        const url = `/devis/${global.Id_Devis}`
+        const options = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method : 'PATCH',
+            body : JSON.stringify(global)
+        }
 
-    const response = await fetch(url, options)
-    if(response.ok) {
-        const data = await response.json()
-        const { infos } = data
-        
-        if(infos.message) {
-            div.classList.add('messageConf')
-            div.innerHTML = infos.message
+        const response = await fetch(url, options)
+        if(response.ok) {
+            const data = await response.json()
+            const { infos } = data
+            
+            if(infos.message) {
+                div.classList.add('messageConf')
+                div.innerHTML = infos.message
+            }
+            if(infos.error) {
+                div.classList.add('messageError')
+                div.innerHTML = infos.error
+            }
         }
-        if(infos.error) {
-            div.classList.add('messageError')
-            div.innerHTML = infos.error
-        }
-        console.log(infos)
+    }
+    else {
+        div.classList.add('messageError')
+        div.innerHTML = 'Le prix ne peut pas être négatif.'
     }
 }
 
-// TODO:sendDevis
 // dans un second temps, envoie par mail
 const sendDevis = async () => {
     const div = document.getElementById('divInfos')
@@ -846,33 +951,40 @@ const sendDevis = async () => {
     saveAdresseLivraison()
     saveCommentaire()
 
-    // enregistre les potentielles modifs
-    let url = `/devis/${global.Id_Devis}`
-    let options = {
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        method : 'PATCH',
-        body : JSON.stringify(global)
+    const prixTotalTTC = Number(document.getElementById('prixTotalTTC').innerHTML.replace('Prix TTC : ', '').replace('€', ''))
+    if(prixTotalTTC > 0) {
+        // enregistre les potentielles modifs
+        let url = `/devis/${global.Id_Devis}`
+        let options = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method : 'PATCH',
+            body : JSON.stringify(global)
+        }
+
+        const response = await fetch(url, options)
+        if(response.ok) {
+            const data = await response.json()
+            const { infos } = data
+
+            if(infos.error) {
+                div.classList.add('messageError')
+                div.innerHTML = infos.error
+            }
+            if(infos.message) {
+                //  tout s'est bien passé
+                div.classList.add('messageConf')
+                div.innerHTML = infos.message
+
+                url = `/devis/pdf/${encodeURI('CHEZ MES SOEURS - Devis ')}${global.Id_Devis}.pdf`
+                window.open(url)
+            }
+        }
     }
-
-    const response = await fetch(url, options)
-    if(response.ok) {
-        const data = await response.json()
-        const { infos } = data
-
-        if(infos.error) {
-            div.classList.add('messageError')
-            div.innerHTML = infos.error
-        }
-        if(infos.message) {
-            //  tout s'est bien passé
-            div.classList.add('messageConf')
-            div.innerHTML = infos.message
-
-            url = `/devis/pdf/${encodeURI('CHEZ MES SOEURS - Devis ')}${global.Id_Devis}.pdf`
-            window.open(url)
-        }
+    else {
+        div.classList.add('messageError')
+        div.innerHTML = 'Le prix ne peut pas être négatif.'
     }
 }
 
@@ -931,10 +1043,15 @@ const initUX = () => {
     Array.from(document.getElementById('recettesSucreesBrunch').children).forEach(li => li.onclick = selectRecette)
     Array.from(document.getElementById('recettesBoissonsBrunch').children).forEach(li => li.onclick = selectRecette)
     Array.from(document.getElementById('Options').children).forEach(li => li.onclick = selectRecette)
+    Array.from(document.getElementById('Remises').children).forEach(li => li.onclick = selectRecette)
 
     // ajoute le clic sur les boutons d'ajout et de retrait de recettes
     tabBtnAjouteRecette.forEach(btn => btn.onclick = ajouteRecette)
     tabBtnRetireRecette.forEach(btn => btn.onclick = retireRecette)
+
+    // ajoute le clic sur les boutons d'ajout et de retrait de remises
+    document.getElementsByClassName('btnAjouteRemise')[0].onclick = ajouteRemise
+    document.getElementsByClassName('btnRetireRemise')[0].onclick = retireRemise
 
     // ajout des clics des boutons d'action de bas de page
     if(document.getElementById('Id_Devis') !== null) {

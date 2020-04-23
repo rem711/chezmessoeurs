@@ -554,14 +554,48 @@
             </div>
 
             <!--  REMISE -->
-            <div class="select_option_ctn">
+            <div class="select_recette_ctn">
                 <div class="select_recette">
                     <div class="nb_salees">
-                        <label>Ajouter une remise</label>
+                        <label>Remise en cours</label>
                     </div>
-                    <ul class="list_selected custom_scrollbar" id="listeRemises">
-                        <li>+</li>
-                    </ul>
+                    <div id="divCurrentRemise">
+                        <% if (locals.devis.Id_Remise !== null) { %>
+                            <% let euros, pourcent = '' %> 
+                            <% if (devis.Remise.IsPourcent) { %>
+                                <% pourcent = 'checked' %> 
+                            <% } else { %>
+                                <% euros = 'checked' %> 
+                            <% } %> 
+                            <p>
+                                <label for="nomRemise">Nom : </label><input id="nomRemise" type="text" placeholder="Remise de 5€ (fidélité)" value="<%= devis.Remise.Nom %>"><br>                
+                                <label>Valeur : </label><input id="valeurRemise" type="number" placeholder="5" min="0" step=".01" value="<%= devis.Remise.Valeur %>">
+                                <label for="IsRemiseValeur">€</label><input type="radio" id="IsRemiseValeur" name="IsPourcent" <%= euros %> >
+                                <label for="IsRemisePourcentage">%</label><input type="radio" id="IsRemisePourcentage" name="IsPourcent" <%= pourcent %> ><br>
+                            </p>
+                        <% } else { %>
+                            <p>Aucune</p>
+                        <% } %> 
+                    </div>
+                </div>
+                <div class="list_recettes">
+                    <label>Remises</label>
+                    <div class="ctn_recettes custom_scrollbar">
+                        <ul id="Remises">
+                            <li data-for="Remises" id="remiseCustom">Remise personnalisée</li>
+                            <li data-for="Remises" data-isPourcent="false" data-valeur="5">Remise de 5€</li>
+                            <li data-for="Remises" data-isPourcent="false" data-valeur="10">Remise de 10€</li>
+                            <li data-for="Remises" data-isPourcent="false" data-valeur="20">Remise de 20€</li>
+                            <li data-for="Remises" data-isPourcent="false" data-valeur="50">Remise de 50€</li>
+                            <li data-for="Remises" data-isPourcent="true" data-valeur="2.5">Remise de 2.5%</li>
+                            <li data-for="Remises" data-isPourcent="true" data-valeur="5">Remise de 5%</li>
+                            <li data-for="Remises" data-isPourcent="true" data-valeur="10">Remise de 10%</li>
+                            <li data-for="Remises" data-isPourcent="true" data-valeur="15">Remise de 15%</li>
+                            <li data-for="Remises" data-isPourcent="true" data-valeur="20">Remise de 20%</li>
+                        </ul>
+                    </div>
+                    <button class="btnAjouteRemise" data-for="Remises">V</button>
+                    <button class="btnRetireRemise" data-for="Remises">X</button>
                 </div>
             </div>
 
@@ -626,8 +660,17 @@
                 <div class="recap recap_right">
                     <div class="recap_item">
                         <p>Remise</p>
-                        <p class="orange" id="affichageRemise"></p>
-                        <p class="orange" id="prixRemise">0.00 HT</p>
+                        <% let prixRemiseAffiche = 0 %> 
+                        <% let textRemise = '' %> 
+                        <% if (locals.devis.Id_Remise !== null) { %>
+                            <% prixRemiseAffiche = devis.Remise.Valeur %> 
+                            <% if (devis.Remise.IsPourcent) { %>
+                                <% prixRemiseAffiche = devis.Prix_HT * (devis.Remise.Valeur / 100) %> 
+                            <% } %>
+                            <% textRemise = devis.Remise.Nom %> 
+                        <% } %>
+                        <p class="orange" id="affichageRemise"><%= textRemise %></p>
+                        <p class="orange" id="prixRemise"><%= Number(prixRemiseAffiche).toFixed(2) + ' HT' %></p>
                     </div>
                 </div>
             </div>
