@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
 		Id_Devis: {
 			field : 'Id_Devis',
 			type: DataTypes.INTEGER(11),
-			allowNull: false
+			allowNull: true
 		},
 		Id_Formule_Aperitif: {
 			field : 'Id_Formule_Aperitif',
@@ -113,7 +113,8 @@ module.exports = (sequelize, DataTypes) => {
 		Paiement_En_Retard: {
 			field : 'Paiement_En_Retard',
 			type: DataTypes.STRING(100),
-			allowNull: false
+			allowNull: false,
+			defaultValue : 'Non'
 		},
 		Nb_Relances: {
 			field : 'Nb_Relances',
@@ -129,8 +130,12 @@ module.exports = (sequelize, DataTypes) => {
     }, {})
     Factures.associate = models => {
         Factures.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
-        Factures.belongsTo(models.Devis, { foreignKey : 'Id_Devis' })
-        Factures.belongsTo(models.Remises, { foreignKey : 'Id_Remise' })
+        Factures.belongsTo(models.Devis, { foreignKey : 'Id_Devis', onDelete : 'cascade', hooks : true })
+		Factures.belongsTo(models.Remises, { foreignKey : 'Id_Remise' })
+		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Aperitif', as : 'Formule_Aperitif', onDelete : 'cascade', hooks : true })
+		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Cocktail', as : 'Formule_Cocktail', onDelete : 'cascade', hooks : true })
+		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Box', as : 'Formule_Box', onDelete : 'cascade', hooks : true })
+		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Brunch', as : 'Formule_Brunch', onDelete : 'cascade', hooks : true })
     }
 
     return Factures

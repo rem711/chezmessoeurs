@@ -38,7 +38,7 @@ module.exports = {
 		Id_Devis: {
 			field : 'Id_Devis',
 			type: Sequelize.INTEGER(11),
-			allowNull: false
+			allowNull: true
 		},
 		Id_Formule_Aperitif: {
 			field : 'Id_Formule_Aperitif',
@@ -114,7 +114,8 @@ module.exports = {
 		Paiement_En_Retard: {
 			field : 'Paiement_En_Retard',
 			type: Sequelize.STRING(100),
-			allowNull: false
+			allowNull: false,
+			defaultValue : 'Non'
 		},
 		Nb_Relances: {
 			field : 'Nb_Relances',
@@ -148,7 +149,7 @@ module.exports = {
               table: 'devis',
               field: 'Id_Devis'
             },
-            onDelete : 'cascade',
+            onDelete : 'SET NULL',
             onUpdate : 'cascade'
           })
       })
@@ -159,8 +160,8 @@ module.exports = {
               references : {
                   table : 'remises',
                   field : 'Id_Remise'
-              },
-              onDelete : 'restrict',
+			  },
+			  onDelete : 'SET NULL',
               onUpdate : 'cascade'
           })
       })

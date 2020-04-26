@@ -115,7 +115,7 @@ module.exports = {
             table: 'estimations',
             field: 'Id_Estimation'
           },
-          onDelete : 'cascade',
+          onDelete : 'set null',
           onUpdate : 'cascade'
         })
     })
@@ -127,22 +127,22 @@ module.exports = {
                 table : 'remises',
                 field : 'Id_Remise'
             },
-            onDelete : 'restrict',
+            onDelete : 'set null',
             onUpdate : 'cascade'
         })
     })
       
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.removeConstraint('Estimations', 'FK_Remise_Devis')
+    return queryInterface.removeConstraint('Devis', 'FK_Remise_Devis')
     .then(() => {
-        return queryInterface.removeConstraint('Estimations', 'FK_Client_Devis')
+        return queryInterface.removeConstraint('Devis', 'FK_Client_Devis')
     })
     .then(() => {
-        return queryInterface.removeConstraint('Estimations', 'FK_Estimation_Devis')
+        return queryInterface.removeConstraint('Devis', 'FK_Estimation_Devis')
     })    
     .then(() => {
-      return queryInterface.dropTable('Estimations')
+      return queryInterface.dropTable('Devis')
     })
   }
 };
