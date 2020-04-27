@@ -85,11 +85,11 @@ const fillModal = (infos, client) => {
 // rempli et affiche la modal update
 const showUpdateElmt = async () => {
   const trSelected = document.getElementsByClassName('selected')[0]
-  if(trSelected) {
+  if(trSelected && trSelected.getAttribute('id') !== null) {
     const Id_Client = trSelected.getAttribute('id').split('_')[1]
     const url = '/clients/' + Id_Client
     const options = {
-      method : 'GET',
+      method : 'GET'
     }
     const response  = await fetch(url, options)
     if(response.ok) {
@@ -122,6 +122,7 @@ const updateElmt = async (event) => {
     Type : Type
   }
 
+  // eslint-disable-next-line no-undef
   const url = createURL(action, params)
   const options = {
     method : formUpdate.getAttribute('method')

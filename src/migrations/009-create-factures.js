@@ -75,7 +75,7 @@ module.exports = {
 			field : 'Statut',
 			type: Sequelize.STRING(30),
 			allowNull: false,
-			defaultValue: 'En attente de paiement'
+			defaultValue: 'En attente'
 		},
 		Liste_Options: {
 			field : 'Liste_Options',
@@ -126,7 +126,8 @@ module.exports = {
 		Date_Derniere_Relance: {
 			field : 'Date_Derniere_Relance',
 			type: Sequelize.DATE,
-			allowNull: true
+			allowNull: true,
+			defaultValue : null
 		}
     })
     .then(() => {

@@ -12,7 +12,8 @@ const createOrLoadClient = async (postClient) => {
     postClient.Email = postClient.Email === undefined ? '' : postClient.Email.trim()
     // vérification car impossible d'appeler trim() sur undefined
     postClient.Nom_Prenom = postClient.Nom_Prenom === undefined ? '' : postClient.Nom_Prenom.trim()
-    postClient.Telephone = postClient.Telephone === undefined ? '' : postClient.Telephone.trim().replace(/ /g, '') // retire également les espaces inutils
+    // retire également les espaces inutils
+    postClient.Telephone = postClient.Telephone === undefined ? '' : postClient.Telephone.trim().replace(/ /g, '') 
     postClient.Adresse_Facturation = postClient.Adresse_Facturation === undefined ? '' : postClient.Adresse_Facturation.trim()
     postClient.Type = postClient.Type === undefined ? 'Particulier' : postClient.Type
 
@@ -195,8 +196,7 @@ router
     
 })
 // supprime client
-// utiliser method POST au lieu de DELETE car envoi depuis un formulaire html
-// .post('/clients/delete/:Id_Client', async (req, res) => {
+// TODO:ajouter la suppression des éléments relatifs au cient (estimations, devis, factures)
 .delete('/clients/delete/:Id_Client', async (req, res) => {
     // récupération de l'Id_Client
     const getId_Client = req.params.Id_Client

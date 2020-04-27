@@ -17,7 +17,7 @@ const carteRouter = require('./routers/carte')
 const clientsRouter = require('./routers/clients').router
 const devisRouter = require('./routers/devis').router
 const estimationsRouter = require('./routers/estimations')
-const facturesRouter = require('./routers/factures')
+const facturesRouter = require('./routers/factures').router
 const menuRouter = require('./routers/menu')
 const statistiquesRouter = require('./routers/statistiques')
 

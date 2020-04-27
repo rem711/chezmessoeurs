@@ -365,7 +365,6 @@ const createFormules = async (post) => {
     }
 }
 
-// TODO:
 const modifyFormule = async (oldFormule, newFormule) => {
     // let infos = undefined
     let formule = undefined
@@ -466,7 +465,6 @@ const modifyFormule = async (oldFormule, newFormule) => {
     }
 
     // s'il n'y a pas d'erreur
-    // FIXME:Modification du prix
     let Prix_HT = 0     
     if(newFormule.isAperitif) {
         // récupération des prix 

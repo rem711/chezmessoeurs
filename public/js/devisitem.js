@@ -733,7 +733,7 @@ const ajouteRemise = (event) => {
     }
 }
 
-const retireRemise = (event) => {
+const retireRemise = () => {
     const div = document.getElementById('divCurrentRemise')
     div.innerHTML = "<p>Aucune</p>"
 
@@ -988,10 +988,70 @@ const sendDevis = async () => {
     }
 }
 
-// TODO:toFacture
 // valide le devis et le transforme en facture
-const toFacture = () => {
-    // appelle save pour le valider
+const toFacture = async () => {
+    const div = document.getElementById('divInfos')
+    div.innerHTML = ''
+    div.classList.remove('messageError')
+    div.classList.remove('messageConf')
+    // enregistrement des infos autres que les formules qui sont actualisées lors d'un changement
+    saveClient()
+    saveDateEvenement()
+    saveAdresseLivraison()
+    saveCommentaire()
+
+    const prixTotalTTC = Number(document.getElementById('prixTotalTTC').innerHTML.replace('Prix TTC : ', '').replace('€', ''))
+    if(prixTotalTTC > 0) {
+        // enregistre les potentielles modifs
+        let url = `/devis/${global.Id_Devis}`
+        let options = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method : 'PATCH',
+            body : JSON.stringify(global)
+        }
+
+        let response = await fetch(url, options)
+        if(response.ok) {
+            let data = await response.json()
+            let { infos } = data
+
+            if(infos.error) {
+                div.classList.add('messageError')
+                div.innerHTML = infos.error
+            }
+            if(infos.message) {
+                //  tout s'est bien passé
+                div.classList.add('messageConf')
+                div.innerHTML = infos.message
+
+                url = `/devis/validation/${global.Id_Devis}`
+                options = {
+                    method : 'POST'
+                }
+
+                response = await fetch(url, options)
+                if(response.ok) {
+                    data = await response.json()
+                    let { infos, facture } = data
+
+                    if(infos.error) {
+                        div.classList.add('messageError')
+                        div.innerHTML = infos.error
+                    }
+                    else if(infos.message) {
+                        alert(infos.message + ' Vous allez être redirigé.')
+                        window.location = '/factures'
+                    }
+                }
+            }
+        }
+    }
+    else {
+        div.classList.add('messageError')
+        div.innerHTML = 'Le prix ne peut pas être négatif.'
+    }
 }
 
 const initUX = () => {
@@ -1067,7 +1127,7 @@ const initUX = () => {
 
 
 
-window.addEventListener("DOMContentLoaded", (event) => {
+window.addEventListener("DOMContentLoaded", () => {
     $( "#Date_Evenement" ).datepicker($.datepicker.regional['fr']);
     initAffichage()
     setGlobals()

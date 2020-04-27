@@ -74,7 +74,7 @@ module.exports = (sequelize, DataTypes) => {
 			field : 'Statut',
 			type: DataTypes.STRING(30),
 			allowNull: false,
-			defaultValue: 'En attente de paiement'
+			defaultValue: 'En attente'
 		},
 		Liste_Options: {
 			field : 'Liste_Options',
@@ -125,7 +125,8 @@ module.exports = (sequelize, DataTypes) => {
 		Date_Derniere_Relance: {
 			field : 'Date_Derniere_Relance',
 			type: DataTypes.DATE,
-			allowNull: true
+			allowNull: true,
+			defaultValue : null
 		}
     }, {})
     Factures.associate = models => {

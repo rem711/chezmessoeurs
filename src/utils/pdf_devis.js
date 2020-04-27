@@ -990,7 +990,6 @@ const drawLastPage = () => {
     yPos = doc.y
     xPos = doc.page.margins.left + paddingPageContent.left + paddingContent.left
 
-    // FIXME:
     // **** Commentaire
     height = paddingTitles.top    
     doc.font(fontTitles).fontSize(fontSizeTitles)

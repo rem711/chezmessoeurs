@@ -1,34 +1,11 @@
-// initialisation du tableau pour savoir quelle ligne est sélectionnée
-const lignesTableaux = document.getElementsByTagName('tr')
-
-for(let i = 0; i < lignesTableaux.length; i++) {
-    lignesTableaux[i].onclick = (event) => {
-        tr = event.target.parentNode
-        toggleSelectedTr(tr)
-    }
-}
+// initilisation des lignes qui peuvent être sélectionnées
+// eslint-disable-next-line no-undef
+initSelectedTr()
 
 // récupération des boutons
 const btnNewDevis = document.getElementById('btnNewDevis')
 const btnModifyDevis = document.getElementById('btnModifyDevis')
 const btnArchiveDevis = document.getElementById('btnArchiveDevis')
-
-const toggleSelectedTr = (trClicked) => {
-    // si une précédente sélectionnée
-    let trSelected = document.getElementsByClassName('selected')[0]
-    if(trClicked !== trSelected) {
-        if(trSelected) {
-            // on retire la classe
-            trSelected.setAttribute('class', '')
-        }
-        // on assigne à la nouvelle tr sélectionnée la classe
-        trClicked.setAttribute('class', 'selected')
-    }
-    if(trSelected) {
-        // on retire la classe s'il y avait une précédente tr de sélectionnée
-        trSelected.setAttribute('class', '')
-    }
-}
 
 const newDevis = () => {
     location.replace('/devis/create')
@@ -45,7 +22,7 @@ const modifyDevis = () => {
 
 const archiveDevis = async () => {
     const trSelected = document.getElementsByClassName('selected')[0]
-    if(trSelected) {
+    if(trSelected && trSelected.getAttribute('id' !== null)) {
         const Id_Devis = trSelected.getAttribute('id').split('_')[1]
         const url = `/devis/archive/${Id_Devis}`
         const options = {
@@ -62,8 +39,9 @@ const archiveDevis = async () => {
                 location.replace('/devis')
             }
             if(infos.error) {
-                div.style.color = 'red'
-                div.innerHTML = infos.error
+                // div.style.color = 'red'
+                // div.innerHTML = infos.error
+                alert(infos.error)
             }
         }
     }

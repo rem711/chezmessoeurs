@@ -1,12 +1,13 @@
 const express = require('express')
 const router = new express.Router()
 const ejs = require('ejs')
-const { Devis, Clients, Estimations, Formules, Recettes, Prix_Unitaire } = global.db
+const { Devis, Clients, Estimations, Formules, Recettes, Prix_Unitaire, Factures } = global.db
 const { tableCorrespondanceTypes, modifyFormule, createFormules } = require('../utils/gestion_formules')
 const { createOrLoadClient }  = require('./clients')
 const { checksListeOptions } = require('../utils/gestion_prix_unitaire')
 const { createOrLoadRemise, getRemise } = require('../utils/gestion_remise')
 const createPDF = require('../utils/pdf_devis')
+const { createFacture } = require('./factures')
 const { Op } = require('sequelize')
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 const moment = require('moment')
@@ -128,10 +129,10 @@ const createDevis = async (estimation) => {
         Prix_TTC : Number.parseFloat(prixTTC).toFixed(2)
     })
 
-    // si l'on avait un devis, on l'archive
+    // si l'on avait une estimation, on l'archive
     if(!estimation.isCreation) {
         // on archive l'estimation
-        estimation.Statut = 'Archivé'
+        estimation.Statut = 'Archivée'
         await estimation.save()
     }
 
@@ -349,60 +350,72 @@ router
         Formule_Aperitif : null,
         Formule_Cocktail : null,
         Formule_Box : null,
-        Formule_Brunch : null
+        Formule_Brunch : null,
+        Id_Remise : null
     }
 
-    // récupération des recettes
-    const listeRecettesSalees = await Recettes.findAll({
-        where : {
-            Categorie : 'Salée'
-        }
-    })
-    const listeRecettesSucrees = await Recettes.findAll({
-        where : {
-            Categorie : 'Sucrée'
-        }
-    })
-    const listeRecettesBoissons = await Recettes.findAll({
-        where : {
-            Categorie : 'Boisson'
-        }
-    })
+    try {
+        // récupération des recettes
+        const listeRecettesSalees = await Recettes.findAll({
+            where : {
+                Categorie : 'Salée'
+            }
+        })
+        const listeRecettesSucrees = await Recettes.findAll({
+            where : {
+                Categorie : 'Sucrée'
+            }
+        })
+        const listeRecettesBoissons = await Recettes.findAll({
+            where : {
+                Categorie : 'Boisson'
+            }
+        })
 
-    // récupération des options
-    const listeOptions = await Prix_Unitaire.findAll({
-        where : {
-            isOption : true
+        // récupération des options
+        const listeOptions = await Prix_Unitaire.findAll({
+            where : {
+                isOption : true
+            }
+        })
+
+        // récupération des différents prix
+        const listePrix_unitaire = await Prix_Unitaire.findAll({}) 
+
+        const values = {
+            isDevisItem : true,
+            infos,
+            devis,
+            moment,
+            tableCorrespondanceTypes,
+            listeRecettesSalees,
+            listeRecettesSucrees,
+            listeRecettesBoissons,
+            listeOptions,
+            listePrix_unitaire,
+            isCreation : true
         }
-    })
 
-    // récupération des différents prix
-    const listePrix_unitaire = await Prix_Unitaire.findAll({}) 
 
-    const values = {
-        isDevisItem : true,
-        infos,
-        devis,
-        moment,
-        tableCorrespondanceTypes,
-        listeRecettesSalees,
-        listeRecettesSucrees,
-        listeRecettesBoissons,
-        listeOptions,
-        listePrix_unitaire,
-        isCreation : true
+        ejs.renderFile(__dirname + '/../views/index.html', values, (err, html) => {
+            if(!err) {
+                res.send(html)
+            }
+            else {
+                throw err
+            }            
+        })
+    }
+    catch(error) {
+        infos = clientInformationObject(getErrorMessage(error), undefined)
+
+        res.render('index', {
+            isDevisItem : true,
+            infos
+        })
     }
 
-
-    ejs.renderFile(__dirname + '/../views/index.html', values, (err, html) => {
-        if(!err) {
-            res.send(html)
-        }
-        else {
-            infos = clientInformationObject(err, undefined)
-            res.render('index', values)
-        }
-    })
+    
     
     // res.render('index', {
     //     isDevisItem : true,
@@ -789,13 +802,6 @@ router
             }
         }
 
-        // remise
-        // let remiseSelectionnee = undefined
-        // if(devis.Id_Remise !== null) {
-        //     remiseSelectionnee = await getRemise(devis.Id_Remise)
-        //     if(remiseSelectionnee === null) remiseSelectionnee = undefined
-        // }
-
         // récupération des recettes
         const listeRecettesSalees = await Recettes.findAll({
             where : {
@@ -1077,10 +1083,48 @@ router
         res.send(getErrorMessage(error))
     }
 })
-// TODO:Devis vers facture
 // valide un devis pour créer une facture
 .post('/devis/validation/:Id_Devis', async (req, res) => {
+    const postIdDevis = req.params.Id_Devis  
+    let infos = undefined
+    let facture = undefined
 
+    try {
+        if(postIdDevis !== undefined) {
+            // vérifie que le devis est valide
+            const devis = await validate(postIdDevis)
+
+            if(devis !== null) {
+                facture = await createFacture(devis)
+            }
+
+            if(facture !== null) {
+                // on met à jour le devis
+                devis.Statut = 'Validé'
+                await devis.save()
+
+                devis.Client.Dernier_Statut = 'Devis validé'
+                await devis.Client.save()
+
+                // on prévient l'utilisateur
+                infos = clientInformationObject(undefined, `La facture ${facture.Numero_Facture} pour l'évènement du ${moment(facture.Date_Evenement).format(formatDateHeure)} vient d'être créée.`)
+            }
+            else {
+                throw 'Une erreur est survenue lors de la création de la facture, veuillez recommencer ultérieurement'
+            }
+        }
+        else {
+            throw 'Le devis est inconnu.'
+        }
+    }
+    catch(error) {
+        infos = clientInformationObject(getErrorMessage(error), undefined)
+    }
+
+    res.send({
+        infos,
+        facture
+    })
 })
 // modifie un devis
 .patch('/devis/:Id_Devis', async (req, res) => {
@@ -1130,6 +1174,20 @@ router
         }
 
         if(devis !== null) {
+            // vérification qu'une facture ne soit pas déjà émise pour ce devis
+            const factureExistante = await Factures.findOne({
+                where : {
+                    Id_Devis : devis.Id_Devis,
+                    Statut : {
+                        [Op.notLike] : 'Annulée'
+                    }
+                }
+            })
+
+            if(factureExistante !== null) {
+                throw `La facture ${factureExistante.Numero_Facture} correspond déjà à ce devis. Pour tout de même modifier le devis, celle-ci doit être annulée manuellement.`
+            }
+
             // vérification des formules
             let Formule_Aperitif = null
             let Formule_Cocktail = null
@@ -1414,10 +1472,32 @@ router
         const devis = await Devis.findOne({
             where : {
                 Id_Devis : postIdDevis
-            }
+            },
+            include : [
+                { model : Formules, as : 'Formule_Aperitif' },
+                { model : Formules, as : 'Formule_Cocktail' },
+                { model : Formules, as : 'Formule_Box' },
+                { model : Formules, as : 'Formule_Brunch' }
+            ]
         })
 
         if(devis !== null) {
+            // supression des formules associées dans le cas où le devis n'est pas lié à une facture
+            const facture = await Factures.findOne({
+                where : {
+                    Id_Devis : devis.Id_Devis
+                }
+            })
+            if(facture === null) {
+                const formulesPromises = []
+                if(devis.Formule_Aperitif !== null) formulesPromises.push(devis.Formule_Aperitif.destroy())
+                if(devis.Formule_Cocktail !== null) formulesPromises.push(devis.Formule_Cocktail.destroy())
+                if(devis.Formule_Box !== null) formulesPromises.push(devis.Formule_Box.destroy())
+                if(devis.Formule_Brunch !== null) formulesPromises.push(devis.Formule_Brunch.destroy())
+                await Promise.all(formulesPromises)
+            }
+
+            // suppresion du devis
             await devis.destroy()
             infos = clientInformationObject(undefined, 'Le devis a bien été supprimé.')
         }

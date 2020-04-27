@@ -1,13 +1,15 @@
 <link rel="stylesheet" href="/css/factures.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script defer src="/js/factures.js"></script>
+<script defer src="/js/modals/factures.js"></script>
 
- 
-         
+        
         <div class="content_inner">
-          <h1>Factures</h1>
+            <h1>Factures</h1>
             <table>
                 <thead>
-                   <th>N°</th>
-                   <th>Date d'édition</th>
+                    <th>N°</th>
+                    <th>Date d'édition</th>
                     <th>Nom Prénom</th>
                     <th>Téléphone</th>
                     <th>Email</th>
@@ -19,60 +21,76 @@
 
                 </thead>
                 <tbody>
-                    <tr>
-                      <td>2019-0000</td>
-                    <td>jj/mm/aaaa hh:mm</td>
-                       <td>Nom Prénom</td>
-                       <td>0000000000</td>
-                       <td>email@emailemail.fr</td>
-                       <td>-</td>
-                       <td>0000€</td>
-                       <td>Payée</td>
-                       <td>J+32</td>
-                       <td>0 - jj/mm/aaaa</td>
-
-                    </tr>
+                    <% if (locals.infos) { %>
+                        <tr>
+                            <td colspan="10">
+                                <%= infos.error %>
+                                <%= infos.message %>
+                            </td>
+                        </tr>
+                    <% } else { %>
+                        <% if (locals.factures) { %>
+                            <% for(let facture of factures) { %> 
+                                <% let stringRelance = facture.Nb_Relances.toString() %>
+                                <% if(facture.Date_Derniere_Relance !== null) stringRelance += ` - ${moment.utc(facture.Date_Derniere_Relance).format('DD/MM/YYYY')}` %> 
+                                <tr id="facture_<%= facture.Id_Facture %>">
+                                    <td><%= facture.Numero_Facture %></td>
+                                    <td><%= moment.utc(facture.Date_Creation).format(formatDateHeure) %></td>
+                                    <td><%= facture.Client.Nom_Prenom %></td>
+                                    <td><%= facture.Client.Telephone %></td>
+                                    <td><%= facture.Client.Email %></td>
+                                    <td><%= Number(facture.Acompte).toFixed(2) %>€</td>
+                                    <td><%= Number(facture.Reste_A_Payer).toFixed(2) %>€</td>
+                                    <td><%= facture.Statut %></td>
+                                    <td><%= facture.Paiement_En_Retard %></td>
+                                    <td><%= stringRelance %></td>
+                                </tr>
+                            <% } %>                             
+                        <% } %>
+                    <% } %>                     
                 </tbody>
             </table>
         </div>
 
-        <div class="modal">
+        <div class="modal" id="modalUpdate">
             <div class="modal-content">
-                <span class="close closespan">&times;</span>
-                <h2>Facture n°</h2>
+                <input type="hidden" id="Id_Facture">
+                <h2>Facture n°<span id="Numero_Facture"></span></h2>
                 <div class="rowinput">
                     <label>Date d'édition :</label>
-                    <p>jj/mm/aaaa - hh:mm</p>
+                    <p id="Date_Creation"></p>
                 </div>
                 <div class="rowinput">
                     <label>Nom Prénom :</label>
-                    <p>Nom prénom</p>
+                    <p id="Nom_Prenom"></p>
                 </div>
                 <div class="rowinput">
                     <label>Email :</label>
-                    <p>email@email.fr</p>
+                    <p id="Email"></p>
                 </div>
                 <div class="rowinput">
                     <label>Téléphone :</label>
-                    <p>06 00 00 00 00</p>
+                    <p id="Telephone"></p>
                 </div>
                 <h4>Statut</h4>
-                <div class="row">
-                    <button>En attente de paiement</button>
-                    <button>Payée</button>
-                    <button>Acompte</button>
+                <div class="row" id="Statut">
+                    <button id="btnAttente" data-statut="En attente de paiement">En attente de paiement</button>
+                    <button id="btnPayee" data-statut="Payée">Payée</button>
+                    <button type="button" disabled>Acompte : <input id="Acompte" type="number" min="0" step=".01"></button>
                 </div>
                 <h4>Actions</h4>
                 <div class="row">
-                    <button>Archiver</button>
-                    <button>Exporter</button>
-                    <button>Envoyer une relance</button>
+                    <button id="btnArchive">Archiver</button>
+                    <button id="btnExport">Exporter</button>
+                    <button id="btnRelance">Envoyer une relance</button>
                 </div>
+                <p id="modalError" class="messageError"></p><br>
+                <p id="modalMessage" class="messageConf"></p><br>
                 <button id="btnUpdate">&check;</button>
             </div>
         </div>
 
-           <div class="btnbotright">
-            <button>0</button> 
-            <button>X</button>
+        <div class="btnbotright">
+            <button id="btnOpenModalUpdate">0</button> 
+            <button id="btnDelete">X</button>
         </div>

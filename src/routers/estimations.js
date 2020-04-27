@@ -113,7 +113,7 @@ router
         ],
         where : {
             [Op.or] : [
-                {Statut : {[Op.notLike] : 'Archivé'}},
+                {Statut : {[Op.notLike] : 'Archivée'}},
                 {Statut : null}
             ]
         },
@@ -281,6 +281,7 @@ router
 })
 
 // supprime une estimation
+// TODO:ajouter la suppression des formules
 .delete('/estimations/:Id_Estimation', async (req, res) => {
     const getId_Estimation = req.params.Id_Estimation
 
@@ -311,7 +312,7 @@ router
 })
 
 const archiveEstimation = async (estimation) => {
-    estimation.Statut = 'Archivé'
+    estimation.Statut = 'Archivée'
     await estimation.save()
 }
 

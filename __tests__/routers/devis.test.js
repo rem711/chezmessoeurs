@@ -238,7 +238,7 @@ describe("Router devis", () => {
                         }
                     })
 
-                    expect(estimation.Statut).toBe('Archivé')
+                    expect(estimation.Statut).toBe('Archivée')
                 })
 
                 test("Cocktail", async () => {
@@ -943,7 +943,6 @@ describe("Router devis", () => {
 
                     const devisSent = response.body.devis
                     const infos = response.body.infos
-                    console.log(infos)
 
                     expect(infos.message).toBe('Le devis a bien été modifié.')
                     expect(devisSent.Id_Client).toBe(5)
