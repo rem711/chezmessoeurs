@@ -6,7 +6,7 @@ fullInstall () {
     then
         branch=dev
     fi
-    echo "full $1"
+    sh ./install/fullIntall.sh "$1" "$branch"
 }
 
 deployDB () {
