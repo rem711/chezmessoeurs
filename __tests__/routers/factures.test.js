@@ -6,6 +6,14 @@ const moment = require('moment')
 const { formatNumeroFacture, createFacture } = require('../../src/routers/factures')
 
 describe("Router Factures", () => {
+    let cookie = undefined
+
+    beforeAll(async () => {
+        const response = await request(app).post('/authentification').send({ password : 'demo@2020crm-CMS' }).expect(302)
+        
+        cookie = response.header['set-cookie']
+    })
+    
     describe("Fonctions indépendantes", () => {
         test("formatNumeroFacture", () => {
             expect(formatNumeroFacture(1)).toBe('0001')
@@ -152,7 +160,7 @@ describe("Router Factures", () => {
             })
 
             test("Id_Facture = undefined", async () => {
-                const response = await request(app).get(`/factures/undefined`).send().expect(200)
+                const response = await request(app).get(`/factures/undefined`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
@@ -160,7 +168,7 @@ describe("Router Factures", () => {
             })
 
             test("Id_Facture = 0", async () => {
-                const response = await request(app).get(`/factures/0`).send().expect(200)
+                const response = await request(app).get(`/factures/0`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
@@ -168,7 +176,7 @@ describe("Router Factures", () => {
             })
 
             test("Id_Facture = inconnu", async () => {
-                const response = await request(app).get(`/factures/46000`).send().expect(200)
+                const response = await request(app).get(`/factures/46000`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
@@ -176,7 +184,7 @@ describe("Router Factures", () => {
             })
 
             test("Obtient la facture demandée", async () => {
-                const response = await request(app).get(`/factures/${realFacture.Id_Facture}`).send().expect(200)
+                const response = await request(app).get(`/factures/${realFacture.Id_Facture}`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture } = response.body
 
                 expect(infos).toBe(undefined)
@@ -187,7 +195,7 @@ describe("Router Factures", () => {
 
         describe("patch /factures/Id_Facture", () => {
             test("Id_Facture = undefined", async () => {
-                const response = await request(app).patch(`/factures/undefined`).send().expect(200)
+                const response = await request(app).patch(`/factures/undefined`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
@@ -195,7 +203,7 @@ describe("Router Factures", () => {
             })
 
             test("Id_Facture = 0", async () => {
-                const response = await request(app).patch(`/factures/0`).send().expect(200)
+                const response = await request(app).patch(`/factures/0`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
@@ -203,7 +211,7 @@ describe("Router Factures", () => {
             })
 
             test("Id_Facture = inconnu", async () => {
-                const response = await request(app).patch(`/factures/46000`).send().expect(200)
+                const response = await request(app).patch(`/factures/46000`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
@@ -211,7 +219,7 @@ describe("Router Factures", () => {
             })
 
             test("Echoue avec statut incorrect", async () => {
-                const response = await request(app).patch(`/factures/${realFacture.Id_Facture}`).send({
+                const response = await request(app).patch(`/factures/${realFacture.Id_Facture}`).set('Cookie', cookie).send({
                     Statut : 'Annulée'
                 }).expect(200)
 
@@ -221,7 +229,7 @@ describe("Router Factures", () => {
             })
 
             test("Echoue avec acompte négatif", async () => {
-                const response = await request(app).patch(`/factures/${realFacture.Id_Facture}`).send({
+                const response = await request(app).patch(`/factures/${realFacture.Id_Facture}`).set('Cookie', cookie).send({
                     Statut : 'En attente de paiement',
                     Acompte : -13
                 }).expect(200)
@@ -232,7 +240,7 @@ describe("Router Factures", () => {
             })
 
             test("Modifie la facture", async () => {
-                let response = await request(app).patch(`/factures/${realFacture.Id_Facture}`).send({
+                let response = await request(app).patch(`/factures/${realFacture.Id_Facture}`).set('Cookie', cookie).send({
                     Statut : 'Payée',
                     Acompte : realFacture.Prix_TTC
                 }).expect(200)
@@ -245,7 +253,7 @@ describe("Router Factures", () => {
                 expect(facture.Acompte).toBe(realFacture.Prix_TTC)
                 expect(facture.Reste_A_Payer).toBe(0)
 
-                response = await request(app).patch(`/factures/${realFacture.Id_Facture}`).send({
+                response = await request(app).patch(`/factures/${realFacture.Id_Facture}`).set('Cookie', cookie).send({
                     Statut : 'En attente de paiement',
                     Acompte : realFacture.Prix_TTC
                 }).expect(200)
@@ -263,7 +271,7 @@ describe("Router Factures", () => {
 
         describe("patch /factures/archive/Id_Facture", () => {
             test("Id_Facture = undefined", async () => {
-                const response = await request(app).patch(`/factures/archive/undefined`).send().expect(200)
+                const response = await request(app).patch(`/factures/archive/undefined`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
@@ -271,7 +279,7 @@ describe("Router Factures", () => {
             })
 
             test("Id_Facture = 0", async () => {
-                const response = await request(app).patch(`/factures/archive/0`).send().expect(200)
+                const response = await request(app).patch(`/factures/archive/0`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
@@ -279,7 +287,7 @@ describe("Router Factures", () => {
             })
 
             test("Id_Facture = inconnu", async () => {
-                const response = await request(app).patch(`/factures/archive/46000`).send().expect(200)
+                const response = await request(app).patch(`/factures/archive/46000`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
@@ -298,7 +306,7 @@ describe("Router Factures", () => {
                     }
                 )
 
-                const response = await request(app).patch(`/factures/archive/${realFacture.Id_Facture}`).send().expect(200)
+                const response = await request(app).patch(`/factures/archive/${realFacture.Id_Facture}`).set('Cookie', cookie).send().expect(200)
 
                 const { infos, facture } = response.body
 
@@ -318,7 +326,7 @@ describe("Router Factures", () => {
                     }
                 )
 
-                const response = await request(app).patch(`/factures/archive/${realFacture.Id_Facture}`).send().expect(200)
+                const response = await request(app).patch(`/factures/archive/${realFacture.Id_Facture}`).set('Cookie', cookie).send().expect(200)
 
                 const { infos, facture } = response.body
 
@@ -329,35 +337,35 @@ describe("Router Factures", () => {
 
         describe('get /factures/validate/Id_Facture/Numero_Facture', () => {
             test("Id_Facture = undefined", async () => {
-                const response = await request(app).get(`/factures/validate/undefined/${realFacture.Numero_Facture}`).send().expect(200)
+                const response = await request(app).get(`/factures/validate/undefined/${realFacture.Numero_Facture}`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
             })
 
             test("Id_Facture = 0", async () => {
-                const response = await request(app).get(`/factures/validate/0/${realFacture.Numero_Facture}`).send().expect(200)
+                const response = await request(app).get(`/factures/validate/0/${realFacture.Numero_Facture}`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
             })
 
             test("Id_Facture = inconnu", async () => {
-                const response = await request(app).get(`/factures/validate/46000/${realFacture.Numero_Facture}`).send().expect(200)
+                const response = await request(app).get(`/factures/validate/46000/${realFacture.Numero_Facture}`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("Le numéro de facture est incorrect.")
             })
 
             test("Numero_Facture = inconnu", async () => {
-                const response = await request(app).get(`/factures/validate/${realFacture.Id_Facture}/021305498`).send().expect(200)
+                const response = await request(app).get(`/factures/validate/${realFacture.Id_Facture}/021305498`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("Le numéro de facture est incorrect.")
             })
 
             test("Valide l'Id_Facture et le Numero_Facture", async () => {
-                const response = await request(app).get(`/factures/validate/${realFacture.Id_Facture}/${realFacture.Numero_Facture}`).send().expect(200)
+                const response = await request(app).get(`/factures/validate/${realFacture.Id_Facture}/${realFacture.Numero_Facture}`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.message).toBe("ok")
@@ -366,21 +374,21 @@ describe("Router Factures", () => {
 
         describe('post /factures/Id_Facture', () => {
             test("Id_Facture = undefined", async () => {
-                const response = await request(app).post(`/factures/undefined`).send().expect(200)
+                const response = await request(app).post(`/factures/undefined`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
             })
 
             test("Id_Facture = 0", async () => {
-                const response = await request(app).post(`/factures/0`).send().expect(200)
+                const response = await request(app).post(`/factures/0`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
             })
 
             test("Id_Facture = inconnu", async () => {
-                const response = await request(app).post(`/factures/46000`).send().expect(200)
+                const response = await request(app).post(`/factures/46000`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
@@ -398,7 +406,7 @@ describe("Router Factures", () => {
                     }
                 )
 
-                const response = await request(app).post(`/factures/${realFacture.Id_Facture}`).send().expect(200)
+                const response = await request(app).post(`/factures/${realFacture.Id_Facture}`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe('La facture a déjà été réglée.')
@@ -416,7 +424,7 @@ describe("Router Factures", () => {
                     }
                 )
 
-                const response = await request(app).post(`/factures/${realFacture.Id_Facture}`).send().expect(200)
+                const response = await request(app).post(`/factures/${realFacture.Id_Facture}`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture } = response.body
 
                 expect(infos.message).toBe('La relance a bien été envoyée.')
@@ -427,28 +435,28 @@ describe("Router Factures", () => {
 
         describe('patch /factures/cancel/Id_Facture', () => {
             test("Id_Facture = undefined", async () => {
-                const response = await request(app).patch(`/factures/cancel/undefined`).send().expect(200)
+                const response = await request(app).patch(`/factures/cancel/undefined`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
             })
 
             test("Id_Facture = 0", async () => {
-                const response = await request(app).patch(`/factures/cancel/0`).send().expect(200)
+                const response = await request(app).patch(`/factures/cancel/0`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
             })
 
             test("Id_Facture = inconnu", async () => {
-                const response = await request(app).patch(`/factures/cancel/46000`).send().expect(200)
+                const response = await request(app).patch(`/factures/cancel/46000`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
             })
 
             test("Id_Facture = inconnu", async () => {
-                const response = await request(app).patch(`/factures/cancel/${realFacture.Id_Facture}`).send().expect(200)
+                const response = await request(app).patch(`/factures/cancel/${realFacture.Id_Facture}`).set('Cookie', cookie).send().expect(200)
                 const { infos, facture, urlAvoir } = response.body
 
                 expect(infos.message).toBe(`La facture ${realFacture.Numero_Facture} a été annulée.`)
@@ -460,21 +468,21 @@ describe("Router Factures", () => {
 
         describe('delete /factures/id', () => {
             test("Id_Facture = undefined", async () => {
-                const response = await request(app).delete(`/factures/undefined`).send().expect(200)
+                const response = await request(app).delete(`/factures/undefined`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
             })
 
             test("Id_Facture = 0", async () => {
-                const response = await request(app).delete(`/factures/0`).send().expect(200)
+                const response = await request(app).delete(`/factures/0`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")
             })
 
             test("Id_Facture = inconnu", async () => {
-                const response = await request(app).delete(`/factures/46000`).send().expect(200)
+                const response = await request(app).delete(`/factures/46000`).set('Cookie', cookie).send().expect(200)
                 const { infos } = response.body
 
                 expect(infos.error).toBe("L'identifiant est incorrect ou la facture n'existe pas.")

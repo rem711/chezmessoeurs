@@ -7,6 +7,13 @@ const { createDevis, getListInfosDevis, validate } = require('../../src/routers/
 
 describe("Router devis", () => {  
     const devisCreated = []
+    let cookie = undefined
+
+    beforeAll(async () => {
+        const response = await request(app).post('/authentification').send({ password : 'demo@2020crm-CMS' }).expect(302)
+        
+        cookie = response.header['set-cookie']
+    })
 
     afterAll(async () => {
         await Devis.destroy({
@@ -785,7 +792,7 @@ describe("Router devis", () => {
             })
 
             test("Erreur - Pas d'ID", async () => {
-                const response = await request(app).patch('/devis/undefined').send().expect(200)
+                const response = await request(app).patch('/devis/undefined').set('Cookie', cookie).send().expect(200)
                 expect(response.body.infos.error).toBe("Une erreur s'est produite, veuillez réessayer plus tard")
             })
 
@@ -796,7 +803,7 @@ describe("Router devis", () => {
                 })
 
                 test("Crée un devis complet", async () => {
-                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).set('Cookie', cookie).send(devis).expect(200)
 
                     const devisSent = response.body.devis
                     const infos = response.body.infos
@@ -822,7 +829,7 @@ describe("Router devis", () => {
                 test("Crée un devis complet avec options", async () => {
                     devis.Liste_Options = '8;10'
 
-                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).set('Cookie', cookie).send(devis).expect(200)
 
                     const devisSent = response.body.devis
                     const infos = response.body.infos
@@ -852,7 +859,7 @@ describe("Router devis", () => {
                         Valeur : 50
                     }
 
-                    let response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+                    let response = await request(app).patch(`/devis/${devis.Id_Devis}`).set('Cookie', cookie).send(devis).expect(200)
 
                     let devisSent = response.body.devis
                     let infos = response.body.infos
@@ -881,7 +888,7 @@ describe("Router devis", () => {
                         Valeur : 10
                     }
 
-                    response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+                    response = await request(app).patch(`/devis/${devis.Id_Devis}`).set('Cookie', cookie).send(devis).expect(200)
 
                     devisSent = response.body.devis
                     infos = response.body.infos
@@ -907,7 +914,7 @@ describe("Router devis", () => {
                 test("Erreur pour créer un devis complet", async () => {
                     devis.Formule_Aperitif.Nb_Convives = 1
 
-                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).set('Cookie', cookie).send(devis).expect(200)
 
                     const devisSent = response.body.devis
                     const infos = response.body.infos
@@ -919,7 +926,7 @@ describe("Router devis", () => {
                 test("Erreur Pas d'adresse de facturation", async () => {
                     devis.client.Adresse_Facturation = ''
 
-                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).set('Cookie', cookie).send(devis).expect(200)
                     const infos = response.body.infos
                     
                     expect(infos.error).toBe("L'adresse de facturation doit être renseignée.")
@@ -939,7 +946,7 @@ describe("Router devis", () => {
                     devis.Formule_Box.Nb_Convives = 10
                     devis.Formule_Brunch.Nb_Convives = 20
 
-                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).set('Cookie', cookie).send(devis).expect(200)
 
                     const devisSent = response.body.devis
                     const infos = response.body.infos
@@ -970,19 +977,19 @@ describe("Router devis", () => {
                     devis.Formule_Box.Nb_Convives = 9
                     devis.Formule_Brunch.Nb_Convives = 19
 
-                    await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+                    await request(app).patch(`/devis/${devis.Id_Devis}`).set('Cookie', cookie).send(devis).expect(200)
                     expect(response.body.infos.error).toBe(undefined)
                     expect(response.body.devis.Client.Adresse_Facturation).toBe('adresse Facturation Client Test')
                 })
 
                 test("Modifie devis complet (sans modification)", async () => {
-                    await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+                    await request(app).patch(`/devis/${devis.Id_Devis}`).set('Cookie', cookie).send(devis).expect(200)
                 })
 
                 test("Erreur pour modifier devis complet", async () => {
                     devis.Formule_Aperitif.Nb_Convives = 1
 
-                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).send(devis).expect(200)
+                    const response = await request(app).patch(`/devis/${devis.Id_Devis}`).set('Cookie', cookie).send(devis).expect(200)
 
                     const devisSent = response.body.devis
                     const infos = response.body.infos

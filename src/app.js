@@ -3,6 +3,8 @@ const path = require('path')
 const compression = require('compression')
 const express = require('express')
 const bodyParser = require('body-parser')
+const session = require('express-session')
+const auth = require('./middlewares/authentification/auth')
 // const hbs = require('hbs') pour handlebars
 
 // chargement base de données
@@ -11,6 +13,7 @@ const db = require('./models')
 global.db = db 
 
 // chargement des routers
+const authRouter = require('./routers/auth')
 const agendaRouter = require('./routers/agenda')
 const archivesRouter = require('./routers/archives')
 const carteRouter = require('./routers/carte')
@@ -25,6 +28,13 @@ const app = express()
 app.use(compression())
 app.use(bodyParser.urlencoded({ extended : true }))
 app.use(bodyParser.json())
+app.use(session({
+    name : 'session',
+    secret : 'crm chezmessoeurs @Rémi Qualicom',
+    resave: false,
+    saveUninitialized: true
+}))
+app.use(auth)
 
 // chemins pour config Express
 const publicDirectoryPath = path.join(__dirname, '../public')
@@ -44,6 +54,7 @@ app.set('views', viewsPath)
 app.use(express.static(publicDirectoryPath))
 
 // setup des routers
+app.use(authRouter)
 app.use(agendaRouter)
 app.use(archivesRouter)
 app.use(carteRouter)

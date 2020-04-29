@@ -23,6 +23,11 @@ branch="$2"
 echo -e "Vérification de la branche \n"
 git checkout $branch
 echo -e "- Installation des dépendances de l'application : \n"
-npm install
+if [ $env != "production" ]
+then
+    npm install
+else
+    npm install --production
+fi
 sh ./install/init-database.sh "$env"
 echo -e "Environnement de $env prêt \n"
