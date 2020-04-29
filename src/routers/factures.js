@@ -286,61 +286,72 @@ router
     // si facture déjà envoyée, juste sortir le pdf pour consultation
 .get(`/factures/pdf/${encodeURI('CHEZ MES SOEURS - Facture ')}:Numero_Facture.pdf`, async (req, res) => {
     const postNumeroFacture = req.params.Numero_Facture
-    const facture = await Factures.findOne({
-        where : {
-            Numero_Facture : postNumeroFacture
-        },
-        include : {
-            all : true,
-            nested : true
+
+    try {
+        const facture = await Factures.findOne({
+            where : {
+                Numero_Facture : postNumeroFacture
+            },
+            include : {
+                all : true,
+                nested : true
+            }
+        })
+
+        const toPDF = {}
+        toPDF.Id_Facture = facture.Id_Facture
+        toPDF.Numero_Facture = facture.Numero_Facture
+        toPDF.Date_Creation = facture.Date_Creation
+        toPDF.Id_Devis = facture.Id_Devis
+        toPDF.Date_Evenement = facture.Date_Evenement
+        toPDF.Adresse_Livraison = facture.Adresse_Livraison
+        toPDF.Client = JSON.parse(JSON.stringify(facture.Client))
+        // la méthode {...} est utilisée pour si la formule est null avoir un objet et pouvoir définir isAperitif etc.
+        toPDF.Formule_Aperitif = {...JSON.parse(JSON.stringify(facture.Formule_Aperitif))} 
+        toPDF.Formule_Aperitif.isAperitif = false
+        toPDF.Formule_Cocktail = {...JSON.parse(JSON.stringify(facture.Formule_Cocktail))}
+        toPDF.Formule_Cocktail.isCocktail = false
+        toPDF.Formule_Box = {...JSON.parse(JSON.stringify(facture.Formule_Box))}
+        toPDF.Formule_Box.isBox = false
+        toPDF.Formule_Brunch = {...JSON.parse(JSON.stringify(facture.Formule_Brunch))}
+        toPDF.Formule_Brunch.isBrunch = false
+        toPDF.Commentaire = facture.Commentaire
+        toPDF.Liste_Options = []
+        toPDF.Remise = facture.Remise
+        toPDF.Prix_HT = facture.Prix_HT
+        toPDF.Prix_TTC = facture.Prix_TTC
+
+        if(facture.Id_Formule_Aperitif !== null) toPDF.Formule_Aperitif.isAperitif = true
+        if(facture.Id_Formule_Cocktail !== null) toPDF.Formule_Cocktail.isCocktail = true
+        if(facture.Id_Formule_Box !== null) toPDF.Formule_Box.isBox = true
+        if(facture.Id_Formule_Brunch !== null) toPDF.Formule_Brunch.isBrunch = true
+
+        // récupérer liste options avec nom et prix
+        if(facture.Liste_Options !== null && facture.Liste_Options !== '') {
+            const tabOptions = facture.Liste_Options.split(';')
+            for(let id of tabOptions) {
+                if(id === '') continue
+                const option = await Prix_Unitaire.findOne({
+                    where : {
+                        Id_Prix_Unitaire : id
+                    }
+                })
+                if(option !== null) toPDF.Liste_Options.push({ Nom : option.Nom_Type_Prestation, Montant : option.Montant })
+            }
         }
-    })
 
-    const toPDF = {}
-    toPDF.Id_Facture = facture.Id_Facture
-    toPDF.Numero_Facture = facture.Numero_Facture
-    toPDF.Date_Creation = facture.Date_Creation
-    toPDF.Id_Devis = facture.Id_Devis
-    toPDF.Date_Evenement = facture.Date_Evenement
-    toPDF.Adresse_Livraison = facture.Adresse_Livraison
-    toPDF.Client = JSON.parse(JSON.stringify(facture.Client))
-    // la méthode {...} est utilisée pour si la formule est null avoir un objet et pouvoir définir isAperitif etc.
-    toPDF.Formule_Aperitif = {...JSON.parse(JSON.stringify(facture.Formule_Aperitif))} 
-    toPDF.Formule_Aperitif.isAperitif = false
-    toPDF.Formule_Cocktail = {...JSON.parse(JSON.stringify(facture.Formule_Cocktail))}
-    toPDF.Formule_Cocktail.isCocktail = false
-    toPDF.Formule_Box = {...JSON.parse(JSON.stringify(facture.Formule_Box))}
-    toPDF.Formule_Box.isBox = false
-    toPDF.Formule_Brunch = {...JSON.parse(JSON.stringify(facture.Formule_Brunch))}
-    toPDF.Formule_Brunch.isBrunch = false
-    toPDF.Commentaire = facture.Commentaire
-    toPDF.Liste_Options = []
-    toPDF.Remise = facture.Remise
-    toPDF.Prix_HT = facture.Prix_HT
-    toPDF.Prix_TTC = facture.Prix_TTC
+        createPDF(res, toPDF)
 
-    if(facture.Id_Formule_Aperitif !== null) toPDF.Formule_Aperitif.isAperitif = true
-    if(facture.Id_Formule_Cocktail !== null) toPDF.Formule_Cocktail.isCocktail = true
-    if(facture.Id_Formule_Box !== null) toPDF.Formule_Box.isBox = true
-    if(facture.Id_Formule_Brunch !== null) toPDF.Formule_Brunch.isBrunch = true
-
-    // récupérer liste options avec nom et prix
-    if(facture.Liste_Options !== null && facture.Liste_Options !== '') {
-        const tabOptions = facture.Liste_Options.split(';')
-        for(let id of tabOptions) {
-            if(id === '') continue
-            const option = await Prix_Unitaire.findOne({
-                where : {
-                    Id_Prix_Unitaire : id
-                }
-            })
-            if(option !== null) toPDF.Liste_Options.push({ Nom : option.Nom_Type_Prestation, Montant : option.Montant })
+        if(facture.Statut === 'En attente') {
+            facture.Statut = 'En attente de paiement'
+            facture.Client.Dernier_Statut = 'Facture envoyée'
+            await facture.save()
+            await facture.Client.save()
         }
     }
-
-    createPDF(res, toPDF)
-
-    // res.send(req.params.Numero_Facture)
+    catch(error) {
+        res.send(getErrorMessage(error))
+    }
 })
 // envoie relance
 .post('/factures/:Id_Facture', async (req, res) => {
