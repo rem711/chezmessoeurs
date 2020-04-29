@@ -24,6 +24,11 @@ npx sequelize-cli db:create $envString
 echo -e "- Migration de la BDD : \n"
 npx sequelize-cli db:migrate $envString
 echo -e "- Remplissage de la BDD : \n"
-npx sequelize-cli db:seed:all $envString
+if [ $env != "production" ]
+then
+    npx sequelize-cli db:seed:all $envString
+else
+    npx sequelize-cli db:seed --seed 001-seed-type_formule.js 003-seed-recettes.js 004-seed-prix_unitaire.js $envString
+fi
 echo -e "Déploiement terminé. \n"
 cd ..
