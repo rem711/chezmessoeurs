@@ -61,7 +61,9 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: true,
 			defaultValue : 'En cours'
 		}
-  }, {});
+  }, {
+	tableName : 'estimations'
+  });
   Estimations.associate = function(models) {
     // associations can be defined here
 	Estimations.belongsTo(models.Clients, { foreignKey : 'Id_Client' })

@@ -58,7 +58,9 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING(1000),
 			allowNull: true
 		}
-    }, {})
+    }, {
+		tableName : 'formules'
+	})
     Formules.associate = models => {
         Formules.belongsTo(models.Type_Formule, { foreignKey : 'Id_Type_Formule'})
     }

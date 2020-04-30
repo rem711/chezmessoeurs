@@ -31,7 +31,9 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: 0
 		}
-    }, {})
+    }, {
+		tableName : 'prix_unitaire'
+	})
 
     return Prix_Unitaire
 }

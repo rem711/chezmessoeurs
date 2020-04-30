@@ -100,7 +100,9 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: 0
 		}
-  }, {});
+  }, {
+	  tableName : 'clients'
+  });
   Clients.associate = function(models) {
 	// associations can be defined here
 	// Clients.hasMany(models.Estimations)

@@ -28,7 +28,9 @@ module.exports = (sequelize, DataTypes) => {
 				msg : 'Type de formule déjà existant.'
 			}
 		}
-    }, {})
+    }, {
+		tableName : 'type_formule'
+	})
     Type_Formule.associate = models => {
         // Type_Formule.hasMany(models.Formules)
     }

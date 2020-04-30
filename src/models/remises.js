@@ -31,7 +31,9 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: 0
 		}
-    }, {})
+    }, {
+		tableName : 'remises'
+	})
     Remises.associate = models => {
         // Remises.hasMany(models.Devis),
         // Remises.hasMany(models.Factures)
