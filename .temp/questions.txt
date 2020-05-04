@@ -1,0 +1,35 @@
+Facture :
+- Format numérotation factures
+- Format numérotation avoirs
+- Relance, envoyer un mail? Créer un document à transmettre au client, à joindre dans ce mail?
+- Que faire d'une facture créée mais non envoyée, simplement l'archivée?
+- Un acompte doit-il être versé à partir d'un certain montant?
+- Combien de temps le client a t-il pour payer une facture? (ex : date d'envoie +30 jours)
+- La relance doit-elle être automatique ou uniquement manuelle?
+- Si la facture est payée en retard, y a t-il un pourcentage sur le total supplémentaire
+- Y a t-il un système d'escompte?
+
+Devis :
+- Besoin de format spécial pour la numérotation des devis? ou simple numéro croissant (peu importe?)
+
+Clients :
+- Suppression réellement possible? engendre suppression de tout ce qui est en lien avec le client!
+- Les clients professionnels doivent-ils avoir un numéro de TVA d'enregistré?
+
+Agenda :
+ - que doit être géré dans l'agenda? Les dates de prestations pour les devis validés uniquement?
+
+Archives :
+- Combien de temps doivent être conservées les informations archivées, Sachant que certaines pourront être détruites, d'autres devront être conservées
+
+Général :
+- Un document archivé peut-il être retiré des archives? (revenir à son état de création). 
+- Quelles sont les informations pouvant être supprimées? (recette? facture? devis? client?) Et dans quelle mesure, exemple un devis peut-il être supprimé si une facture a été établie depuis celui-ci. Un client peut-il être supprimé si
+  une facture est à son nom?
+- Comment gérer la boisson? Est-elle incluse dans certaines formules, y a t-il une limitation dans la quantité, y a t-il des formats différents (ex : 33cL, 1L), le prix est-il inclus dans la formule ou en supplément? (box inclus, reste en sus?)
+- Quelle est la structure d'une formule box (une entrée, un plat (légumes + viande/poisson), un dessert + une boisson 33cl)? Le plat est-il compté comme un seul élément (plat = nom plat, ET NON plat = nom plat légumes + nom plat viande)
+- Y a t-il des choses incluses d'office dans certaines formules?
+- Quels sont les nombres d'éléments contenus dans un brunch selon son type (ex Petit brunch salé = 4 plats salés, Grand brunch salé = 8 plats salés)?
+- Plusieurs remises peuvent-elles être applicables ou au maximum une remise globale est appliquée?
+- A quel moment une prestation est comptée comme réalisée? Lorsque la facture est payée? Lorsque la facture est archivée? Lorsque la facture est envoyée (càd post réalisation de l'évènement)
+- Faut-il garder une traçabilité des actions utilisateur? (quel utilisateur a fait cette action, ex : qui a validé le devis X)

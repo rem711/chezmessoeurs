@@ -8,45 +8,52 @@
         
          
         <div class="content_inner">
-          <h1>Clients</h1>
-            <table>
-                <thead>
-                    <th>Nom Prénom</th>
-                    <th>Adresse</th>
-                    <th>Téléphone</th>
-                    <th>Email</th>
-                    <th>Type</th>
-                    <th>Nb Prestations</th>
-                    <th>Dernier Statut</th>
-                    <th>Paiement(s) en retard</th>
+            <h1>Clients</h1>
+            <%# Affiche si une erreur est survenue %>      
+            <% if (locals.infos && infos.error) { %>
+                <h3>
+                    <%= infos.error %> 
+                </h3>
+            <%# Affiche le contenu s'il n'y a pas de problème sur le serveur %> 
+            <% } else { %>
+                <table>
+                    <thead>
+                        <th>Nom Prénom</th>
+                        <th>Adresse</th>
+                        <th>Téléphone</th>
+                        <th>Email</th>
+                        <th>Type</th>
+                        <th>Nb Prestations</th>
+                        <th>Dernier Statut</th>
+                        <th>Paiement(s) en retard</th>
 
-                </thead>
-                <tbody>
-                <% if(locals.infos) { %>
-                    <tr><td colspan="8">
-                        <%= infos.error %>
-                        <%= infos.message %>
-                    </td></tr>         
-                <% } else { %>                    
-                    <% if(locals.clients) { %>
-                        <% clients.forEach(client => { %>
-                            <% const { Id_Client, Nom_Prenom, Adresse_Facturation, Telephone, Email, Type, Nombre_Prestations, Dernier_Statut, Paiement_En_Retard } = client %>
-                            <% const id = 'client_' + Id_Client %>
-                            <tr id="<%= id %>">
-                                <td><%= Nom_Prenom %></td>
-                                <td><%= Adresse_Facturation %></td>
-                                <td><%= Telephone %></td>
-                                <td><%= Email %></td>
-                                <td><%= Type %></td>
-                                <td><%= Nombre_Prestations %></td>
-                                <td><%= Dernier_Statut %></td>
-                                <td><%= Paiement_En_Retard %></td>    
-                            </tr>
-                        <% }) %>
-                    <% } %>
-                <% } %>                          
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    <% if(locals.infos && infos.message) { %>
+                        <tr><td colspan="8">
+                            <%= infos.message %>
+                        </td></tr>         
+                    <% } else { %>                    
+                        <% if(locals.clients) { %>
+                            <% clients.forEach(client => { %>
+                                <% const { Id_Client, Nom_Prenom, Adresse_Facturation, Telephone, Email, Type, Nombre_Prestations, Dernier_Statut, Paiement_En_Retard } = client %>
+                                <% const id = 'client_' + Id_Client %>
+                                <tr id="<%= id %>">
+                                    <td><%= Nom_Prenom %></td>
+                                    <td><%= Adresse_Facturation %></td>
+                                    <td><%= Telephone %></td>
+                                    <td><%= Email %></td>
+                                    <td><%= Type %></td>
+                                    <td><%= Nombre_Prestations %></td>
+                                    <td><%= Dernier_Statut %></td>
+                                    <td><%= Paiement_En_Retard %></td>    
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    <% } %>                          
+                    </tbody>
+                </table>
+            <% } %> 
         </div>
 
         <div class="modal" id="modalUpdate">

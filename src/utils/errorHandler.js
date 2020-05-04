@@ -48,6 +48,9 @@ const getErrorMessage = (error) => {
         else if(error.name === 'SequelizeDatabaseError') {
             message = error.parent.sqlMessage
         }
+        else if(error.name === 'SequelizeConnectionRefusedError') {
+            message = "La connexion à la base de données est interrompue, veuillez réessayer plus tard. Si l'erreur persiste, veuillez en informer votre Webmaster."
+        }
     }
     catch(e) {
         console.log(e)

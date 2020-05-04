@@ -414,16 +414,6 @@ router
             infos
         })
     }
-
-    
-    
-    // res.render('index', {
-    //     isDevisItem : true,
-    //     infos,
-    //     devis,
-    //     moment,
-    //     tableCorrespondanceTypes
-    // })
 })
 // tableau devis
 .get('/devis', async (req, res) => {
@@ -446,71 +436,78 @@ router
         }
     }
 
-    // récupération des différentes listes de devis
-    const temp_devisEnCours = await Devis.findAll({
-        order : [
-            ['Date_Evenement', 'ASC']
-        ],
-        where : {
-            Statut : 'En cours'
-        },
-        include : [
-            { model : Clients },
-            { model : Estimations }
-        ]
-    })
-    const temp_devisValidés = await Devis.findAll({
-        order : [
-            ['Date_Evenement', 'ASC']
-        ],
-        where : {
-            Statut : 'Validé'
-        },
-        include : [
-            { model : Clients },
-            { model : Estimations }
-        ]
-    })
-    const temp_devisEnvoyés = await Devis.findAll({
-        order : [
-            ['Date_Evenement', 'ASC']
-        ],
-        where : {
-            Statut : 'Envoyé'
-        },
-        include : [
-            { model : Clients },
-            { model : Estimations }
-        ]
-    })
+    try {
+        // récupération des différentes listes de devis
+        const temp_devisEnCours = await Devis.findAll({
+            order : [
+                ['Date_Evenement', 'ASC']
+            ],
+            where : {
+                Statut : 'En cours'
+            },
+            include : [
+                { model : Clients },
+                { model : Estimations }
+            ]
+        })
+        const temp_devisValidés = await Devis.findAll({
+            order : [
+                ['Date_Evenement', 'ASC']
+            ],
+            where : {
+                Statut : 'Validé'
+            },
+            include : [
+                { model : Clients },
+                { model : Estimations }
+            ]
+        })
+        const temp_devisEnvoyés = await Devis.findAll({
+            order : [
+                ['Date_Evenement', 'ASC']
+            ],
+            where : {
+                Statut : 'Envoyé'
+            },
+            include : [
+                { model : Clients },
+                { model : Estimations }
+            ]
+        })
 
-    // il y a un problème pour récupérer les devis
-    if(temp_devisEnCours === null || temp_devisValidés === null || temp_devisEnvoyés === null) {
-        values['Général'].infos = clientInformationObject('Une erreur s\'est produite, impossible de charger les devis.', undefined)        
+        // il y a un problème pour récupérer les devis
+        if(temp_devisEnCours === null || temp_devisValidés === null || temp_devisEnvoyés === null) {
+            throw 'Une erreur s\'est produite, impossible de charger les devis.'     
+        }
+        else {
+            // indique s'il n'y a pas de devis dans la catégorie
+            if(temp_devisEnCours.length === 0) {
+                values['En cours'].infos = clientInformationObject(undefined, 'Aucun devis')
+            }
+            if(temp_devisEnvoyés.length === 0) {
+                values['Envoyés'].infos = clientInformationObject(undefined, 'Aucun devis')
+            }
+            if(temp_devisValidés.length === 0) {
+                values['Validés'].infos = clientInformationObject(undefined, 'Aucun devis')
+            }
+
+            // récupération et formatage des informations des devis
+            if(temp_devisEnCours.length > 0) {
+                values['En cours'].devis = await getListInfosDevis(temp_devisEnCours)            
+            }
+            if(temp_devisEnvoyés.length > 0) {
+                values['Envoyés'].devis = await getListInfosDevis(temp_devisEnvoyés)
+            }
+            if(temp_devisValidés.length > 0) {
+                values['Validés'].devis = await getListInfosDevis(temp_devisValidés)
+            }
+        }
     }
-    else {
-        // indique s'il n'y a pas de devis dans la catégorie
-        if(temp_devisEnCours.length === 0) {
-            values['En cours'].infos = clientInformationObject(undefined, 'Aucun devis')
-        }
-        if(temp_devisEnvoyés.length === 0) {
-            values['Envoyés'].infos = clientInformationObject(undefined, 'Aucun devis')
-        }
-        if(temp_devisValidés.length === 0) {
-            values['Validés'].infos = clientInformationObject(undefined, 'Aucun devis')
-        }
-
-        // récupération et formatage des informations des devis
-        if(temp_devisEnCours.length > 0) {
-            values['En cours'].devis = await getListInfosDevis(temp_devisEnCours)            
-        }
-        if(temp_devisEnvoyés.length > 0) {
-            values['Envoyés'].devis = await getListInfosDevis(temp_devisEnvoyés)
-        }
-        if(temp_devisValidés.length > 0) {
-            values['Validés'].devis = await getListInfosDevis(temp_devisValidés)
-        }
-
+    catch(error) {
+        values['En cours'].devis = undefined
+        values['Envoyés'].devis = undefined
+        values['Validés'].devis = undefined
+        values['Général'].infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
     res.render('index', {
@@ -527,349 +524,358 @@ router
     // init valeurs retour
     const values = { isDevisItem : true }
     let infos = undefined
+    let devis = undefined
 
-    const devis = await Devis.findOne({
-        where : {
-            Id_Devis : getId
-        },
-        include : {
-            all : true,
-            nested : true
-        }
-    })
-
-    // on verifie l'existence du devis
-    if(devis !== null) { 
-        // récupérations recettes sélectionnées
-        let recettesSaleesAperitif = []
-        let recettesBoissonsAperitif = []
-        let recettesSaleesCocktail = []
-        let recettesSucreesCocktail = []
-        let recettesBoissonsCocktail = []
-        let recettesSaleesBox = []
-        let recettesSucreesBox = []
-        let recettesBoissonsBox = []
-        let recettesSaleesBrunch = []
-        let recettesSucreesBrunch = []
-        let recettesBoissonsBrunch = []
-
-        if(devis.Formule_Aperitif) {
-            let tabRecettesSalees = undefined
-            let tabRecettesBoissons = undefined
-
-            // récupération des recettes depuis les listes
-            if(devis.Formule_Aperitif.Liste_Id_Recettes_Salees !== null) {
-                tabRecettesSalees = devis.Formule_Aperitif.Liste_Id_Recettes_Salees.split(';')
-                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-                tabRecettesSalees.pop()
-
-                // on crée une liste où on poussera les recettes
-                recettesSaleesAperitif = []
-                for(const Id_Recette of tabRecettesSalees) {
-                    const recette = await Recettes.findOne({
-                        where : {
-                            Id_Recette : Id_Recette
-                        }
-                    })
-                    if(recette !== null) {
-                        recettesSaleesAperitif.push(recette)
-                    }
-                }
-            }
-            if(devis.Formule_Aperitif.Liste_Id_Recettes_Boissons !== null) {
-                tabRecettesBoissons = devis.Formule_Aperitif.Liste_Id_Recettes_Boissons.split(';')
-                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-                tabRecettesBoissons.pop()
-
-                // on crée une liste où on poussera les recettes
-                recettesBoissonsAperitif = []
-                for(const Id_Recette of tabRecettesBoissons) {
-                    const recette = await Recettes.findOne({
-                        where : {
-                            Id_Recette : Id_Recette
-                        }
-                    })
-                    if(recette !== null) {
-                        recettesBoissonsAperitif.push(recette)
-                    }
-                }
-            }
-
-        }
-        if(devis.Formule_Cocktail) {
-            let tabRecettesSalees = undefined
-            let tabRecettesSucrees = undefined
-            let tabRecettesBoissons = undefined
-
-            // récupération des recettes depuis les listes
-            if(devis.Formule_Cocktail.Liste_Id_Recettes_Salees !== null) {
-                tabRecettesSalees = devis.Formule_Cocktail.Liste_Id_Recettes_Salees.split(';')
-                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-                tabRecettesSalees.pop()
-
-                // on crée une liste où on poussera les recettes
-                recettesSaleesCocktail = []
-                for(const Id_Recette of tabRecettesSalees) {
-                    const recette = await Recettes.findOne({
-                        where : {
-                            Id_Recette : Id_Recette
-                        }
-                    })
-                    if(recette !== null) {
-                        recettesSaleesCocktail.push(recette)
-                    }
-                }
-            }
-            if(devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees !== null) {
-                tabRecettesSucrees = devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees.split(';')
-                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-                tabRecettesSucrees.pop()
-
-                // on crée une liste où on poussera les recettes
-                recettesSucreesCocktail = []
-                for(const Id_Recette of tabRecettesSucrees) {
-                    const recette = await Recettes.findOne({
-                        where : {
-                            Id_Recette : Id_Recette
-                        }
-                    })
-                    if(recette !== null) {
-                        recettesSucreesCocktail.push(recette)
-                    }
-                }
-            }
-            if(devis.Formule_Cocktail.Liste_Id_Recettes_Boissons !== null) {
-                tabRecettesBoissons = devis.Formule_Cocktail.Liste_Id_Recettes_Boissons.split(';')
-                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-                tabRecettesBoissons.pop()
-
-                // on crée une liste où on poussera les recettes
-                recettesBoissonsCocktail = []
-                for(const Id_Recette of tabRecettesBoissons) {
-                    const recette = await Recettes.findOne({
-                        where : {
-                            Id_Recette : Id_Recette
-                        }
-                    })
-                    if(recette !== null) {
-                        recettesBoissonsCocktail.push(recette)
-                    }
-                }
-            }
-        }
-        if(devis.Formule_Box) {
-            let tabRecettesSalees = undefined
-            let tabRecettesSucrees = undefined
-            let tabRecettesBoissons = undefined
-
-            // récupération des recettes depuis les listes
-            if(devis.Formule_Box.Liste_Id_Recettes_Salees !== null) {
-                tabRecettesSalees = devis.Formule_Box.Liste_Id_Recettes_Salees.split(';')
-                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-                tabRecettesSalees.pop()
-
-                // on crée une liste où on poussera les recettes
-                recettesSaleesBox = []
-                for(const Id_Recette of tabRecettesSalees) {
-                    const recette = await Recettes.findOne({
-                        where : {
-                            Id_Recette : Id_Recette
-                        }
-                    })
-                    if(recette !== null) {
-                        recettesSaleesBox.push(recette)
-                    }
-                }
-            }
-            if(devis.Formule_Box.Liste_Id_Recettes_Sucrees !== null) {
-                tabRecettesSucrees = devis.Formule_Box.Liste_Id_Recettes_Sucrees.split(';')
-                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-                tabRecettesSucrees.pop()
-
-                // on crée une liste où on poussera les recettes
-                recettesSucreesBox = []
-                for(const Id_Recette of tabRecettesSucrees) {
-                    const recette = await Recettes.findOne({
-                        where : {
-                            Id_Recette : Id_Recette
-                        }
-                    })
-                    if(recette !== null) {
-                        recettesSucreesBox.push(recette)
-                    }
-                }
-            }
-            if(devis.Formule_Box.Liste_Id_Recettes_Boissons !== null) {
-                tabRecettesBoissons = devis.Formule_Box.Liste_Id_Recettes_Boissons.split(';')
-                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-                tabRecettesBoissons.pop()
-
-                // on crée une liste où on poussera les recettes
-                recettesBoissonsBox = []
-                for(const Id_Recette of tabRecettesBoissons) {
-                    const recette = await Recettes.findOne({
-                        where : {
-                            Id_Recette : Id_Recette
-                        }
-                    })
-                    if(recette !== null) {
-                        recettesBoissonsBox.push(recette)
-                    }
-                }
-            }
-        }
-        if(devis.Formule_Brunch) {
-            let tabRecettesSalees = undefined
-            let tabRecettesSucrees = undefined
-            let tabRecettesBoissons = undefined
-
-            // récupération des recettes depuis les listes
-            if(devis.Formule_Brunch.Liste_Id_Recettes_Salees !== null) {
-                tabRecettesSalees = devis.Formule_Brunch.Liste_Id_Recettes_Salees.split(';')
-                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-                tabRecettesSalees.pop()
-
-                // on crée une liste où on poussera les recettes
-                recettesSaleesBrunch = []
-                for(const Id_Recette of tabRecettesSalees) {
-                    const recette = await Recettes.findOne({
-                        where : {
-                            Id_Recette : Id_Recette
-                        }
-                    })
-                    if(recette !== null) {
-                        recettesSaleesBrunch.push(recette)
-                    }
-                }
-            }
-            if(devis.Formule_Brunch.Liste_Id_Recettes_Sucrees !== null) {
-                tabRecettesSucrees = devis.Formule_Brunch.Liste_Id_Recettes_Sucrees.split(';')
-                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-                tabRecettesSucrees.pop()
-
-                // on crée une liste où on poussera les recettes
-                recettesSucreesBrunch = []
-                for(const Id_Recette of tabRecettesSucrees) {
-                    const recette = await Recettes.findOne({
-                        where : {
-                            Id_Recette : Id_Recette
-                        }
-                    })
-                    if(recette !== null) {
-                        recettesSucreesBrunch.push(recette)
-                    }
-                }
-            }
-            if(devis.Formule_Brunch.Liste_Id_Recettes_Boissons !== null) {
-                tabRecettesBoissons = devis.Formule_Brunch.Liste_Id_Recettes_Boissons.split(';')
-                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-                tabRecettesBoissons.pop()
-
-                // on crée une liste où on poussera les recettes
-                recettesBoissonsBrunch = []
-                for(const Id_Recette of tabRecettesBoissons) {
-                    const recette = await Recettes.findOne({
-                        where : {
-                            Id_Recette : Id_Recette
-                        }
-                    })
-                    if(recette !== null) {
-                        recettesBoissonsBrunch.push(recette)
-                    }
-                }
-            }
-        }
-
-        let optionsSelectionnees = undefined
-        let IdoptionsSelectionnees = []
-        if(devis.Liste_Options !== null) {
-            const tabOptions = devis.Liste_Options.split(';')
-            // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
-            tabOptions.pop()
-
-            // on crée une liste où on poussera les recettes
-            optionsSelectionnees = []
-            for(const Id_Option of tabOptions) {
-                const option = await Prix_Unitaire.findOne({
-                    where : {
-                        Id_Prix_Unitaire : Id_Option
-                    }
-                })
-                if(option !== null) {
-                    optionsSelectionnees.push(option)
-                    IdoptionsSelectionnees.push(option.Id_Prix_Unitaire)
-                }
-            }
-        }
-
-        // récupération des recettes
-        const listeRecettesSalees = await Recettes.findAll({
+    try {
+        devis = await Devis.findOne({
             where : {
-                Categorie : 'Salée'
-            }
-        })
-        const listeRecettesSucrees = await Recettes.findAll({
-            where : {
-                Categorie : 'Sucrée'
-            }
-        })
-        const listeRecettesBoissons = await Recettes.findAll({
-            where : {
-                Categorie : 'Boisson'
+                Id_Devis : getId
+            },
+            include : {
+                all : true,
+                nested : true
             }
         })
 
-        // récupération des options
-        const listeOptions = await Prix_Unitaire.findAll({
-            where : {
-                isOption : true,
-                Id_Prix_Unitaire : {
-                    [Op.notIn] : IdoptionsSelectionnees
+        // on verifie l'existence du devis
+        if(devis !== null) { 
+            // récupérations recettes sélectionnées
+            let recettesSaleesAperitif = []
+            let recettesBoissonsAperitif = []
+            let recettesSaleesCocktail = []
+            let recettesSucreesCocktail = []
+            let recettesBoissonsCocktail = []
+            let recettesSaleesBox = []
+            let recettesSucreesBox = []
+            let recettesBoissonsBox = []
+            let recettesSaleesBrunch = []
+            let recettesSucreesBrunch = []
+            let recettesBoissonsBrunch = []
+
+            if(devis.Formule_Aperitif) {
+                let tabRecettesSalees = undefined
+                let tabRecettesBoissons = undefined
+
+                // récupération des recettes depuis les listes
+                if(devis.Formule_Aperitif.Liste_Id_Recettes_Salees !== null) {
+                    tabRecettesSalees = devis.Formule_Aperitif.Liste_Id_Recettes_Salees.split(';')
+                    // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                    tabRecettesSalees.pop()
+
+                    // on crée une liste où on poussera les recettes
+                    recettesSaleesAperitif = []
+                    for(const Id_Recette of tabRecettesSalees) {
+                        const recette = await Recettes.findOne({
+                            where : {
+                                Id_Recette : Id_Recette
+                            }
+                        })
+                        if(recette !== null) {
+                            recettesSaleesAperitif.push(recette)
+                        }
+                    }
+                }
+                if(devis.Formule_Aperitif.Liste_Id_Recettes_Boissons !== null) {
+                    tabRecettesBoissons = devis.Formule_Aperitif.Liste_Id_Recettes_Boissons.split(';')
+                    // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                    tabRecettesBoissons.pop()
+
+                    // on crée une liste où on poussera les recettes
+                    recettesBoissonsAperitif = []
+                    for(const Id_Recette of tabRecettesBoissons) {
+                        const recette = await Recettes.findOne({
+                            where : {
+                                Id_Recette : Id_Recette
+                            }
+                        })
+                        if(recette !== null) {
+                            recettesBoissonsAperitif.push(recette)
+                        }
+                    }
+                }
+
+            }
+            if(devis.Formule_Cocktail) {
+                let tabRecettesSalees = undefined
+                let tabRecettesSucrees = undefined
+                let tabRecettesBoissons = undefined
+
+                // récupération des recettes depuis les listes
+                if(devis.Formule_Cocktail.Liste_Id_Recettes_Salees !== null) {
+                    tabRecettesSalees = devis.Formule_Cocktail.Liste_Id_Recettes_Salees.split(';')
+                    // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                    tabRecettesSalees.pop()
+
+                    // on crée une liste où on poussera les recettes
+                    recettesSaleesCocktail = []
+                    for(const Id_Recette of tabRecettesSalees) {
+                        const recette = await Recettes.findOne({
+                            where : {
+                                Id_Recette : Id_Recette
+                            }
+                        })
+                        if(recette !== null) {
+                            recettesSaleesCocktail.push(recette)
+                        }
+                    }
+                }
+                if(devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees !== null) {
+                    tabRecettesSucrees = devis.Formule_Cocktail.Liste_Id_Recettes_Sucrees.split(';')
+                    // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                    tabRecettesSucrees.pop()
+
+                    // on crée une liste où on poussera les recettes
+                    recettesSucreesCocktail = []
+                    for(const Id_Recette of tabRecettesSucrees) {
+                        const recette = await Recettes.findOne({
+                            where : {
+                                Id_Recette : Id_Recette
+                            }
+                        })
+                        if(recette !== null) {
+                            recettesSucreesCocktail.push(recette)
+                        }
+                    }
+                }
+                if(devis.Formule_Cocktail.Liste_Id_Recettes_Boissons !== null) {
+                    tabRecettesBoissons = devis.Formule_Cocktail.Liste_Id_Recettes_Boissons.split(';')
+                    // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                    tabRecettesBoissons.pop()
+
+                    // on crée une liste où on poussera les recettes
+                    recettesBoissonsCocktail = []
+                    for(const Id_Recette of tabRecettesBoissons) {
+                        const recette = await Recettes.findOne({
+                            where : {
+                                Id_Recette : Id_Recette
+                            }
+                        })
+                        if(recette !== null) {
+                            recettesBoissonsCocktail.push(recette)
+                        }
+                    }
                 }
             }
-        })
+            if(devis.Formule_Box) {
+                let tabRecettesSalees = undefined
+                let tabRecettesSucrees = undefined
+                let tabRecettesBoissons = undefined
 
-        // récupération des différents prix
-        const listePrix_unitaire = await Prix_Unitaire.findAll({}) 
+                // récupération des recettes depuis les listes
+                if(devis.Formule_Box.Liste_Id_Recettes_Salees !== null) {
+                    tabRecettesSalees = devis.Formule_Box.Liste_Id_Recettes_Salees.split(';')
+                    // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                    tabRecettesSalees.pop()
 
-        // affectation des valeurs de retour
-        values.recettesSaleesAperitif = recettesSaleesAperitif
-        values.recettesBoissonsAperitif = recettesBoissonsAperitif
-        values.recettesSaleesCocktail = recettesSaleesCocktail
-        values.recettesSucreesCocktail = recettesSucreesCocktail
-        values.recettesBoissonsCocktail = recettesBoissonsCocktail
-        values.recettesSaleesBox = recettesSaleesBox
-        values.recettesSucreesBox = recettesSucreesBox
-        values.recettesBoissonsBox = recettesBoissonsBox
-        values.recettesSaleesBrunch = recettesSaleesBrunch
-        values.recettesSucreesBrunch = recettesSucreesBrunch
-        values.recettesBoissonsBrunch = recettesBoissonsBrunch
-        values.optionsSelectionnees = optionsSelectionnees
-        values.listeRecettesSalees = listeRecettesSalees
-        values.listeRecettesSucrees = listeRecettesSucrees
-        values.listeRecettesBoissons = listeRecettesBoissons
-        values.listeOptions = listeOptions
-        values.listePrix_unitaire = listePrix_unitaire
-    }
-    else {
-        infos = clientInformationObject(`Le devis n°${getId} n'existe pas.`)
-    }
+                    // on crée une liste où on poussera les recettes
+                    recettesSaleesBox = []
+                    for(const Id_Recette of tabRecettesSalees) {
+                        const recette = await Recettes.findOne({
+                            where : {
+                                Id_Recette : Id_Recette
+                            }
+                        })
+                        if(recette !== null) {
+                            recettesSaleesBox.push(recette)
+                        }
+                    }
+                }
+                if(devis.Formule_Box.Liste_Id_Recettes_Sucrees !== null) {
+                    tabRecettesSucrees = devis.Formule_Box.Liste_Id_Recettes_Sucrees.split(';')
+                    // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                    tabRecettesSucrees.pop()
 
-    values.infos = infos
-    values.devis = devis
-    values.tableCorrespondanceTypes = tableCorrespondanceTypes
-    values.moment = moment
-    
-    // essaie de rendu en amont pour un chargement de la page plus rapide
-    ejs.renderFile(__dirname + '/../views/index.html', values, (err, html) => {
-        if(!err) {
-            res.send(html)
+                    // on crée une liste où on poussera les recettes
+                    recettesSucreesBox = []
+                    for(const Id_Recette of tabRecettesSucrees) {
+                        const recette = await Recettes.findOne({
+                            where : {
+                                Id_Recette : Id_Recette
+                            }
+                        })
+                        if(recette !== null) {
+                            recettesSucreesBox.push(recette)
+                        }
+                    }
+                }
+                if(devis.Formule_Box.Liste_Id_Recettes_Boissons !== null) {
+                    tabRecettesBoissons = devis.Formule_Box.Liste_Id_Recettes_Boissons.split(';')
+                    // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                    tabRecettesBoissons.pop()
+
+                    // on crée une liste où on poussera les recettes
+                    recettesBoissonsBox = []
+                    for(const Id_Recette of tabRecettesBoissons) {
+                        const recette = await Recettes.findOne({
+                            where : {
+                                Id_Recette : Id_Recette
+                            }
+                        })
+                        if(recette !== null) {
+                            recettesBoissonsBox.push(recette)
+                        }
+                    }
+                }
+            }
+            if(devis.Formule_Brunch) {
+                let tabRecettesSalees = undefined
+                let tabRecettesSucrees = undefined
+                let tabRecettesBoissons = undefined
+
+                // récupération des recettes depuis les listes
+                if(devis.Formule_Brunch.Liste_Id_Recettes_Salees !== null) {
+                    tabRecettesSalees = devis.Formule_Brunch.Liste_Id_Recettes_Salees.split(';')
+                    // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                    tabRecettesSalees.pop()
+
+                    // on crée une liste où on poussera les recettes
+                    recettesSaleesBrunch = []
+                    for(const Id_Recette of tabRecettesSalees) {
+                        const recette = await Recettes.findOne({
+                            where : {
+                                Id_Recette : Id_Recette
+                            }
+                        })
+                        if(recette !== null) {
+                            recettesSaleesBrunch.push(recette)
+                        }
+                    }
+                }
+                if(devis.Formule_Brunch.Liste_Id_Recettes_Sucrees !== null) {
+                    tabRecettesSucrees = devis.Formule_Brunch.Liste_Id_Recettes_Sucrees.split(';')
+                    // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                    tabRecettesSucrees.pop()
+
+                    // on crée une liste où on poussera les recettes
+                    recettesSucreesBrunch = []
+                    for(const Id_Recette of tabRecettesSucrees) {
+                        const recette = await Recettes.findOne({
+                            where : {
+                                Id_Recette : Id_Recette
+                            }
+                        })
+                        if(recette !== null) {
+                            recettesSucreesBrunch.push(recette)
+                        }
+                    }
+                }
+                if(devis.Formule_Brunch.Liste_Id_Recettes_Boissons !== null) {
+                    tabRecettesBoissons = devis.Formule_Brunch.Liste_Id_Recettes_Boissons.split(';')
+                    // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                    tabRecettesBoissons.pop()
+
+                    // on crée une liste où on poussera les recettes
+                    recettesBoissonsBrunch = []
+                    for(const Id_Recette of tabRecettesBoissons) {
+                        const recette = await Recettes.findOne({
+                            where : {
+                                Id_Recette : Id_Recette
+                            }
+                        })
+                        if(recette !== null) {
+                            recettesBoissonsBrunch.push(recette)
+                        }
+                    }
+                }
+            }
+
+            let optionsSelectionnees = undefined
+            let IdoptionsSelectionnees = []
+            if(devis.Liste_Options !== null) {
+                const tabOptions = devis.Liste_Options.split(';')
+                // retire le dernier élément qui est vide puisqu'il y a toujours un ';' final
+                tabOptions.pop()
+
+                // on crée une liste où on poussera les recettes
+                optionsSelectionnees = []
+                for(const Id_Option of tabOptions) {
+                    const option = await Prix_Unitaire.findOne({
+                        where : {
+                            Id_Prix_Unitaire : Id_Option
+                        }
+                    })
+                    if(option !== null) {
+                        optionsSelectionnees.push(option)
+                        IdoptionsSelectionnees.push(option.Id_Prix_Unitaire)
+                    }
+                }
+            }
+
+            // récupération des recettes
+            const listeRecettesSalees = await Recettes.findAll({
+                where : {
+                    Categorie : 'Salée'
+                }
+            })
+            const listeRecettesSucrees = await Recettes.findAll({
+                where : {
+                    Categorie : 'Sucrée'
+                }
+            })
+            const listeRecettesBoissons = await Recettes.findAll({
+                where : {
+                    Categorie : 'Boisson'
+                }
+            })
+
+            // récupération des options
+            const listeOptions = await Prix_Unitaire.findAll({
+                where : {
+                    isOption : true,
+                    Id_Prix_Unitaire : {
+                        [Op.notIn] : IdoptionsSelectionnees
+                    }
+                }
+            })
+
+            // récupération des différents prix
+            const listePrix_unitaire = await Prix_Unitaire.findAll({}) 
+
+            // affectation des valeurs de retour
+            values.recettesSaleesAperitif = recettesSaleesAperitif
+            values.recettesBoissonsAperitif = recettesBoissonsAperitif
+            values.recettesSaleesCocktail = recettesSaleesCocktail
+            values.recettesSucreesCocktail = recettesSucreesCocktail
+            values.recettesBoissonsCocktail = recettesBoissonsCocktail
+            values.recettesSaleesBox = recettesSaleesBox
+            values.recettesSucreesBox = recettesSucreesBox
+            values.recettesBoissonsBox = recettesBoissonsBox
+            values.recettesSaleesBrunch = recettesSaleesBrunch
+            values.recettesSucreesBrunch = recettesSucreesBrunch
+            values.recettesBoissonsBrunch = recettesBoissonsBrunch
+            values.optionsSelectionnees = optionsSelectionnees
+            values.listeRecettesSalees = listeRecettesSalees
+            values.listeRecettesSucrees = listeRecettesSucrees
+            values.listeRecettesBoissons = listeRecettesBoissons
+            values.listeOptions = listeOptions
+            values.listePrix_unitaire = listePrix_unitaire
         }
         else {
-            infos = clientInformationObject(err, undefined)
-            res.render('index', values)
+            throw `Le devis n°${getId} n'existe pas.`
         }
-    })
+
+        values.infos = infos
+        values.devis = devis
+        values.tableCorrespondanceTypes = tableCorrespondanceTypes
+        values.moment = moment
+        
+        // essaie de rendu en amont pour un chargement de la page plus rapide
+        ejs.renderFile(__dirname + '/../views/index.html', values, (err, html) => {
+            if(!err) {
+                res.send(html)
+            }
+            else {
+                throw err
+            }
+        })
+    }
+    catch(error) {
+        infos = clientInformationObject(error, undefined)
+        res.render('index', {
+            isDevisItem : true,
+            infos
+        })
+    }
 })
 .get(`/devis/pdf/${encodeURI('CHEZ MES SOEURS - Devis ')}:Id_Devis.pdf`, async (req, res) => {
     const postIdDevis = req.params.Id_Devis    
@@ -1118,6 +1124,7 @@ router
         }
     }
     catch(error) {
+        facture = undefined
         infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
@@ -1419,6 +1426,7 @@ router
         
     }
     catch(error) {
+        devis = undefined
         infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
@@ -1431,36 +1439,44 @@ router
 .patch('/devis/archive/:Id_Devis', async (req, res) => {
     const postIdDevis = req.params.Id_Devis
     let infos = undefined
+    let devis = undefined
 
-    const devis = await Devis.findOne({
-        where : {
-            Id_Devis : postIdDevis
-        }
-    })
-
-    if(devis !== null) {
-        devis.Statut = 'Archivé'
-        await devis.save()
-
-        await Clients.update(
-            {
-                Dernier_Statut : 'Devis archivé'
-            },
-            {
-                where : {
-                    Id_Client : devis.Id_Client
-                }
+    try {
+        devis = await Devis.findOne({
+            where : {
+                Id_Devis : postIdDevis
             }
-        )
+        })
 
-        infos = clientInformationObject(undefined, 'Le devis a bien été archivé')
+        if(devis !== null) {
+            devis.Statut = 'Archivé'
+            await devis.save()
+
+            await Clients.update(
+                {
+                    Dernier_Statut : 'Devis archivé'
+                },
+                {
+                    where : {
+                        Id_Client : devis.Id_Client
+                    }
+                }
+            )
+
+            infos = clientInformationObject(undefined, 'Le devis a bien été archivé')
+        }
+        else {
+            throw 'Le devis n\'existe pas'
+        }
     }
-    else {
-        infos = clientInformationObject('Le devis n\'existe pas', undefined)
+    catch(error) {
+        devis = undefined
+        infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
     res.send({
-        infos
+        infos,
+        devis
     })
 })
 .delete('/devis/:Id_Devis', async (req, res) => {
@@ -1502,7 +1518,7 @@ router
             infos = clientInformationObject(undefined, 'Le devis a bien été supprimé.')
         }
         else {
-            infos = clientInformationObject('Le devis n\'existe pas.', undefined)
+            throw 'Le devis n\'existe pas.'
         }
     }
     catch(error) {

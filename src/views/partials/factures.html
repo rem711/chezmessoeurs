@@ -6,50 +6,57 @@
         
         <div class="content_inner">
             <h1>Factures</h1>
-            <table>
-                <thead>
-                    <th>N°</th>
-                    <th>Date d'édition</th>
-                    <th>Nom Prénom</th>
-                    <th>Téléphone</th>
-                    <th>Email</th>
-                    <th>Acompte</th>
-                    <th>Reste à payer</th>
-                    <th>Statut</th>
-                    <th>Paiement(s) en retard</th>
-                    <th>Relance(s)</th>
+            <%# Affiche si une erreur est survenue %>      
+            <% if (locals.infos && infos.error) { %>
+                <h3>
+                    <%= infos.error %> 
+                </h3>
+            <%# Affiche le contenu s'il n'y a pas de problème sur le serveur %> 
+            <% } else { %>
+                <table>
+                    <thead>
+                        <th>N°</th>
+                        <th>Date d'édition</th>
+                        <th>Nom Prénom</th>
+                        <th>Téléphone</th>
+                        <th>Email</th>
+                        <th>Acompte</th>
+                        <th>Reste à payer</th>
+                        <th>Statut</th>
+                        <th>Paiement(s) en retard</th>
+                        <th>Relance(s)</th>
 
-                </thead>
-                <tbody>
-                    <% if (locals.infos) { %>
-                        <tr>
-                            <td colspan="10">
-                                <%= infos.error %>
-                                <%= infos.message %>
-                            </td>
-                        </tr>
-                    <% } else { %>
-                        <% if (locals.factures) { %>
-                            <% for(let facture of factures) { %> 
-                                <% let stringRelance = facture.Nb_Relances.toString() %>
-                                <% if(facture.Date_Derniere_Relance !== null) stringRelance += ` - ${moment.utc(facture.Date_Derniere_Relance).format('DD/MM/YYYY')}` %> 
-                                <tr id="facture_<%= facture.Id_Facture %>">
-                                    <td><%= facture.Numero_Facture %></td>
-                                    <td><%= moment.utc(facture.Date_Creation).format(formatDateHeure) %></td>
-                                    <td><%= facture.Client.Nom_Prenom %></td>
-                                    <td><%= facture.Client.Telephone %></td>
-                                    <td><%= facture.Client.Email %></td>
-                                    <td><%= Number(facture.Acompte).toFixed(2) %>€</td>
-                                    <td><%= Number(facture.Reste_A_Payer).toFixed(2) %>€</td>
-                                    <td><%= facture.Statut %></td>
-                                    <td><%= facture.Paiement_En_Retard %></td>
-                                    <td><%= stringRelance %></td>
-                                </tr>
-                            <% } %>                             
-                        <% } %>
-                    <% } %>                     
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <% if (locals.infos && infos.message) { %>
+                            <tr>
+                                <td colspan="10">
+                                    <%= infos.message %>
+                                </td>
+                            </tr>
+                        <% } else { %>
+                            <% if (locals.factures) { %>
+                                <% for(let facture of factures) { %> 
+                                    <% let stringRelance = facture.Nb_Relances.toString() %>
+                                    <% if(facture.Date_Derniere_Relance !== null) stringRelance += ` - ${moment.utc(facture.Date_Derniere_Relance).format('DD/MM/YYYY')}` %> 
+                                    <tr id="facture_<%= facture.Id_Facture %>">
+                                        <td><%= facture.Numero_Facture %></td>
+                                        <td><%= moment.utc(facture.Date_Creation).format(formatDateHeure) %></td>
+                                        <td><%= facture.Client.Nom_Prenom %></td>
+                                        <td><%= facture.Client.Telephone %></td>
+                                        <td><%= facture.Client.Email %></td>
+                                        <td><%= Number(facture.Acompte).toFixed(2) %>€</td>
+                                        <td><%= Number(facture.Reste_A_Payer).toFixed(2) %>€</td>
+                                        <td><%= facture.Statut %></td>
+                                        <td><%= facture.Paiement_En_Retard %></td>
+                                        <td><%= stringRelance %></td>
+                                    </tr>
+                                <% } %>                             
+                            <% } %>
+                        <% } %>                     
+                    </tbody>
+                </table>
+            <% } %> 
         </div>
 
         <div class="modal" id="modalUpdate">
