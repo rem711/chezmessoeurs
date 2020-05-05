@@ -5,6 +5,8 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const auth = require('./middlewares/authentification/auth')
+const logger = require('./utils/logger')
+const morgan = require('morgan')
 // const hbs = require('hbs') pour handlebars
 
 // chargement base de données
@@ -25,6 +27,7 @@ const menuRouter = require('./routers/menu')
 const statistiquesRouter = require('./routers/statistiques')
 
 const app = express()
+app.use(morgan('short', { stream : logger.stream }))
 app.use(compression())
 app.use(bodyParser.urlencoded({ extended : true }))
 app.use(bodyParser.json())

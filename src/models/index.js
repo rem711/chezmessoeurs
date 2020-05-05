@@ -6,7 +6,11 @@ const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const env =  process.env.NODE_ENV;
 const config = require(__dirname + '/../config/config.json')[env];
+const logger = require('../utils/logger')
 const db = {};
+
+// add logger instead of using console.log
+config.logging = msg => logger.debug(msg)
 
 let sequelize;
 if (config.use_env_variable) {

@@ -1,5 +1,4 @@
-// les paramètres sont la string à afficher 
-// celui qui n'est pas utile est undefined
+const logger = require('./logger')
 
 /**
  * Create information object to send to the client to give feedback
@@ -35,7 +34,7 @@ const clientInformationObject = (error = undefined, message = undefined) => {
  */
 const getErrorMessage = (error) => {
     let message = 'Une erreur est survenue sur le serveur, veuillez en informer votre Webmaster.'
-    console.log(error)
+    logger.warn(error)
 
     try {
         // cas trivial, message déjà récupéré ou erreur custom avec throw 'mystring'
@@ -51,9 +50,12 @@ const getErrorMessage = (error) => {
         else if(error.name === 'SequelizeConnectionRefusedError') {
             message = "La connexion à la base de données est interrompue, veuillez réessayer plus tard. Si l'erreur persiste, veuillez en informer votre Webmaster."
         }
+        else {
+            throw error
+        }
     }
     catch(e) {
-        console.log(e)
+        logger.error(e)
     }
 
     return message

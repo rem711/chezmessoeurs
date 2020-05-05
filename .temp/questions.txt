@@ -1,3 +1,4 @@
+V1
 Facture :
 - Format numérotation factures
 - Format numérotation avoirs
@@ -31,5 +32,13 @@ Général :
 - Y a t-il des choses incluses d'office dans certaines formules?
 - Quels sont les nombres d'éléments contenus dans un brunch selon son type (ex Petit brunch salé = 4 plats salés, Grand brunch salé = 8 plats salés)?
 - Plusieurs remises peuvent-elles être applicables ou au maximum une remise globale est appliquée?
-- A quel moment une prestation est comptée comme réalisée? Lorsque la facture est payée? Lorsque la facture est archivée? Lorsque la facture est envoyée (càd post réalisation de l'évènement)
+- A quel moment une prestation est comptée comme réalisée? Lorsque la facture est payée? Lorsque la facture est archivée? Lorsque la facture est envoyée (càd post réalisation de l'événement)
 - Faut-il garder une traçabilité des actions utilisateur? (quel utilisateur a fait cette action, ex : qui a validé le devis X)
+
+
+
+V2
+
+Général :
+- Quel contrôle de dates appliquer? Aucun? Vérifier qu'une estimation est faite au moins x jours avant l'événement, de même pour un devis, qu'un devis soit validé avant la date d'événement?
+- Faut-il appliquer un archivage automatique de certaines données, si oui lesquelles? Estimation dont date dépassée? (ou pas si la date était potentiellment fausse), devis non validé avant la date de l'événement?
