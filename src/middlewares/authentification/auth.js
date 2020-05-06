@@ -1,18 +1,46 @@
-const whiteListUrls = [
-    '/authentification',
-    '/estimations'
+const whiteList = [
+    {
+        url : '/css/login.css',
+        method : 'GET'
+    },
+    {
+        url : '/img/logo_cmstraiteur.png',
+        method : 'GET'
+    },
+    {
+        url : '/img/backgroundchezmessoeurs.png',
+        method : 'GET'
+    },
+    {
+        url : '/authentification',
+        method : 'POST'
+    },
+    {
+        url : '/estimations',
+        method : 'OPTIONS'
+    },
+    {
+        url : '/estimations',
+        method : 'POST'
+    }
 ]
 
-const whiteListMethods = [
-    'POST',
-    'OPTIONS'
-]
+const isAcessible = (url, method) => {
+    for(let elt of whiteList) {
+        if(elt.url === url && elt.method === method) {
+            return true
+        }
+    }
+
+    return false
+}
+
 const auth = (req, res, next) => {
-    if((whiteListUrls.includes(req.originalUrl) && whiteListMethods.includes(req.method)) || req.session.authenticated) {
+    if(req.session.authenticated || isAcessible(req.originalUrl, req.method)) {
         return next()
     }
     
-    res.render('auth', {})
+    return res.render('auth', {})
 }
 
 module.exports = auth

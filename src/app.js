@@ -4,6 +4,8 @@ const compression = require('compression')
 const express = require('express')
 const bodyParser = require('body-parser')
 const session = require('express-session')
+const MemoryStore = require('memorystore')(session)
+const crypto = require('crypto')
 const auth = require('./middlewares/authentification/auth')
 const logger = require('./utils/logger')
 const morgan = require('morgan')
@@ -33,7 +35,12 @@ app.use(bodyParser.urlencoded({ extended : true }))
 app.use(bodyParser.json())
 app.use(session({
     name : 'session',
-    secret : 'crm chezmessoeurs @Rémi Qualicom',
+    // valide pour 24h
+    cookie : { maxAge : 86400000 },
+    store : new MemoryStore({
+        checkPeriod : 86400000
+    }),
+    secret : crypto.randomBytes(20).toString('hex'),
     resave: false,
     saveUninitialized: true
 }))

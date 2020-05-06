@@ -42,3 +42,40 @@ V2
 Général :
 - Quel contrôle de dates appliquer? Aucun? Vérifier qu'une estimation est faite au moins x jours avant l'événement, de même pour un devis, qu'un devis soit validé avant la date d'événement?
 - Faut-il appliquer un archivage automatique de certaines données, si oui lesquelles? Estimation dont date dépassée? (ou pas si la date était potentiellment fausse), devis non validé avant la date de l'événement?
+
+
+CORRECTIONS :
+Facture :
+- Modifier Numero_Facture pour qu'il soit sous la forme : FA_YYYYMMDD_0001_[Nom_Client]
+- Lors de l'export de la facture, générer la facture d'acompte en plus de la facture (FAA_YYYYMMDD_00001_[Nom_Client])
+- Faire figurer le numéro TVA client
+- pdf facture, absence de paiment : 0%
+- pdf facture faire apparaître l'acompte versé
+- relance, renvoyer le lien d'accès à la facture
+
+Compteurs :
+- Créer un compteur commun pour factures et avoir à incrémenter à chaque nouveau document
+- Créer un compteur pour les factures d'acompte
+
+Avoir : 
+- Créer en BDD un avoir qui a un ID, un Numero_Avoir et un Id_Facture
+- Id de la forme AV_YYYYMMD_00001_[Nom_Client]
+
+Devis :
+- Ajouter Numero_Devis de la forme : DE_YYYYMMDD_0001_[Nom_Client]
+- pdf devis, modifier affichage pour noter paiement sous 30 jours à compter de la date [d'expédition de la facture | de réception]
+- voir pour ajouter double clic pour ajouter une recette
+
+Client : 
+- Retirer la suppression client
+- Retirer la suppression en cascade lors de la suppression d'un client (impossible)
+- Ajouter champs Société et Numéro TVA pour les pros
+- Ajouter les champs Nom et Prénom (plutôt qu'en un seul bloc)
+- Modifier les Champs Adresse_Livraison et Adresse_Facturation pour les exploser en plusieurs bloc (numéro, adresse, complément1 (facultatif), complément2 (facultatif), CP, Ville)
+
+Général :
+- Suppression possible uniquement pour recettes
+- Faire en sorte que le brunch n'est pas de limite de min et max
+- gérer authentification et créer page de connexion
+- gérer agenda (avec estimations et devis)
+- gérer la carte

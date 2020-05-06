@@ -1,10 +1,27 @@
-<% if(locals.error) { %> 
-    <p style="color: red;">
-        <%= error %> 
-    </p>
-<% } %> 
-<form method="POST" action="/authentification">
-    <label for="password">Mot de passe : </label>
-    <input type="password" name="password" id="password">
-    <input type="submit">
-</form>
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" href="/css/login.css">
+    <head>
+        <title>CRM chezmessoeurs</title>
+    </head>
+    <body>
+        <section class="login">
+            <img src="/img/logo_cmstraiteur.png">
+            <div class="ctnloginform">            
+                <% if(locals.error) { %> 
+                    <p style="color: red;">
+                        <%= error %> 
+                    </p>
+                <% } %> 
+                <form method="POST" action="/authentification">
+                    <div class="loginform">
+                        <label for="login">Identifiant : </label><input type="text" id="login" name="login" required>
+                        <label for="password">Mot de passe : </label><input type="password" name="password" id="password" required>
+                    </div>              
+                    <button type="submit" class="btn_fb" value="valider"><h2>Valider</h2></button>
+                </form>
+            </div>
+        </section>       
+    </body>
+</html>
+
