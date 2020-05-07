@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		Numero_Facture: {
 			field : 'Numero_Facture',
-			type: DataTypes.STRING(100),
+			type: DataTypes.STRING(500),
 			allowNull: false
 		},
 		Date_Creation: {
@@ -29,10 +29,68 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.DATE,
 			allowNull: false
 		},
-		Adresse_Livraison: {
-			field : 'Adresse_Livraison',
-			type: DataTypes.STRING(1000),
-			allowNull: true
+		Adresse_Livraison_Adresse: {
+			field : 'Adresse_Livraison_Adresse',
+			type: DataTypes.STRING(500),
+			allowNull: true,
+			defaultValue: '',
+			validate : {
+				len : {
+					args : [0, 500],
+					msg : 'L\'adresse de livraison est limité à 500 caractères.'
+				}
+			}
+		},
+		Adresse_Livraison_Adresse_Complement_1: {
+			field : 'Adresse_Livraison_Adresse_Complement_1',
+			type: DataTypes.STRING(500),
+			allowNull: true,
+			defaultValue: '',
+			validate : {
+				len : {
+					args : [0, 500],
+					msg : 'Le complément 1 d\'adresse de livraison est limité à 500 caractères.'
+				}
+			}
+		},
+		Adresse_Livraison_Adresse_Complement_2: {
+			field : 'Adresse_Livraison_Adresse_Complement_2',
+			type: DataTypes.STRING(500),
+			allowNull: true,
+			defaultValue: '',
+			validate : {
+				len : {
+					args : [0, 500],
+					msg : 'Le complément 2 d\'adresse de livraison est limité à 500 caractères.'
+				}
+			}
+		},
+		Adresse_Livraison_CP: {
+			field : 'Adresse_Livraison_CP',
+			type: DataTypes.STRING(5),
+			allowNull: true,
+			defaultValue: '00000',
+			validate : {
+				isNumeric : {
+					msg : 'Le code postal doit être composé de 5 chiffres.'
+				},
+				len : {
+					args : [5, 5],
+					msg : 'Le code postal doit être composé de 5 chiffres.'
+				}
+			}
+		},
+		Adresse_Livraison_Ville: {
+			field : 'Adresse_Livraison_Ville',
+			type: DataTypes.STRING(500),
+			allowNull: true,
+			defaultValue: '',
+			validate : {
+				len : {
+					args : [0, 500],
+					msg : 'La ville de l\'adresse de livraison est limité à 500 caractères.'
+				}
+			}
 		},
 		Id_Devis: {
 			field : 'Id_Devis',
@@ -133,12 +191,12 @@ module.exports = (sequelize, DataTypes) => {
 	})
     Factures.associate = models => {
         Factures.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
-        Factures.belongsTo(models.Devis, { foreignKey : 'Id_Devis', onDelete : 'cascade', hooks : true })
+        Factures.belongsTo(models.Devis, { foreignKey : 'Id_Devis' })
 		Factures.belongsTo(models.Remises, { foreignKey : 'Id_Remise' })
-		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Aperitif', as : 'Formule_Aperitif', onDelete : 'cascade', hooks : true })
-		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Cocktail', as : 'Formule_Cocktail', onDelete : 'cascade', hooks : true })
-		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Box', as : 'Formule_Box', onDelete : 'cascade', hooks : true })
-		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Brunch', as : 'Formule_Brunch', onDelete : 'cascade', hooks : true })
+		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Aperitif', as : 'Formule_Aperitif' })
+		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Cocktail', as : 'Formule_Cocktail' })
+		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Box', as : 'Formule_Box' })
+		Factures.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Brunch', as : 'Formule_Brunch' })
     }
 
     return Factures

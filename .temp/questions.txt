@@ -48,7 +48,7 @@ CORRECTIONS :
 Facture :
 - Modifier Numero_Facture pour qu'il soit sous la forme : FA_YYYYMMDD_0001_[Nom_Client]
 - Lors de l'export de la facture, générer la facture d'acompte en plus de la facture (FAA_YYYYMMDD_00001_[Nom_Client])
-- Faire figurer le numéro TVA client
+- pdf, Faire figurer le numéro TVA client
 - pdf facture, absence de paiment : 0%
 - pdf facture faire apparaître l'acompte versé
 - relance, renvoyer le lien d'accès à la facture
@@ -57,25 +57,33 @@ Compteurs :
 - Créer un compteur commun pour factures et avoir à incrémenter à chaque nouveau document
 - Créer un compteur pour les factures d'acompte
 
+Gestion acomptes :
+- voir ici : https://zyfro.fr/blog/quest-ce-quune-facture-dacompte/#Le_montant_des_acomptes
+- acompte de 30 %
+- paiement sous 30j
+- La facture d'acompte doit comporter la date de création, le numéro de facture d'acompte (FAA_YYYYMMDD_00001_[Nom_Client]), le numéro du devis, l'identification des deux parties
+- la facture d'acompte NE DOIT PAS spécifier le contenu de la facture (marchandises etc)
+
 Avoir : 
-- Créer en BDD un avoir qui a un ID, un Numero_Avoir et un Id_Facture
+- V Créer en BDD un avoir qui a un ID, un Numero_Avoir et un Id_Facture
 - Id de la forme AV_YYYYMMD_00001_[Nom_Client]
 
 Devis :
-- Ajouter Numero_Devis de la forme : DE_YYYYMMDD_0001_[Nom_Client]
+- V Ajouter Numero_Devis de la forme : DE_YYYYMMDD_0001_[Nom_Client]
 - pdf devis, modifier affichage pour noter paiement sous 30 jours à compter de la date [d'expédition de la facture | de réception]
+- pdf ajouter numéro TVA pour les professionnels
 - voir pour ajouter double clic pour ajouter une recette
 
 Client : 
 - Retirer la suppression client
-- Retirer la suppression en cascade lors de la suppression d'un client (impossible)
-- Ajouter champs Société et Numéro TVA pour les pros
-- Ajouter les champs Nom et Prénom (plutôt qu'en un seul bloc)
-- Modifier les Champs Adresse_Livraison et Adresse_Facturation pour les exploser en plusieurs bloc (numéro, adresse, complément1 (facultatif), complément2 (facultatif), CP, Ville)
+- V Retirer la suppression en cascade lors de la suppression d'un client (impossible)
+- V Ajouter champs Société et Numéro TVA pour les pros
+- V Ajouter les champs Nom et Prénom (plutôt qu'en un seul bloc)
+- V Modifier les Champs Adresse_Livraison et Adresse_Facturation pour les exploser en plusieurs bloc (numéro, adresse, complément1 (facultatif), complément2 (facultatif), CP, Ville)
 
 Général :
-- Suppression possible uniquement pour recettes
+- Suppression possible uniquement pour recettes (visible = false, pour garder une trace et que les anciens devis/factures puissent accéder à ces recettes)
 - Faire en sorte que le brunch n'est pas de limite de min et max
-- gérer authentification et créer page de connexion
+- V gérer authentification et créer page de connexion
 - gérer agenda (avec estimations et devis)
 - gérer la carte

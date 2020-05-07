@@ -68,7 +68,7 @@ module.exports = {
           table: 'type_formule',
           field: 'Id_Type_Formule'
         },
-        onDelete : 'restrict',
+        onDelete : 'no action',
         onUpdate : 'cascade'
       })
     })

@@ -34,6 +34,18 @@ module.exports = (sequelize, DataTypes) => {
 					msg : 'La description est trop longue, maximum 1000 caractères.'
 				}
 			}
+		},
+		Disponible : {
+			field : 'Disponible',
+			type: DataTypes.INTEGER(1),
+			allowNull : false,
+			defaultValue : 1
+		},
+		Visible  : {
+			field : 'Visible',
+			type: DataTypes.INTEGER(1),
+			allowNull : false,
+			defaultValue : 1
 		}
     }, {
 		tableName : 'recettes'

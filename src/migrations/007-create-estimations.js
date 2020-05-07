@@ -71,7 +71,7 @@ module.exports = {
           table: 'clients',
           field: 'Id_Client'
         },
-        onDelete : 'cascade',
+        onDelete : 'no action',
         onUpdate : 'cascade'
       })
     })

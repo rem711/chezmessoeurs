@@ -8,6 +8,11 @@ module.exports = (sequelize, DataTypes) => {
 			primaryKey: true,
 			autoIncrement: true
 		},
+		Numero_Devis: {
+			field : 'Numero_Devis',
+			type : DataTypes.STRING(500),
+			allowNull : false
+		},
 		Date_Creation: {
 			field : 'Date_Creation',
 			type: DataTypes.DATE,
@@ -24,10 +29,68 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.DATE,
 			allowNull: false
 		},
-		Adresse_Livraison: {
-			field : 'Adresse_Livraison',
-			type: DataTypes.STRING(1000),
-			allowNull: false
+		Adresse_Livraison_Adresse: {
+			field : 'Adresse_Livraison_Adresse',
+			type: DataTypes.STRING(500),
+			allowNull: true,
+			defaultValue: '',
+			validate : {
+				len : {
+					args : [0, 500],
+					msg : 'L\'adresse de livraison est limité à 500 caractères.'
+				}
+			}
+		},
+		Adresse_Livraison_Adresse_Complement_1: {
+			field : 'Adresse_Livraison_Adresse_Complement_1',
+			type: DataTypes.STRING(500),
+			allowNull: true,
+			defaultValue: '',
+			validate : {
+				len : {
+					args : [0, 500],
+					msg : 'Le complément 1 d\'adresse de livraison est limité à 500 caractères.'
+				}
+			}
+		},
+		Adresse_Livraison_Adresse_Complement_2: {
+			field : 'Adresse_Livraison_Adresse_Complement_2',
+			type: DataTypes.STRING(500),
+			allowNull: true,
+			defaultValue: '',
+			validate : {
+				len : {
+					args : [0, 500],
+					msg : 'Le complément 2 d\'adresse de livraison est limité à 500 caractères.'
+				}
+			}
+		},
+		Adresse_Livraison_CP: {
+			field : 'Adresse_Livraison_CP',
+			type: DataTypes.STRING(5),
+			allowNull: true,
+			defaultValue: '00000',
+			validate : {
+				isNumeric : {
+					msg : 'Le code postal doit être composé de 5 chiffres.'
+				},
+				len : {
+					args : [5, 5],
+					msg : 'Le code postal doit être composé de 5 chiffres.'
+				}
+			}
+		},
+		Adresse_Livraison_Ville: {
+			field : 'Adresse_Livraison_Ville',
+			type: DataTypes.STRING(500),
+			allowNull: true,
+			defaultValue: '',
+			validate : {
+				len : {
+					args : [0, 500],
+					msg : 'La ville de l\'adresse de livraison est limité à 500 caractères.'
+				}
+			}
 		},
 		Id_Estimation: {
 			field : 'Id_Estimation',
@@ -98,7 +161,7 @@ module.exports = (sequelize, DataTypes) => {
 	})
     Devis.associate = models => {
         Devis.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
-        Devis.belongsTo(models.Estimations, { foreignKey : 'Id_Estimation', onDelete : 'cascade', hooks : true })
+        Devis.belongsTo(models.Estimations, { foreignKey : 'Id_Estimation' })
 		Devis.belongsTo(models.Remises, { foreignKey : 'Id_Remise' })
 		Devis.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Aperitif', as : 'Formule_Aperitif' })
 		Devis.belongsTo(models.Formules, { foreignKey : 'Id_Formule_Cocktail', as : 'Formule_Cocktail' })
