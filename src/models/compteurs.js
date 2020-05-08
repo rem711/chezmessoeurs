@@ -1,29 +1,23 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
     const Compteurs = sequelize.define('Compteurs', {
-        Id_Avoir: {
-			field : 'Id_Avoir',
-			type: DataTypes.INTEGER(11),
+        Nom_Compteur: {
+			field : 'Nom_Compteur',
+			type: DataTypes.STRING,
 			allowNull: false,
 			primaryKey: true,
-			autoIncrement: true
+			unique : true
 		},
-		Compteur_Factures_Avoirs: {
-			field : 'Compteur_Factures_Avoirs',
+		Valeur_Compteur: {
+			field : 'Valeur_Compteur',
 			type: DataTypes.INTEGER(11),
             allowNull : false,
             defaultValue : 0
 		},
-		Compteur_Acomptes: {
-			field : 'Compteur_Acomptes',
-			type: DataTypes.INTEGER(11),
-            allowNull : false,
-            defaultValue : 0
-		}
     }, {
-		tableName : 'avoirs'
+		tableName : 'compteurs'
 	})
-    Avoir.associate = models => {
+    Compteurs.associate = models => {
         
     }
 

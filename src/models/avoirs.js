@@ -32,9 +32,9 @@ module.exports = (sequelize, DataTypes) => {
     }, {
 		tableName : 'avoirs'
 	})
-    Avoir.associate = models => {
-        Avoir.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
-        Avoir.belongsTo(models.Factures, { foreignKey : 'Id_Facture' })
+    Avoirs.associate = models => {
+        Avoirs.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
+        Avoirs.belongsTo(models.Factures, { foreignKey : 'Id_Facture' })
     }
 
     return Avoirs

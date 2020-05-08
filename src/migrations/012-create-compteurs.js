@@ -2,25 +2,19 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Compteurs', {
-        Id_Avoir: {
-			field : 'Id_Avoir',
-			type: Sequelize.INTEGER(11),
+        Nom_Compteur: {
+			field : 'Nom_Compteur',
+			type: Sequelize.STRING,
 			allowNull: false,
 			primaryKey: true,
-			autoIncrement: true
+			unique : true
 		},
-		Compteur_Factures_Avoirs: {
-			field : 'Compteur_Factures_Avoirs',
+		Valeur_Compteur: {
+			field : 'Valeur_Compteur',
 			type: Sequelize.INTEGER(11),
             allowNull : false,
             defaultValue : 0
 		},
-		Compteur_Acomptes: {
-			field : 'Compteur_Acomptes',
-			type: Sequelize.INTEGER(11),
-            allowNull : false,
-            defaultValue : 0
-		}
     })
   },
   down: (queryInterface, Sequelize) => {
