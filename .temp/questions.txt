@@ -46,10 +46,10 @@ Général :
 
 CORRECTIONS :
 Facture :
-- Modifier Numero_Facture pour qu'il soit sous la forme : FA_YYYYMMDD_0001_[Nom_Client]
+- V Modifier Numero_Facture pour qu'il soit sous la forme : FA_YYYYMMDD_0001_[Nom_Client]
 - Lors de l'export de la facture, générer la facture d'acompte en plus de la facture (FAA_YYYYMMDD_00001_[Nom_Client])
-- pdf, Faire figurer le numéro TVA client
-- pdf facture, absence de paiment : 0%
+- V pdf, Faire figurer le numéro TVA client
+- V pdf facture, absence de paiment : 0%
 - pdf facture faire apparaître l'acompte versé
 - relance, renvoyer le lien d'accès à la facture
 
@@ -93,3 +93,4 @@ Général :
 Pour Wendy :
 - Affichage modal clients
 - Affichage devisItem
+- Affichage factures et modal factures

@@ -203,7 +203,7 @@ const drawIdentification = () => {
     }
     
 
-    const isProfessionnel = facture.Client.type === 'Professionnel'
+    const isProfessionnel = facture.Client.Type === 'Professionnel'
     if(isProfessionnel) {
         doc.text(facture.Client.Societe, xIdentificationClient, doc.y, options)
     }
