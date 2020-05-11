@@ -68,7 +68,14 @@ const fillModal = (infos, facture) => {
         document.getElementById('Numero_Facture').innerHTML = facture.Numero_Facture
         // eslint-disable-next-line no-undef
         document.getElementById('Date_Creation').innerHTML = moment(facture.Date_Creation).format('DD/MM/YYYY')
-        document.getElementById('Nom_Prenom').innerHTML = facture.Client.Nom_Prenom
+        if(facture.Client.Type === 'Professionnel') {
+            document.getElementById('Societe').innerHTML = facture.Client.Societe
+            document.getElementById('divSociete').style.display = ''
+        }
+        else {
+            document.getElementById('divSociete').style.display = 'none'
+        }
+        document.getElementById('Client').innerHTML = `${facture.Client.Prenom} ${facture.Client.Nom}`
         document.getElementById('Email').innerHTML = facture.Client.Email
         document.getElementById('Telephone').innerHTML = facture.Client.Telephone
         document.getElementById('btnAttente').setAttribute('class', attente)

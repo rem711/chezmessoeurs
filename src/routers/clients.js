@@ -6,14 +6,30 @@ const { clientInformationObject, getErrorMessage } = require('../utils/errorHand
 const createOrLoadClient = async (postClient) => {
     let client = undefined
 
-    // vérification car impossible de faire un WHERE avec "undefined"
-    postClient.Email = postClient.Email === undefined ? '' : postClient.Email.trim()
-    // vérification car impossible d'appeler trim() sur undefined
-    postClient.Nom_Prenom = postClient.Nom_Prenom === undefined ? '' : postClient.Nom_Prenom.trim()
-    // retire également les espaces inutils
-    postClient.Telephone = postClient.Telephone === undefined ? '' : postClient.Telephone.trim().replace(/ /g, '') 
-    postClient.Adresse_Facturation = postClient.Adresse_Facturation === undefined ? '' : postClient.Adresse_Facturation.trim()
-    postClient.Type = postClient.Type === undefined ? 'Particulier' : postClient.Type
+    // vérification des données
+    if(postClient.Nom === undefined || postClient.Nom === 'undefined' || postClient.Nom === '') {
+        throw "Le nom doit être défini."
+    }
+    if(postClient.Prenom === undefined || postClient.Prenom === 'undefined' || postClient.Prenom === '') {
+        throw "Le prénom doit être défini."
+    }
+    if(postClient.Email === undefined || postClient.Email === 'undefined' || postClient.Email === '') {
+        throw "L'adresse e-mail doit être définie."
+    }
+    else if(postClient.Email.match(/^.+@.+\.[a-z][a-z]+$/ig) === null) {
+        throw "L'adresse e-mail est incorrecte."
+    }
+    if(postClient.Telephone === undefined || postClient.Telephone === 'undefined' || postClient.Telephone === '') {
+        throw "Le numéro de téléphone doit être défini."
+    }
+    else {
+        postClient.Telephone = postClient.Telephone.replace(/ /g, '').replace(/-/g, '').replace(/_/g, '').replace(/\./g, '')
+        if(postClient.Telephone.match(/^[0-9]{10}$/g) === null) {
+            throw "Le numéro de téléphone est incorrect."
+        }
+    }
+
+    // postClient.Type = postClient.Type === undefined ? 'Particulier' : postClient.Type
 
     // crée un nouveau client où le récupère s'il existe déjà
     const [temp_client, created] = await Clients.findOrCreate({
@@ -21,8 +37,8 @@ const createOrLoadClient = async (postClient) => {
             Email : postClient.Email
         },
         defaults : {
-            Nom_Prenom : postClient.Nom_Prenom,
-            Adresse_Facturation : postClient.Adresse_Facturation,
+            Nom : postClient.Nom,
+            Prenom : postClient.Prenom,
             Telephone : postClient.Telephone
         }
     })
@@ -31,19 +47,111 @@ const createOrLoadClient = async (postClient) => {
 
     // modifie le client s'il existe déjà et ses informations sont différentes
     if(!created && (
-        postClient.Nom_Prenom !== client.Nom_Prenom || 
-        postClient.Adresse_Facturation !== client.Adresse_Facturation ||
-        postClient.Telephone !== client.Telephone ||
-        postClient.Type !== client.Type
+        postClient.Nom !== client.Nom || 
+        postClient.Prenom !== client.Prenom || 
+        postClient.Telephone !== client.Telephone
         )) {
         // on affecte à client les valeurs du post qui ont été mises en BDD plutôt que de relancer une requête
-        client.Nom_Prenom = postClient.Nom_Prenom
-        client.Adresse_Facturation = postClient.Adresse_Facturation
+        client.Nom = postClient.Nom
+        client.Prenom = postClient.Prenom
         client.Telephone = postClient.Telephone
-        client.Type = postClient.Type
 
         await client.save()
     }
+
+    return client
+}
+
+const updateClient = async (Id_Client, postClient) => {
+    let client = undefined
+
+    // vérification des données
+    if(postClient.Nom === undefined || postClient.Nom === 'undefined' || postClient.Nom === '') {
+        throw "Le nom doit être défini."
+    }
+    if(postClient.Prenom === undefined || postClient.Prenom === 'undefined' || postClient.Prenom === '') {
+        throw "Le prénom doit être défini."
+    }
+    if(postClient.Adresse_Facturation_Adresse === undefined || postClient.Adresse_Facturation_Adresse === 'undefined' || postClient.Adresse_Facturation_Adresse === '') {
+        throw "L'adresse de facturation doit être définie."
+    }
+    if(postClient.Adresse_Facturation_CP === undefined || postClient.Adresse_Facturation_CP === 'undefined' || postClient.Adresse_Facturation_CP === '') {
+        throw "Le code postal doit être défini."
+    }
+    else if(postClient.Adresse_Facturation_CP.match(/[0-9]{5}/g) === null) {
+        throw "Le format du code postal est incorrect."
+    }
+    if(postClient.Adresse_Facturation_Ville === undefined || postClient.Adresse_Facturation_Ville === 'undefined' || postClient.Adresse_Facturation_Ville === '') {
+        throw "La ville doit être définie."
+    }
+    if(postClient.Email === undefined || postClient.Email === 'undefined' || postClient.Email === '') {
+        throw "L'adresse e-mail doit être définie."
+    }
+    else if(postClient.Email.match(/^.+@.+\.[a-z][a-z]+$/ig) === null) {
+        throw "L'adresse e-mail est incorrecte."
+    }
+    if(postClient.Telephone === undefined || postClient.Telephone === 'undefined' || postClient.Telephone === '') {
+        throw "Le numéro de téléphone doit être défini."
+    }
+    else {
+        postClient.Telephone = postClient.Telephone.replace(/ /g, '').replace(/-/g, '').replace(/_/g, '').replace(/\./g, '')
+        if(postClient.Telephone.match(/^[0-9]{10}$/g) === null) {
+            throw "Le numéro de téléphone est incorrect."
+        }
+    }
+    if(postClient.Type === undefined || postClient.Type === 'undefined' || postClient.Type === '') {
+        throw "Le type doit être défini."
+    }
+    if(postClient.Type === 'Professionnel') {
+        if(postClient.Societe === undefined || postClient.Societe === 'undefined' || postClient.Societe === '') {
+            throw "Le nom de la société doit être défini."
+        }
+        if(postClient.Numero_TVA === undefined || postClient.Numero_TVA === 'undefined' || postClient.Numero_TVA === '') {
+            throw "Le numéro de TVA doit être défini."
+        }
+        else {
+            postClient.Numero_TVA = postClient.Numero_TVA.toUpperCase()
+            if(postClient.Numero_TVA.match(/^FR[0-9]{2}[0-9]{9}$/ig) === null) {
+                throw "Le format du numéro de TVA est incorrect."
+            }
+        }
+    }
+    else {
+        postClient.Societe = null
+        postClient.Numero_TVA = null
+    }
+
+    if(postClient.Adresse_Facturation_Adresse_Complement_1 === undefined || postClient.Adresse_Facturation_Adresse_Complement_1 === 'undefined') {
+        postClient.Adresse_Facturation_Adresse_Complement_1 = ''
+    }
+    if(postClient.Adresse_Facturation_Adresse_Complement_2 === undefined || postClient.Adresse_Facturation_Adresse_Complement_2 === 'undefined') {
+        postClient.Adresse_Facturation_Adresse_Complement_2 = ''
+    }
+
+    client = await Clients.findOne({
+        where : {
+            Id_Client
+        }
+    })
+
+    if(client === null) {
+        throw "Le client demandé n'existe pas."
+    }
+
+    client.Nom = postClient.Nom
+    client.Prenom = postClient.Prenom
+    client.Societe = postClient.Societe
+    client.Adresse_Facturation_Adresse = postClient.Adresse_Facturation_Adresse
+    client.Adresse_Facturation_Adresse_Complement_1 = postClient.Adresse_Facturation_Adresse_Complement_1
+    client.Adresse_Facturation_Adresse_Complement_2 = postClient.Adresse_Facturation_Adresse_Complement_2
+    client.Adresse_Facturation_CP = postClient.Adresse_Facturation_CP
+    client.Adresse_Facturation_Ville = postClient.Adresse_Facturation_Ville
+    client.Numero_TVA = postClient.Numero_TVA
+    client.Email = postClient.Email
+    client.Telephone = postClient.Telephone
+    client.Type = postClient.Type
+
+    await client.save()
 
     return client
 }
@@ -56,7 +164,6 @@ router
     let infos = undefined 
     let client = undefined
 
-    // const {infos, client} = await createOrLoadClient(postClient)
     try {
         client = await createOrLoadClient(postClient)
     }
@@ -155,29 +262,8 @@ router
         })
 
         if(temp_client !== null) {
-            // récupération de l'objet client
-            client = temp_client.dataValues
-            
-            client.Nom_Prenom = postClient.Nom_Prenom || client.Nom_Prenom
-            client.Adresse_Facturation = postClient.Adresse_Facturation || client.Adresse_Facturation
-            client.Email = postClient.Email || client.Email
-            client.Telephone = postClient.Telephone || client.Telephone
-            client.Type = postClient.Type || client.Type
+            client = await updateClient(temp_client.Id_Client, postClient)
 
-            await Clients.update(
-                {
-                    Nom_Prenom : client.Nom_Prenom,
-                    Adresse_Facturation : client.Adresse_Facturation,
-                    Email : client.Email,
-                    Telephone : client.Telephone.trim(),
-                    Type : client.Type
-                },
-                {
-                    where : {
-                        Id_Client : client.Id_Client
-                    }
-                }
-            )
             infos = clientInformationObject(undefined, 'Le client a bien été modifié.')
         }
         else {
@@ -195,34 +281,9 @@ router
     })
     
 })
-// supprime client
-// TODO:ajouter la suppression des éléments relatifs au cient (estimations, devis, factures)
-.delete('/clients/delete/:Id_Client', async (req, res) => {
-    // récupération de l'Id_Client
-    const getId_Client = req.params.Id_Client
-
-    // init valeurs retour
-    let infos = undefined
-
-    try {
-        await Clients.destroy({
-            where : {
-                Id_Client : getId_Client
-            }
-        })
-        infos = clientInformationObject(undefined, 'Le client a bien été supprimé')
-    }
-    catch(error) {
-        infos = clientInformationObject('Le client n\'existe pas.', undefined)
-    }
-
-    res.send({
-        infos
-    })
-})
-
 
 module.exports = {
     router,
-    createOrLoadClient
+    createOrLoadClient,
+    updateClient
 }

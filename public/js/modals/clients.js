@@ -12,73 +12,53 @@ const modalListCloseElmts = document.getElementsByClassName("close")
 
 // récupère le formulaire d'update
 const formUpdate = document.getElementById('formUpdate')
-// récupère le formulaire de suppression
-const formDelete = document.getElementById('formDelete')
-
-// action lors de la suppression d'un client
-const deleteElmt = async (event) => {
-  event.preventDefault()
-  const trSelected = document.getElementsByClassName('selected')[0]
-  if(trSelected) {
-    const Id_Client = trSelected.getAttribute('id').split('_')[1]
-    const Nom_Prenom = trSelected.children[0].innerText
-    let action = formDelete.getAttribute('action') + Id_Client
-    formDelete.setAttribute('action', action)
-    const isConfirmed = confirm(`Vous vous apprêtez à supprimer le client ${Nom_Prenom}. Cela supprimera tout l'historique avec ce client. Voulez-vous vraiment supprimer le client?`)
-    if(isConfirmed) {
-      // formDelete.submit()
-      const options = {
-        method : 'DELETE'
-      }
-      const response = await fetch(action, options)
-      if(response.ok) {
-        const data = await response.json()
-        const { infos } = data
-        if(infos.error) {
-          alert(infos.error)
-        }
-        else {
-          alert(infos.message)
-          location.reload()
-        }
-      }
-    }
-    // si annulation, on retire l'Id_Client du formulaire
-    else {
-      // on explode la route
-      const temp_tabAction = action.split('/')
-      // on remet l'id à vide
-      temp_tabAction[temp_tabAction.length - 1] = ''
-      // on recré la chaine de route avec l'id à vide; array.toString() utilise les ',' comme séparateur donc on les remplace par des '/'
-      action = temp_tabAction.toString().replace(/,/g, '/')
-      formDelete.setAttribute('action', action)
-    }
-  }
-}
 
 // modifier le remplissage de l'url pour ne pas que l'id soit ajouté plusiers fois
 const fillModal = (infos, client) => {
   // remise à zéro des champs d'information
   document.getElementById('modalError').innerHTML = ''
-  document.getElementById('modalError').innerHTML = ''
+  document.getElementById('modalError').style.display = 'none'
+  document.getElementById('modalMessage').innerHTML = ''
+  document.getElementById('modalMessage').style.display = 'none'
+  // document.getElementById('Nom').value = ''
+  // document.getElementById('Prenom').value = ''
+  // document.getElementById('Adresse_Facturation_Adresse').value = ''
+  // document.getElementById('Adresse_Facturation_Adresse_Complement_1').value = ''
+  // document.getElementById('Adresse_Facturation_Adresse_Complement_2').value = ''
+  // document.getElementById('Adresse_Facturation_CP').value = ''
+  // document.getElementById('Adresse_Facturation_Ville').value = ''
+  // document.getElementById('Telephone').value = ''
+  // document.getElementById('Email').value = ''
+  // document.getElementById('Particulier').checked = true
+  // document.getElementById('Societe').value = ''
+  // document.getElementById('Numero_TVA').value = ''
 
   // remplissage des informations
   if(infos) {
     if(infos.error) {
       document.getElementById('modalError').innerHTML = infos.error
+      document.getElementById('modalError').style.display = 'block'
     }
     if(infos.message) {
       document.getElementById('modalMessage').innerHTML = infos.message
+      document.getElementById('modalMessage').style.display = 'block'
     }    
   }
   // remplissage des données du client
   if(client) {
-    // const action = formUpdate.getAttribute('action') + client.Id_Client
-    // formUpdate.setAttribute('action', action)
-    document.getElementById('Nom_Prenom').value = client.Nom_Prenom
-    document.getElementById('Adresse_Facturation').value = client.Adresse_Facturation
+    document.getElementById('Nom').value = client.Nom
+    document.getElementById('Prenom').value = client.Prenom
+    document.getElementById('Adresse_Facturation_Adresse').value = client.Adresse_Facturation_Adresse
+    document.getElementById('Adresse_Facturation_Adresse_Complement_1').value = client.Adresse_Facturation_Adresse_Complement_1
+    document.getElementById('Adresse_Facturation_Adresse_Complement_2').value = client.Adresse_Facturation_Adresse_Complement_2
+    document.getElementById('Adresse_Facturation_CP').value = client.Adresse_Facturation_CP
+    document.getElementById('Adresse_Facturation_Ville').value = client.Adresse_Facturation_Ville
     document.getElementById('Telephone').value = client.Telephone
+    document.getElementById('Email').value = client.Email
     document.getElementById(client.Type).checked = true
+    showEltProfessionnel({ target : document.getElementById(client.Type) })
+    document.getElementById('Societe').value = client.Societe
+    document.getElementById('Numero_TVA').value = client.Numero_TVA
   }
 }
 
@@ -96,10 +76,16 @@ const showUpdateElmt = async () => {
       const data = await response.json()
       const { infos, client } = data
       fillModal(infos, client)
+      // une fois les valeurs récupérées on affiche la modal
+      modalUpdate.style.display = "block"
     }
-
-    // une fois les valeurs récupérées on affiche la modal
-    modalUpdate.style.display = "block"
+    else if(response.status === 401) {      
+        alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+        location.reload()
+    }
+    else {
+      alert("Une erreur est survenue, veuillez recommencer plus tard.")
+    }
   }  
 }
 
@@ -116,10 +102,18 @@ const updateElmt = async (event) => {
   const action = formUpdate.getAttribute('action') + Id_Client
 
   const params = {
-    Nom_Prenom : document.getElementById('Nom_Prenom').value,
-    Adresse_Facturation : document.getElementById('Adresse_Facturation').value,
+    Nom : document.getElementById('Nom').value,
+    Prenom : document.getElementById('Prenom').value,
+    Adresse_Facturation_Adresse : document.getElementById('Adresse_Facturation_Adresse').value,
+    Adresse_Facturation_Adresse_Complement_1 : document.getElementById('Adresse_Facturation_Adresse_Complement_1').value,
+    Adresse_Facturation_Adresse_Complement_2 : document.getElementById('Adresse_Facturation_Adresse_Complement_2').value,
+    Adresse_Facturation_CP : document.getElementById('Adresse_Facturation_CP').value,
+    Adresse_Facturation_Ville : document.getElementById('Adresse_Facturation_Ville').value,
     Telephone : document.getElementById('Telephone').value,
-    Type : Type
+    Email : document.getElementById('Email').value,
+    Type,
+    Societe : document.getElementById('Societe').value,
+    Numero_TVA : document.getElementById('Numero_TVA').value
   }
 
   // eslint-disable-next-line no-undef
@@ -135,6 +129,13 @@ const updateElmt = async (event) => {
     isUpdated = true
     fillModal(infos, client)
   }
+  else if(response.status === 401) {      
+    alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+    location.reload()
+  }
+  else {
+    alert("Une erreur est survenue, veuillez recommencer plus tard.")
+  }
 }
 
 const closeModal = () => {
@@ -147,10 +148,29 @@ const closeModal = () => {
   }
 }
 
+const showEltProfessionnel = (elt) => {
+  const target = elt.target.getAttribute('id')
+  const inputSociete = document.getElementById('Societe')
+  const labelSociete = document.querySelector("label[for='Societe']")
+  const inputNumeroTVA = document.getElementById('Numero_TVA')
+  const labelNumeroTVA = document.querySelector("label[for='Numero_TVA']")
+
+  if(target === 'Particulier') {
+    inputSociete.style.display = 'none'
+    labelSociete.style.display = 'none'
+    inputNumeroTVA.style.display = 'none'
+    labelNumeroTVA.style.display = 'none'
+  }
+  else {
+    inputSociete.style.display = 'block'
+    labelSociete.style.display = 'block'
+    inputNumeroTVA.style.display = 'block'
+    labelNumeroTVA.style.display = 'block'
+  }
+}
+
 // action lors du click pour ouvrir la modal 
 btnOpenModalUpdate.onclick = showUpdateElmt
-// action lors du click sur le bouton de suppression
-formDelete.addEventListener('submit', deleteElmt)
 // action lors du click sur le bouton de modification d'un client
 formUpdate.addEventListener('submit', updateElmt)
 
@@ -167,3 +187,7 @@ window.onclick = (event) => {
     closeModal()
   }
 }
+
+document.getElementsByName('Type').forEach(elt => {
+  elt.onchange = showEltProfessionnel
+})

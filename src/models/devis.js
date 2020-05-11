@@ -157,7 +157,11 @@ module.exports = (sequelize, DataTypes) => {
 			defaultValue: 0
 		}
     }, {
-		tableName : 'devis'
+		tableName : 'devis',
+		name : {
+			singular : 'Devis',
+			plural : 'Devis'
+		}
 	})
     Devis.associate = models => {
         Devis.belongsTo(models.Clients, { foreignKey : 'Id_Client' })

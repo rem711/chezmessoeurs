@@ -3,25 +3,11 @@ const router = new express.Router()
 const { Factures, Devis, Clients, Prix_Unitaire } = global.db
 const { Op } = require("sequelize")
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
+const compteurs = require('../utils/compteurs')
+const formatNumeroFacture = require('../utils/numeroFormatter')
 const createPDF = require('../utils/pdf_factures')
 const moment = require('moment')
 const formatDateHeure = 'DD/MM/YYYY HH:mm'
-
-const formatNumeroFacture = (num) => {
-    const numSize = num.toString().length
-    let formatedNumber = ''
-
-    // on ajoute des 0 en dessous de 1000
-    if(numSize < 4) {
-        const diff = 4 - numSize
-        for(let i = 0; i < diff; i++) {
-            formatedNumber += '0'
-        }
-    }
-    formatedNumber += num
-
-    return formatedNumber
-}
 
 const createFacture = async (devis) => {
     let facture = undefined
@@ -40,12 +26,17 @@ const createFacture = async (devis) => {
             throw `La facture ${factureExistente.Numero_Facture} correspond déjà au devis n°${devis.Id_Devis}`
         }
 
-        const today = moment.utc()
+        let Numero_Facture = `FA_${moment.utc().format('YYYYMMDD')}_****_${devis.Client.Nom.toUpperCase()}`
+
         facture = await Factures.create({
-            Numero_Facture : today.format('YYYY-MM-'),
+            Numero_Facture,
             Id_Client : devis.Id_Client,
             Date_Evenement : devis.Date_Evenement,
-            Adresse_Livraison : devis.Adresse_Livraison,
+            Adresse_Livraison_Adresse : devis.Adresse_Livraison_Adresse,
+            Adresse_Livraison_Adresse_Complement_1 : devis.Adresse_Livraison_Adresse_Complement_1,
+            Adresse_Livraison_Adresse_Complement_2 : devis.Adresse_Livraison_Adresse_Complement_2,
+            Adresse_Livraison_CP : devis.Adresse_Livraison_CP,
+            Adresse_Livraison_Ville : devis.Adresse_Livraison_Ville,
             Id_Devis : devis.Id_Devis,
             Id_Formule_Aperitif : devis.Id_Formule_Aperitif,
             Id_Formule_Cocktail : devis.Id_Formule_Cocktail,
@@ -60,8 +51,9 @@ const createFacture = async (devis) => {
         })
 
         if(facture !== null) {
-            // màj Numero_Facture grâce à l'Id_Facture
-            facture.Numero_Facture += formatNumeroFacture(facture.Id_Facture)
+            // màj Numero_Facture
+            const numero = await compteurs.get(compteurs.COMPTEUR_FACTURES_AVOIRS)
+            facture.Numero_Facture = facture.Numero_Facture.replace(/(\*){4}/g, formatNumeroFacture(numero))
             facture.save()
         }
     }
@@ -302,9 +294,13 @@ router
         toPDF.Id_Facture = facture.Id_Facture
         toPDF.Numero_Facture = facture.Numero_Facture
         toPDF.Date_Creation = facture.Date_Creation
-        toPDF.Id_Devis = facture.Id_Devis
+        toPDF.Devis = JSON.parse(JSON.stringify(facture.Devis))
         toPDF.Date_Evenement = facture.Date_Evenement
-        toPDF.Adresse_Livraison = facture.Adresse_Livraison
+        toPDF.Adresse_Livraison_Adresse = facture.Adresse_Livraison_Adresse
+        toPDF.Adresse_Livraison_Adresse_Complement_1 = facture.Adresse_Livraison_Adresse_Complement_1
+        toPDF.Adresse_Livraison_Adresse_Complement_2 = facture.Adresse_Livraison_Adresse_Complement_2
+        toPDF.Adresse_Livraison_CP = facture.Adresse_Livraison_CP
+        toPDF.Adresse_Livraison_Ville = facture.Adresse_Livraison_Ville
         toPDF.Client = JSON.parse(JSON.stringify(facture.Client))
         // la méthode {...} est utilisée pour si la formule est null avoir un objet et pouvoir définir isAperitif etc.
         toPDF.Formule_Aperitif = {...JSON.parse(JSON.stringify(facture.Formule_Aperitif))} 
@@ -452,38 +448,6 @@ router
         infos,
         facture,
         urlAvoir
-    })
-})
-// suppression facture
-.delete('/factures/:id', async (req, res) => {
-    const postIdFacture = Number(req.params.Id_Facture)
-    let infos = undefined
-
-    try {
-        if(!isNaN(postIdFacture) && postIdFacture > 0) {
-            const facture = await Factures.findOne({
-                where : {
-                    Id_Facture : postIdFacture
-                }
-            })
-
-            if(facture === null) {
-                throw "L'identifiant est incorrect ou la facture n'existe pas."
-            }
-
-            // supression du devis et des formules par contraintes d'intégrité
-            facture.destroy()
-        }
-        else {
-            throw "L'identifiant est incorrect ou la facture n'existe pas."
-        }
-    }
-    catch(error) {
-        infos = clientInformationObject(getErrorMessage(error), undefined)
-    }
-
-    res.send({
-        infos
     })
 })
 

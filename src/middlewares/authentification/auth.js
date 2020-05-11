@@ -35,12 +35,12 @@ const isAcessible = (url, method) => {
     return false
 }
 
-const auth = (req, res, next) => {
+const auth = (req, res, next) => {    
     if(req.session.authenticated || isAcessible(req.originalUrl, req.method)) {
         return next()
     }
     
-    return res.render('auth', {})
+    return res.status(401).render('auth', {})
 }
 
 module.exports = auth

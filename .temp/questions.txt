@@ -54,8 +54,8 @@ Facture :
 - relance, renvoyer le lien d'accès à la facture
 
 Compteurs :
-- Créer un compteur commun pour factures et avoir à incrémenter à chaque nouveau document
-- Créer un compteur pour les factures d'acompte
+- V Créer un compteur commun pour factures et avoir à incrémenter à chaque nouveau document
+- V Créer un compteur pour les factures d'acompte
 
 Gestion acomptes :
 - voir ici : https://zyfro.fr/blog/quest-ce-quune-facture-dacompte/#Le_montant_des_acomptes
@@ -75,7 +75,7 @@ Devis :
 - voir pour ajouter double clic pour ajouter une recette
 
 Client : 
-- Retirer la suppression client
+- V Retirer la suppression client
 - V Retirer la suppression en cascade lors de la suppression d'un client (impossible)
 - V Ajouter champs Société et Numéro TVA pour les pros
 - V Ajouter les champs Nom et Prénom (plutôt qu'en un seul bloc)
@@ -87,3 +87,9 @@ Général :
 - V gérer authentification et créer page de connexion
 - gérer agenda (avec estimations et devis)
 - gérer la carte
+- fonctions de validation, vérifier que le client soit complètement renseigné
+
+
+Pour Wendy :
+- Affichage modal clients
+- Affichage devisItem

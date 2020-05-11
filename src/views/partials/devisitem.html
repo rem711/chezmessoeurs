@@ -15,7 +15,7 @@
     <% } else { %>
         <!--  doit être scrollable -->
         <div class="content_inner">
-        <h1>Devis n°<%= devis.Id_Devis %> </h1>
+        <h1>Devis n°<%= devis.Numero_Devis %> </h1>
             <!--  INFOS CLIENT -->
             <div>
                 <div class="info_client_devis">
@@ -42,8 +42,14 @@
                             </select>
                         </div>
                         <div>
-                            <label>Adresse de livraison :</label>
-                            <input type="text" id="Adresse_Livraison" value="<%= devis.Adresse_Livraison %>">
+                            <label for="Adresse_Livraison">Adresse de livraison :</label>
+                            <div id="Adresse_Livraison">
+                                <label for="Adresse_Livraison_Adresse">Adresse Livraison : </label><input id="Adresse_Livraison_Adresse" name="Adresse_Livraison_Adresse" type="text" value="<%= devis.Adresse_Livraison_Adresse %>" placeholder="18 Avenue de la Concorde" required><br>
+                                <label for="Adresse_Livraison_Adresse_Complement_1">Adresse Livraison suite (facultatif) : </label><input id="Adresse_Livraison_Adresse_Complement_1" name="Adresse_Livraison_Adresse_Complement_1" type="text" value="<%= devis.Adresse_Livraison_Adresse_Complement_1 %>" placeholder="2ième étage"><br>
+                                <label for="Adresse_Livraison_Adresse_Complement_2">Adresse Livraison suite (facultatif) : </label><input id="Adresse_Livraison_Adresse_Complement_2" name="Adresse_Livraison_Adresse_Complement_2" type="text" value="<%= devis.Adresse_Livraison_Adresse_Complement_2 %>" placeholder="Porte gauche"><br>
+                                <label for="Adresse_Livraison_CP">Code Postal : </label><input id="Adresse_Livraison_CP" name="Adresse_Livraison_CP" type="text" value="<%= devis.Adresse_Livraison_CP %>" placeholder="21000" required>
+                                <label for="Adresse_Livraison_Ville">Ville : </label><input id="Adresse_Livraison_Ville" name="Adresse_Livraison_Ville" type="text" value="<%= devis.Adresse_Livraison_Ville %>" placeholder="Dijon" required><br>
+                            </div>
                         </div>
                         <label for="divPrestation">Prestation :</label>
                         <div id="divPrestation">
@@ -68,8 +74,8 @@
                             <span id="Id_Client"><%= devis.Client.Id_Client %></span>
                         </div>
                         <div>
-                            <label>Client :</label>
-                            <input type="text" id="Nom_Prenom" value="<%= devis.Client.Nom_Prenom %>">
+                            <label for="Nom">Nom :</label><input type="text" id="Nom" value="<%= devis.Client.Nom %>">
+                            <label for="Prenom">Prénom :</label><input type="text" id="Prenom" value="<%= devis.Client.Prenom %>">
                         </div>
                         <div>
                             <label>Type :</label>
@@ -79,11 +85,19 @@
                             <input type="radio" id="typeParticulier" name="Type" value="Particulier" <%= typeClientChecked %> >
                             <label for="typeProfessionnel">Professionnel</label>
                             <% typeClientChecked = devis.Client.Type === 'Professionnel' ? 'checked' : '' %>
-                            <input type="radio" id="typeProfessionnel" name="Type" value="Professionnel" <%= typeClientChecked %> >
+                            <input type="radio" id="typeProfessionnel" name="Type" value="Professionnel" <%= typeClientChecked %> ><br>
+                            <label for="Societe">Nom Société : </label><input id="Societe" name="Societe" type="text" value="<%= devis.Client.Societe %>" placeholder="chezmessoeurs">
+                            <label for="Numero_TVA">Numéro TVA : </label><input id="Numero_TVA" name="Numero_TVA" type="text" value="<%= devis.Client.Numero_TVA %>" placeholder="FR99999999999" pattern="^(FR|fr)[0-9]{2}[0-9]{9}$"><br>
                         </div>
                         <div>
-                            <label>Adresse facturation :</label>
-                            <input type="text" id="Adresse_Facturation" value="<%= devis.Client.Adresse_Facturation %> ">
+                            <label for="Adresse_Facturation">Adresse de facturation :</label>
+                            <div id="Adresse_Facturation">
+                                <label for="Adresse_Facturation_Adresse">Adresse Facturation : </label><input id="Adresse_Facturation_Adresse" name="Adresse_Facturation_Adresse" type="text" value="<%= devis.Client.Adresse_Facturation_Adresse %>" placeholder="18 Avenue de la Concorde" required><br>
+                                <label for="Adresse_Facturation_Adresse_Complement_1">Adresse Facturation suite (facultatif) : </label><input id="Adresse_Facturation_Adresse_Complement_1" name="Adresse_Facturation_Adresse_Complement_1" type="text" value="<%= devis.Client.Adresse_Facturation_Adresse_Complement_1 %>" placeholder="2ième étage"><br>
+                                <label for="Adresse_Facturation_Adresse_Complement_2">Adresse Facturation suite (facultatif) : </label><input id="Adresse_Facturation_Adresse_Complement_2" name="Adresse_Facturation_Adresse_Complement_2" type="text" value="<%= devis.Client.Adresse_Facturation_Adresse_Complement_2 %>" placeholder="Porte gauche"><br>
+                                <label for="Adresse_Facturation_CP">Code Postal : </label><input id="Adresse_Facturation_CP" name="Adresse_Facturation_CP" type="text" value="<%= devis.Client.Adresse_Facturation_CP %>" placeholder="21000" required>
+                                <label for="Adresse_Facturation_Ville">Ville : </label><input id="Adresse_Facturation_Ville" name="Adresse_Facturation_Ville" type="text" value="<%= devis.Client.Adresse_Facturation_Ville %>" placeholder="Dijon" required><br>
+                            </div>
                         </div>
                         <div>
                             <label>Téléphone :</label>
@@ -701,8 +715,8 @@
         <div class="hiddenInfos">
             <%# boolean pour savoir si le devis est à créer ou s'il existe déjà provenant d'une estimation %> 
             <div id="isCreation"><% if(locals.isCreation) { %><%= isCreation %><% } else { %>false<% } %></div>
-            <% if(locals.devis.Id_Devis) { %>
-                <div id="Id_Devis" data-id="<%= devis.Id_Devis %>"></div>
+            <% if(locals.devis.Id_Devis && locals.devis.Numero_Devis) { %>
+                <div id="Id_Devis" data-id="<%= devis.Id_Devis %>" data-numero="<%= devis.Numero_Devis %>"></div>
             <% } %>
             <%# liste prix unitaires pour faire le calcul %> 
             <% if (locals.listePrix_unitaire) { %>

@@ -17,7 +17,7 @@
                     <thead>
                         <th>N°</th>
                         <th>Date d'édition</th>
-                        <th>Nom Prénom</th>
+                        <th>Client</th>
                         <th>Téléphone</th>
                         <th>Email</th>
                         <th>Acompte</th>
@@ -42,7 +42,7 @@
                                     <tr id="facture_<%= facture.Id_Facture %>">
                                         <td><%= facture.Numero_Facture %></td>
                                         <td><%= moment.utc(facture.Date_Creation).format(formatDateHeure) %></td>
-                                        <td><%= facture.Client.Nom_Prenom %></td>
+                                        <td><%= facture.Client.Prenom + ' ' + facture.Client.Nom %></td>
                                         <td><%= facture.Client.Telephone %></td>
                                         <td><%= facture.Client.Email %></td>
                                         <td><%= Number(facture.Acompte).toFixed(2) %>€</td>
@@ -67,9 +67,13 @@
                     <label>Date d'édition :</label>
                     <p id="Date_Creation"></p>
                 </div>
+                <div class="rowinput" id="divSociete">
+                    <label>Société :</label>
+                    <p id="Societe"></p>
+                </div>
                 <div class="rowinput">
-                    <label>Nom Prénom :</label>
-                    <p id="Nom_Prenom"></p>
+                    <label>Client :</label>
+                    <p id="Client"></p>
                 </div>
                 <div class="rowinput">
                     <label>Email :</label>

@@ -29,7 +29,8 @@ router
     try {
         // crée ou récupère le client si déjà existant
         client = await createOrLoadClient( {
-            Nom_Prenom : postEstimation.Nom_Prenom,
+            Nom : postEstimation.Nom,
+            Prenom : postEstimation.Prenom,
             Email : postEstimation.Email,
             Telephone : postEstimation.Telephone,
             Type : postEstimation.Type
@@ -245,7 +246,8 @@ router
         })
 
         if(estimation !== null) {
-            archiveEstimation(estimation)
+            estimation.Statut = 'Archivée'
+            await estimation.save()
 
             await Clients.update(
                 {
@@ -274,42 +276,5 @@ router
         estimation
     })
 })
-
-// supprime une estimation
-// TODO:ajouter la suppression des formules
-.delete('/estimations/:Id_Estimation', async (req, res) => {
-    const getId_Estimation = req.params.Id_Estimation
-
-    let infos = undefined
-
-    try {
-        const estimation = await Estimations.findOne({
-            where : {
-                Id_Estimation : getId_Estimation
-            }
-        })
-
-        if(estimation !== null) {
-            await estimation.destroy()
-            infos = clientInformationObject(undefined, 'L\'estimation a bien été supprimée.')
-        }
-        else {
-            throw 'L\'estimation n\'existe pas.'
-        }
-    }
-    catch(error) {
-        infos = clientInformationObject(getErrorMessage(error), undefined)
-    }
-
-    res.send({
-        infos
-    })
-})
-
-const archiveEstimation = async (estimation) => {
-    estimation.Statut = 'Archivée'
-    await estimation.save()
-}
-
 
 module.exports = router

@@ -366,7 +366,7 @@ const sendEstimation = async () => {
     const { isCocktail, nbConvivesCocktail, nbPiecesSaleesCocktail, nbPiecesSucreesCocktail } = getCocktail()
     const { isBox, nbConvivesBox } = getBox()
     const { isBrunch, nbConvivesBrunch, isBrunchSale, typeBrunchSale, isBrunchSucre, typeBrunchSucre } = getBrunch()
-    const { Nom_Prenom, Email, Telephone } = getClient()
+    const { Nom, Prenom, Email, Telephone } = getClient()
 
     const url = 'http://localhost:3000/estimations'
     const params = {
@@ -375,7 +375,7 @@ const sendEstimation = async () => {
         isCocktail, nbConvivesCocktail, nbPiecesSaleesCocktail, nbPiecesSucreesCocktail,
         isBox, nbConvivesBox,
         isBrunch, nbConvivesBrunch, isBrunchSale, typeBrunchSale, isBrunchSucre, typeBrunchSucre,
-        Nom_Prenom, Email, Telephone
+        Nom, Prenom, Email, Telephone
     }
     const options = {
         method : 'POST',
@@ -395,12 +395,14 @@ const sendEstimation = async () => {
 
 // récupère les infos d'un client
 const getClient = () => {
-    const Nom_Prenom = document.getElementById('nom').value + ' ' + document.getElementById('prenom').value
+    const Nom = document.getElementById('nom').value
+    const Prenom = document.getElementById('prenom').value
     const Email = document.getElementById('mail').value
     const Telephone = document.getElementById('tel').value
     
     return {
-        Nom_Prenom,
+        Nom,
+        Prenom,
         Email,
         Telephone
     }

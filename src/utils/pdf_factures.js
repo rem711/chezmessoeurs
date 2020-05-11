@@ -67,7 +67,7 @@ module.exports = (res, facture, isRelance = false) => {
                 right : 50
             },
             info : { 
-                Title : `CHEZ MES SOEURS - Facture ${facture.Id_Facture}`,
+                Title : `CHEZ MES SOEURS - Facture ${facture.Numero_Facture}`,
                 Author : 'CHEZ MES SOEURS'
             } 
         })
@@ -191,7 +191,7 @@ const drawIdentification = () => {
     doc.font(fontTitles).fontSize(fontSizeTitles)
     doc.text('Chez Mes Soeurs', xIdentificationEntreprise, doc.y, options)
     doc.text('18 Avenue de la concorde', xIdentificationEntreprise, doc.y, options)
-    doc.text('2100 Dijon', xIdentificationEntreprise, doc.y, options)
+    doc.text('21000 DIJON', xIdentificationEntreprise, doc.y, options)
     doc.text('Tél : 06 61 91 80 12', xIdentificationEntreprise, doc.y, options)
     doc.text('Email : chezmessoeurs@gmail.com', xIdentificationEntreprise, doc.y, options)
     hauteurMaxIdentification = hauteurMaxIdentification > doc.y ? hauteurMaxIdentification : doc.y
@@ -202,17 +202,22 @@ const drawIdentification = () => {
         y : doc.y - paddingTitles.top
     }
     
-    // FIXME:Récupération de l'adresse client pour l'afficher correctement
-    const adresse = facture.Client.Adresse_Facturation
-    const tabCodePostal = adresse.match(/[0-9]{5}/)
-    const positionCodePostal = adresse.lastIndexOf(tabCodePostal[tabCodePostal.length-1])
-    const adressePart1 = adresse.slice(0, positionCodePostal)
-    const adressePart2 = adresse.slice(positionCodePostal)
 
-    
-    doc.text(facture.Client.Nom_Prenom, xIdentificationClient, doc.y, options)
-    doc.text(adressePart1, xIdentificationClient, doc.y, options)
-    doc.text(adressePart2, xIdentificationClient, doc.y, options)
+    const isProfessionnel = facture.Client.type === 'Professionnel'
+    if(isProfessionnel) {
+        doc.text(facture.Client.Societe, xIdentificationClient, doc.y, options)
+    }
+    doc.text(`${facture.Client.Prenom} ${facture.Client.Nom}`, xIdentificationClient, doc.y, options)
+    doc.text(facture.Client.Adresse_Facturation_Adresse, xIdentificationClient, doc.y, options)
+    if(facture.Client.Adresse_Facturation_Adresse_Complement_1 !== '' && facture.Client.Adresse_Facturation_Adresse_Complement_2 !== '') {
+        doc.text(facture.Client.Adresse_Facturation_Adresse_Complement_1, xIdentificationClient, doc.y, options)
+        doc.text(facture.Client.Adresse_Facturation_Adresse_Complement_2, xIdentificationClient, doc.y, options)
+    }
+    doc.text(`${facture.Client.Adresse_Facturation_CP} ${facture.Client.Adresse_Facturation_Ville.toUpperCase()}`, xIdentificationClient, doc.y, options)
+    if(isProfessionnel) {
+        doc.text(`Numéro TVA : ${facture.Client.Numero_TVA}`, xIdentificationClient, doc.y, options)
+    }
+
     hauteurMaxIdentification = hauteurMaxIdentification > doc.y ? hauteurMaxIdentification : doc.y
 
     const bottom = {
@@ -241,77 +246,85 @@ const drawRefFactureDate = () => {
     let height = undefined    
     let width = undefined
 
-    // doc.moveDown(1)
+    doc.moveDown(2)
     yPos = doc.y
     doc.font(fontContent).fontSize(fontSizeContent)
 
-    const largeurDispo = (largeurPage * (4/5)) - paddingContent.left - paddingContent.right
-    const top = {
-        x : doc.page.margins.left + paddingPageContent.left + ((largeurPage * (1/5)) / 2) + paddingContent.left + paddingContent.right,
-        y : doc.y
-    }
+    // const largeurDispo = (largeurPage * (4/5)) - paddingContent.left - paddingContent.right
+    // const top = {
+    //     x : doc.page.margins.left + paddingPageContent.left + ((largeurPage * (1/5)) / 2) + paddingContent.left + paddingContent.right,
+    //     y : doc.y
+    // }
 
-    const stringFacture = `Référence facture : ${facture.Numero_Facture}`
-    const stringDevis = `Référence devis : ${facture.Id_Devis}`
-    const stringDate = `Date de facture : ${moment.utc(facture.Date_Creation).format('DD/MM/YYYY')}`
-    let heightFirstCol = 0
-    width = (largeurDispo / 2) - (paddingContent.left + paddingContent.right) - paddingContent.right
-    let options = { align : 'left', width }
-    heightFirstCol += doc.heightOfString(stringFacture, options) + paddingContent.bottom
-    heightFirstCol += doc.heightOfString(stringDevis, options) + paddingContent.top
+    // const stringFacture = `Référence facture : ${facture.Numero_Facture}`
+    // const stringDevis = `Référence devis : ${facture.Devis.Numero_Devis}`
+    // const stringDate = `Date de facture : ${moment.utc(facture.Date_Creation).format('DD/MM/YYYY')}`
+    // let heightFirstCol = 0
+    // width = (largeurDispo / 2) - (paddingContent.left + paddingContent.right) - paddingContent.right
+    // let options = { align : 'left', width }
+    // heightFirstCol += doc.heightOfString(stringFacture, options) + paddingContent.bottom
+    // heightFirstCol += doc.heightOfString(stringDevis, options) + paddingContent.top
 
-    yPos += paddingContent.top
-    doc.y = yPos
-    doc
-    .text(stringFacture, top.x + paddingContent.left, doc.y, options)
-    .text(stringDevis, top.x + paddingContent.left, doc.y, options)
+    // yPos += paddingContent.top
+    // doc.y = yPos
+    // doc
+    // .text(stringFacture, top.x + paddingContent.left, doc.y, options)
+    // .text(stringDevis, top.x + paddingContent.left, doc.y, options)
 
-    const bottom = {
-        x : top.x,
-        y : doc.y
-    }
+    // const bottom = {
+    //     x : top.x,
+    //     y : doc.y
+    // }
 
-    doc.text(stringDate, top.x + width + paddingContent.left, yPos + (((doc.y + paddingContent.bottom) - yPos) / 8), options)
+    // doc.text(stringDate, top.x + width + paddingContent.left, yPos + (((doc.y + paddingContent.bottom) - yPos) / 8), options)
     
-    const contours = {
-        topLeft : {
-            x : top.x - paddingContent.left,
-            y : top.y
-        },
-        topRight : {
-            x : top.x + width + paddingContent.left + width + paddingContent.right,
-            y : top.y 
-        },
-        bottomLeft : {
-            x : bottom.x - paddingContent.left,
-            y : bottom.y + (paddingContent.bottom / 2)
-        },
-        bottomRight : {
-            x : bottom.x + width + paddingContent.left + width + paddingContent.right,
-            y : bottom.y + (paddingContent.bottom / 2)
-        },
-        topCenter : {
-            x : top.x + width,
-            y : top.y
-        },
-        bottomCenter : {
-            x : bottom.x + width,
-            y : bottom.y + (paddingContent.bottom / 2)
-        }
-    }
+    // const contours = {
+    //     topLeft : {
+    //         x : top.x - paddingContent.left,
+    //         y : top.y
+    //     },
+    //     topRight : {
+    //         x : top.x + width + paddingContent.left + width + paddingContent.right,
+    //         y : top.y 
+    //     },
+    //     bottomLeft : {
+    //         x : bottom.x - paddingContent.left,
+    //         y : bottom.y + (paddingContent.bottom / 2)
+    //     },
+    //     bottomRight : {
+    //         x : bottom.x + width + paddingContent.left + width + paddingContent.right,
+    //         y : bottom.y + (paddingContent.bottom / 2)
+    //     },
+    //     topCenter : {
+    //         x : top.x + width,
+    //         y : top.y
+    //     },
+    //     bottomCenter : {
+    //         x : bottom.x + width,
+    //         y : bottom.y + (paddingContent.bottom / 2)
+    //     }
+    // }
 
+    // doc
+    // .moveTo(contours.topLeft.x, contours.topLeft.y)
+    // .lineTo(contours.topRight.x, contours.topRight.y)
+    // .lineTo(contours.bottomRight.x, contours.bottomRight.y)
+    // .lineTo(contours.bottomLeft.x, contours.bottomLeft.y)
+    // .lineTo(contours.topLeft.x, contours.topLeft.y)
+    // .moveTo(contours.topCenter.x, contours.topCenter.y)
+    // .lineTo(contours.bottomCenter.x, contours.bottomCenter.y)
+    // .strokeColor('black')
+    // .stroke()
+
+    // doc.y = bottom.y
+    // yPos = doc.y
+
+    const xFactureDate = doc.page.margins.left + paddingPageContent.left + paddingContent.left
     doc
-    .moveTo(contours.topLeft.x, contours.topLeft.y)
-    .lineTo(contours.topRight.x, contours.topRight.y)
-    .lineTo(contours.bottomRight.x, contours.bottomRight.y)
-    .lineTo(contours.bottomLeft.x, contours.bottomLeft.y)
-    .lineTo(contours.topLeft.x, contours.topLeft.y)
-    .moveTo(contours.topCenter.x, contours.topCenter.y)
-    .lineTo(contours.bottomCenter.x, contours.bottomCenter.y)
-    .strokeColor('black')
-    .stroke()
+    .text(`Référence devis : ${facture.Devis.Numero_Devis}`, xFactureDate, doc.y)
+    .text(`Référence facture : ${facture.Numero_Facture}`, xFactureDate, doc.y)
+    .text(`Date de facture : ${moment.utc().format('DD/MM/YYYY')}`)
 
-    doc.y = bottom.y
     yPos = doc.y
 }
 
@@ -596,7 +609,7 @@ const drawTablesRecap = () => {
 }
 
 const drawReglement = (yTop) => {
-    const pageLeft = doc.page.margins.left + paddingPageContent.left
+    const pageLeft = doc.page.margins.left + paddingPageContent.left + paddingContent.left
     const pageRight = doc.page.width - (doc.page.margins.right + paddingPageContent.right)
     const pageWidth = pageRight - pageLeft
     const width = (pageWidth * 0.4) - paddingContent.right
@@ -615,7 +628,7 @@ const drawReglement = (yTop) => {
         doc.y += paddingContent.top
         doc.text(`Taux de pénalité à compter du : ${moment.utc(facture.Date_Creation).add(1, 'months').add(1, 'days').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
-        doc.text(`En l'absence de paiement : 30 %`, pageLeft, doc.y, options)
+        doc.text(`En l'absence de paiement : -`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
         doc.text(`Conditions d'escompte : Escompte pour paiement anticipé : néant`, pageLeft, doc.y, options)
     }

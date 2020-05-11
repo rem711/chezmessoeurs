@@ -46,7 +46,7 @@
                                     <% const id = `devis_${Id_Devis}` %> 
                                     <tr id="<%= id %> ">
                                         <td class="datedevis"><%= moment.utc(Date_Evenement).format(formatDateHeure) %></td>
-                                        <td><%= Client.Nom_Prenom %></td>
+                                        <td><%= Client.Prenom + ' ' + Client.Nom %></td>
                                         <td><%= Client.Telephone %></td>
                                         <td><%= Client.Email %></td>
                                         <td><% if(Estimation !== null) { %><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %><% } else { %> - <% } %></td>                    
@@ -92,7 +92,7 @@
                                     <% const id = `devis_${Id_Devis}` %> 
                                     <tr id="<%= id %> ">
                                         <td class="datedevis"><%= moment.utc(Date_Evenement).format(formatDateHeure) %></td>
-                                        <td><%= Client.Nom_Prenom %></td>
+                                        <td><%= Client.Prenom + ' ' + Client.Nom %></td>
                                         <td><%= Client.Telephone %></td>
                                         <td><%= Client.Email %></td>
                                         <td><% if(Estimation !== null) { %><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %><% } else { %> - <% } %></td>                    
@@ -138,7 +138,7 @@
                                     <% const id = `devis_${Id_Devis}` %> 
                                     <tr id="<%= id %> ">
                                         <td class="datedevis"><%= moment.utc(Date_Evenement).format(formatDateHeure) %></td>
-                                        <td><%= Client.Nom_Prenom %></td>
+                                        <td><%= Client.Prenom + ' ' + Client.Nom %></td>
                                         <td><%= Client.Telephone %></td>
                                         <td><%= Client.Email %></td>
                                         <td><% if(Estimation !== null) { %><%= moment.utc(Estimation.Date_Creation).format(formatDateHeure) %><% } else { %> - <% } %></td>                    

@@ -67,7 +67,7 @@ module.exports = (res, devis) => {
                 right : 50
             },
             info : { 
-                Title : `CHEZ MES SOEURS - Devis ${devis.Id_Devis}`,
+                Title : `CHEZ MES SOEURS - Devis ${devis.Numero_Devis}`,
                 Author : 'CHEZ MES SOEURS'
             } 
         })
@@ -1010,7 +1010,7 @@ const drawLastPage = () => {
 
     height += paddingContent.top    
     doc.font(fontContent).fontSize(10)
-    content = 'Le réglement est à effectuer à la réception de la facture.\nUn acompte de 30% sera demandé pour tout devis excédant 150€.'
+    content = "Un acompte de 30% sera demandé la validation du devis."
     height += doc.heightOfString(content, { align : 'center', oblique : true, width })    
     height += paddingPageContent.bottom
 
@@ -1034,7 +1034,7 @@ const drawLastPage = () => {
 
     // **** infos paiement
     doc.font(fontContent).fontSize(10)
-    content = 'Le réglement est à effectuer à la réception de la facture.\nUn acompte de 30% sera demandé pour tout devis excédant 150€.'
+    content = "Un acompte de 30% sera demandé la validation du devis."
     options = { align : 'center', oblique : true, width : (pageDrawingSpace.width - (paddingContent.left + paddingContent.right)) }
     height = doc.heightOfString(content, options)
     yPos = (pageDrawingSpace.bottom - height)
@@ -1046,7 +1046,7 @@ const drawLastPage = () => {
     xPos = doc.page.margins.left + paddingPageContent.left + paddingContent.left
 
     yPos += paddingContent.top
-    doc.text(`Devis n°${devis.Id_Devis}.`, xPos, yPos)
+    doc.text(`Devis n°${devis.Numero_Devis}.`, xPos, yPos)
     yPos += paddingContent.bottom
 
     yPos += paddingContent.top
@@ -1066,7 +1066,12 @@ const drawLastPage = () => {
     yPos = doc.y
 
     yPos += paddingContent.top
-    doc.text(`Pour ${devis.Client.Nom_Prenom}.`, xPos, yPos)
+    if(devis.Client.Type === 'Particulier') {
+        doc.text(`Pour ${devis.Client.Prenom} ${devis.Client.Nom}.`, xPos, yPos)
+    }
+    else {
+        doc.text(`Pour ${devis.Client.Societe}, a l'attention de ${devis.Client.Prenom} ${devis.Client.Nom}.`, xPos, yPos)
+    }
     yPos += paddingContent.bottom
 
     yPos += paddingContent.top

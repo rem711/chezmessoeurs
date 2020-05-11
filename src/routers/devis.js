@@ -2,10 +2,12 @@ const express = require('express')
 const router = new express.Router()
 const ejs = require('ejs')
 const { Devis, Clients, Estimations, Formules, Recettes, Prix_Unitaire, Factures } = global.db
+const isSet = require('../utils/isSet')
 const { tableCorrespondanceTypes, modifyFormule, createFormules } = require('../utils/gestion_formules')
-const { createOrLoadClient }  = require('./clients')
+const { createOrLoadClient, updateClient }  = require('./clients')
 const { checksListeOptions } = require('../utils/gestion_prix_unitaire')
 const { createOrLoadRemise, getRemise } = require('../utils/gestion_remise')
+const formatNumeroDevis = require('../utils/numeroFormatter')
 const createPDF = require('../utils/pdf_devis')
 const { createFacture } = require('./factures')
 const { Op } = require('sequelize')
@@ -58,14 +60,16 @@ const createDevis = async (estimation) => {
         
         const formules = await createFormules(params)
 
-        // créer ou trouver client
+        // créer ou trouver client        
         let client = await createOrLoadClient( {
-            Nom_Prenom : estimation.client.Nom_Prenom.trim(),
-            Adresse_Facturation : estimation.client.Adresse_Facturation.trim(),
+            Nom : estimation.client.Nom.trim(),
+            Prenom : estimation.client.Prenom.trim(),
             Email : estimation.client.Email.trim(),
-            Telephone : estimation.client.Telephone.trim(),
-            Type : estimation.client.Type
+            Telephone : estimation.client.Telephone.trim()
         })
+
+        // FIXME:
+        client = await updateClient(client.Id_Client, estimation.client)
 
         // ajout des nouvelles informations à la fausse estimation
         estimation.Id_Estimation = null
@@ -102,21 +106,36 @@ const createDevis = async (estimation) => {
 
     prixTTC = prixHT * 1.1
 
-    let Adresse_Livraison = estimation.Client.Adresse_Facturation
-    if(estimation.isCreation && estimation.Adresse_Livraison != '') {
-        Adresse_Livraison = estimation.Adresse_Livraison
+    let Adresse_Livraison_Adresse = estimation.Client.Adresse_Facturation_Adresse
+    let Adresse_Livraison_Adresse_Complement_1 = estimation.Client.Adresse_Facturation_Adresse_Complement_1
+    let Adresse_Livraison_Adresse_Complement_2 = estimation.Client.Adresse_Facturation_Adresse_Complement_2
+    let Adresse_Livraison_CP = estimation.Client.Adresse_Facturation_CP
+    let Adresse_Livraison_Ville = estimation.Client.Adresse_Facturation_Ville
+    if(estimation.isCreation && isSet(estimation.Adresse_Livraison_Adresse) && isSet(estimation.Adresse_Livraison_CP) && isSet(estimation.Adresse_Livraison_Ville)) {
+        Adresse_Livraison_Adresse = estimation.Adresse_Livraison_Adresse
+        Adresse_Livraison_Adresse_Complement_1 = isSet(estimation.Adresse_Livraison_Adresse_Complement_1) ? estimation.Adresse_Livraison_Adresse_Complement_1 : ''
+        Adresse_Livraison_Adresse_Complement_2 = isSet(estimation.Adresse_Livraison_Adresse_Complement_2) ? estimation.Adresse_Livraison_Adresse_Complement_2 : ''
+        Adresse_Livraison_CP = estimation.Adresse_Livraison_CP
+        Adresse_Livraison_Ville = estimation.Adresse_Livraison_Ville
     }
 
     const Liste_Options = estimation.Liste_Options !== undefined ? estimation.Liste_Options : null      
 
     const Id_Remise = estimation.Id_Remise !== undefined ? estimation.Id_Remise : null
 
+    const Numero_Devis = `DE_${moment.utc().format('YYYYMMDD')}_****_${estimation.Client.Nom}`
+
     // création du devis
     devis = await Devis.create({
         Id_Estimation : estimation.Id_Estimation,
+        Numero_Devis,
         Id_Client : estimation.Id_Client,
         Date_Evenement : moment.utc(estimation.Date_Evenement),
-        Adresse_Livraison : Adresse_Livraison,
+        Adresse_Livraison_Adresse,
+        Adresse_Livraison_Adresse_Complement_1,
+        Adresse_Livraison_Adresse_Complement_2,
+        Adresse_Livraison_CP,
+        Adresse_Livraison_Ville,
         Id_Formule_Aperitif : estimation.Id_Formule_Aperitif,
         Id_Formule_Cocktail : estimation.Id_Formule_Cocktail,
         Id_Formule_Box : estimation.Id_Formule_Box,
@@ -128,6 +147,15 @@ const createDevis = async (estimation) => {
         Prix_HT : Number.parseFloat(prixHT).toFixed(2),
         Prix_TTC : Number.parseFloat(prixTTC).toFixed(2)
     })
+
+    if(devis === null) {
+        throw "Une erreur est survenue lors de la création du devis."
+    }
+
+    // si le devis est bien créé, on lui donne son vrai numéro
+    // eslint-disable-next-line prefer-named-capture-group
+    devis.Numero_Devis = devis.Numero_Devis.replace(/(\*){4}/g, formatNumeroDevis(devis.Id_Devis))
+    await devis.save()
 
     // si l'on avait une estimation, on l'archive
     if(!estimation.isCreation) {
@@ -877,18 +905,33 @@ router
         })
     }
 })
-.get(`/devis/pdf/${encodeURI('CHEZ MES SOEURS - Devis ')}:Id_Devis.pdf`, async (req, res) => {
-    const postIdDevis = req.params.Id_Devis    
+.get(`/devis/pdf/${encodeURI('CHEZ MES SOEURS - Devis ')}:Numero_Devis.pdf`, async (req, res) => {
+    const postNumeroDevis = req.params.Numero_Devis    
 
     try {
+        const temp_devis = await Devis.findOne({
+            where : {
+                Numero_Devis : postNumeroDevis
+            }
+        })
+
+        if(temp_devis === null) {
+            throw 'Le devis demandé n\'existe pas.'
+        }
+
         // vérifie que le devis est valide
-        const devis = await validate(postIdDevis)
+        const devis = await validate(temp_devis.Id_Devis)
 
         // objet du devis à envoyer pour la création du pdf
         const toPDF = {}
         toPDF.Id_Devis = devis.Id_Devis
+        toPDF.Numero_Devis = devis.Numero_Devis
         toPDF.Date_Evenement = devis.Date_Evenement
-        toPDF.Adresse_Livraison = devis.Adresse_Livraison
+        toPDF.Adresse_Livraison_Adresse = devis.Adresse_Livraison_Adresse
+        toPDF.Adresse_Livraison_Adresse_Complement_1 = devis.Adresse_Livraison_Adresse_Complement_1
+        toPDF.Adresse_Livraison_Adresse_Complement_2 = devis.Adresse_Livraison_Adresse_Complement_2
+        toPDF.Adresse_Livraison_CP = devis.Adresse_Livraison_CP
+        toPDF.Adresse_Livraison_Ville = devis.Adresse_Livraison_Ville
         toPDF.Client = JSON.parse(JSON.stringify(devis.Client))
         // la méthode {...} est utilisée pour si la formule est null avoir un objet et pouvoir définir isAperitif etc.
         toPDF.Formule_Aperitif = {...JSON.parse(JSON.stringify(devis.Formule_Aperitif))} 
@@ -1379,24 +1422,33 @@ router
 
             prixTTC = prixHT * 1.1
 
-            // adresses
-            if(body.client.Adresse_Facturation === '' && devis.Client.Adresse_Facturation === '') {
+            if(!isSet(body.client.Adresse_Facturation_Adresse) || !isSet(body.client.Adresse_Facturation_CP) || !isSet(body.client.Adresse_Facturation_Ville)) {
                 throw "L'adresse de facturation doit être renseignée."
             }
-            if(body.client.Adresse_Facturation === '') body.client.Adresse_Facturation = devis.Client.Adresse_Facturation
-            if(body.Adresse_Livraison === '') body.Adresse_Livraison = body.client.Adresse_Facturation
+            else {
+                body.client.Adresse_Facturation_Adresse_Complement_1 = isSet(body.client.Adresse_Facturation_Adresse_Complement_1) ? body.client.Adresse_Facturation_Adresse_Complement_1 : ''
+                body.client.Adresse_Facturation_Adresse_Complement_2 = isSet(body.client.Adresse_Facturation_Adresse_Complement_2) ? body.client.Adresse_Facturation_Adresse_Complement_2 : ''
+            }
+
+            if(!isSet(body.Adresse_Livraison_Adresse) || !isSet(body.Adresse_Livraison_CP) || !isSet(body.Adresse_Livraison_Ville)) {
+                throw "L'adresse de livraison doit être renseignée."
+            }
+            else {
+                body.Adresse_Livraison_Adresse_Complement_1 = isSet(body.Adresse_Livraison_Adresse_Complement_1) ? body.Adresse_Livraison_Adresse_Complement_1 : ''
+                body.Adresse_Livraison_Adresse_Complement_2 = isSet(body.Adresse_Livraison_Adresse_Complement_2) ? body.Adresse_Livraison_Adresse_Complement_2 : ''
+            }
 
 
             // màj des infos client
-            devis.Client.Nom_Prenom = body.client.Nom_Prenom.trim()
-            devis.Client.Adresse_Facturation = body.client.Adresse_Facturation.trim()
-            devis.Client.Email = body.client.Email.trim()
-            devis.Client.Telephone = body.client.Telephone.trim()
-            devis.Client.Type = body.client.Type
+            await updateClient(devis.Id_Client, body.client)
 
             devis.Date_Evenement = moment.utc(body.Date_Evenement)
-            devis.Adresse_Livraison = body.Adresse_Livraison.trim()
-            devis.Commentaire = body.Commentaire.trim()
+            devis.Adresse_Livraison_Adresse = body.Adresse_Livraison_Adresse
+            devis.Adresse_Livraison_Adresse_Complement_1 = body.Adresse_Livraison_Adresse_Complement_1
+            devis.Adresse_Livraison_Adresse_Complement_2 = body.Adresse_Livraison_Adresse_Complement_2
+            devis.Adresse_Livraison_CP = body.Adresse_Livraison_CP
+            devis.Adresse_Livraison_Ville = body.Adresse_Livraison_Ville
+            devis.Commentaire = body.Commentaire
             devis.Liste_Options = body.Liste_Options
             devis.Id_Remise = body.Remise.Id_Remise
             devis.Id_Formule_Aperitif = Formule_Aperitif !== null ? Formule_Aperitif.Id_Formule : null
@@ -1407,9 +1459,8 @@ router
             devis.Prix_TTC = Number.parseFloat(prixTTC).toFixed(2)
 
 
-            // faire les save ici si tout ok
             await devis.save()
-            await devis.Client.save()
+            
             let message = ''
             
             if(body.isCreation) {
@@ -1477,56 +1528,6 @@ router
     res.send({
         infos,
         devis
-    })
-})
-.delete('/devis/:Id_Devis', async (req, res) => {
-    const postIdDevis = req.params.Id_Devis
-
-    let infos = undefined
-
-    try {
-        const devis = await Devis.findOne({
-            where : {
-                Id_Devis : postIdDevis
-            },
-            include : [
-                { model : Formules, as : 'Formule_Aperitif' },
-                { model : Formules, as : 'Formule_Cocktail' },
-                { model : Formules, as : 'Formule_Box' },
-                { model : Formules, as : 'Formule_Brunch' }
-            ]
-        })
-
-        if(devis !== null) {
-            // supression des formules associées dans le cas où le devis n'est pas lié à une facture
-            const facture = await Factures.findOne({
-                where : {
-                    Id_Devis : devis.Id_Devis
-                }
-            })
-            if(facture === null) {
-                const formulesPromises = []
-                if(devis.Formule_Aperitif !== null) formulesPromises.push(devis.Formule_Aperitif.destroy())
-                if(devis.Formule_Cocktail !== null) formulesPromises.push(devis.Formule_Cocktail.destroy())
-                if(devis.Formule_Box !== null) formulesPromises.push(devis.Formule_Box.destroy())
-                if(devis.Formule_Brunch !== null) formulesPromises.push(devis.Formule_Brunch.destroy())
-                await Promise.all(formulesPromises)
-            }
-
-            // suppresion du devis
-            await devis.destroy()
-            infos = clientInformationObject(undefined, 'Le devis a bien été supprimé.')
-        }
-        else {
-            throw 'Le devis n\'existe pas.'
-        }
-    }
-    catch(error) {
-        infos = clientInformationObject(getErrorMessage(error), undefined)
-    }
-
-    res.send({
-        infos
     })
 })
 

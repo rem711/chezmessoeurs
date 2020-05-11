@@ -153,7 +153,7 @@ module.exports = (sequelize, DataTypes) => {
 					msg : 'Le numéro de téléphone doit être renseigné.'
 				},
                 isPhoneNumber : value => {
-                    if(!value.match(/[0-9]{10}/)) {
+                    if(!value.match(/^[0-9]{10}$/g)) {
                         throw new Error('Numéro de téléphone invalide')
                     }
                 }
@@ -161,7 +161,6 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		Type: {
 			field : 'Type',
-			// type: DataTypes.STRING(13),
 			type : DataTypes.ENUM('Professionnel', 'Particulier'),
 			allowNull: false,
 			defaultValue: 'Particulier',

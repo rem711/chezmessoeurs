@@ -79,7 +79,30 @@ const toggle = event => {
     }
 }
 
+const showEltProfessionnel = (elt) => {
+    const target = elt.target.getAttribute('id')
+    const inputSociete = document.getElementById('Societe')
+    const labelSociete = document.querySelector("label[for='Societe']")
+    const inputNumeroTVA = document.getElementById('Numero_TVA')
+    const labelNumeroTVA = document.querySelector("label[for='Numero_TVA']")
+
+    if(target === 'typeParticulier') {
+        inputSociete.style.display = 'none'
+        labelSociete.style.display = 'none'
+        inputNumeroTVA.style.display = 'none'
+        labelNumeroTVA.style.display = 'none'
+    }
+    else {
+        inputSociete.style.display = 'inline'
+        labelSociete.style.display = 'inline'
+        inputNumeroTVA.style.display = 'inline'
+        labelNumeroTVA.style.display = 'inline'
+    }
+}
+
 const initAffichage = () => {
+    showEltProfessionnel({ target : document.querySelector("input[name='Type']:checked") })
+
     document.getElementById('divAperitif').style.display = 'none'
     document.getElementById('divCocktail').style.display = 'none'
     document.getElementById('divBox').style.display = 'none'
@@ -121,6 +144,7 @@ const initAffichage = () => {
 const setGlobals = () => {
     global.isCreation = document.getElementById('isCreation').innerHTML
     global.Id_Devis = document.getElementById('Id_Devis') !== null ? document.getElementById('Id_Devis').getAttribute('data-id') : undefined
+    global.Numero_Devis = document.getElementById('Id_Devis') !== null ? document.getElementById('Id_Devis').getAttribute('data-numero') : undefined
     saveClient()
     saveDateEvenement()
     saveAdresseLivraison()
@@ -136,11 +160,18 @@ const setGlobals = () => {
 // récupère les infos du client
 const getClient = () => {
     return {
-        Nom_Prenom : document.getElementById('Nom_Prenom').value,
-        Adresse_Facturation : document.getElementById('Adresse_Facturation').value,
-        Email : document.getElementById('Email').value,
+        Nom : document.getElementById('Nom').value,
+        Prenom : document.getElementById('Prenom').value,
+        Adresse_Facturation_Adresse : document.getElementById('Adresse_Facturation_Adresse').value,
+        Adresse_Facturation_Adresse_Complement_1 : document.getElementById('Adresse_Facturation_Adresse_Complement_1').value,
+        Adresse_Facturation_Adresse_Complement_2 : document.getElementById('Adresse_Facturation_Adresse_Complement_2').value,
+        Adresse_Facturation_CP : document.getElementById('Adresse_Facturation_CP').value,
+        Adresse_Facturation_Ville : document.getElementById('Adresse_Facturation_Ville').value,
         Telephone : document.getElementById('Telephone').value,
-        Type : Array.from(document.getElementsByName('Type')).find(elt => elt.checked).value
+        Email : document.getElementById('Email').value,
+        Type : Array.from(document.getElementsByName('Type')).find(elt => elt.checked).value,
+        Societe : document.getElementById('Societe').value,
+        Numero_TVA : document.getElementById('Numero_TVA').value        
     }
 }
 
@@ -151,7 +182,13 @@ const getDateEvenement = () => {
 
 // récupère l'adresse de livraison
 const getAdresseLivraison = () => {
-    return document.getElementById('Adresse_Livraison').value
+    return {
+        Adresse_Livraison_Adresse : document.getElementById('Adresse_Livraison_Adresse').value,
+        Adresse_Livraison_Adresse_Complement_1 : document.getElementById('Adresse_Livraison_Adresse_Complement_1').value,
+        Adresse_Livraison_Adresse_Complement_2 : document.getElementById('Adresse_Livraison_Adresse_Complement_2').value,
+        Adresse_Livraison_CP : document.getElementById('Adresse_Livraison_CP').value,
+        Adresse_Livraison_Ville : document.getElementById('Adresse_Livraison_Ville').value
+    }
 }
 
 // récupère les infos de la formule apéritif
@@ -243,7 +280,8 @@ const saveDateEvenement = () => {
 
 // enregistre l'adresse de livraison dans l'objet global
 const saveAdresseLivraison = () => {
-    global.Adresse_Livraison = getAdresseLivraison()
+    // eslint-disable-next-line no-global-assign
+    global = { ...global, ...getAdresseLivraison() }
 }
 
 // enregistre le commentaire dans l'objet global
@@ -977,7 +1015,7 @@ const sendDevis = async () => {
                 div.classList.add('messageConf')
                 div.innerHTML = infos.message
 
-                url = `/devis/pdf/${encodeURI('CHEZ MES SOEURS - Devis ')}${global.Id_Devis}.pdf`
+                url = `/devis/pdf/${encodeURI('CHEZ MES SOEURS - Devis ')}${global.Numero_Devis}.pdf`
                 window.open(url)
             }
         }
@@ -1055,6 +1093,11 @@ const toFacture = async () => {
 }
 
 const initUX = () => {
+    // gestion du changement de type de client
+    document.getElementsByName('Type').forEach(elt => {
+        elt.onchange = showEltProfessionnel
+    })
+
     // gestion du clic sur les checkboxes pour l'affichage
     isAperitifCheckbox.onclick = toggle
     isCocktailCheckbox.onclick = toggle
@@ -1124,8 +1167,6 @@ const initUX = () => {
         document.getElementById('btnCreateDevis').onclick = createDevis
     }
 }
-
-
 
 window.addEventListener("DOMContentLoaded", () => {
     $( "#Date_Evenement" ).datepicker($.datepicker.regional['fr']);
