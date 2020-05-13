@@ -25,6 +25,7 @@ const clientsRouter = require('./routers/clients').router
 const devisRouter = require('./routers/devis').router
 const estimationsRouter = require('./routers/estimations')
 const facturesRouter = require('./routers/factures').router
+const avoirsRouter = require('./routers/avoirs').router
 const menuRouter = require('./routers/menu')
 const statistiquesRouter = require('./routers/statistiques')
 
@@ -71,6 +72,7 @@ app.use(carteRouter)
 app.use(clientsRouter)
 app.use(devisRouter)
 app.use(facturesRouter)
+app.use(avoirsRouter)
 app.use(estimationsRouter)
 app.use(menuRouter)
 app.use(statistiquesRouter)

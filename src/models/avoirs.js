@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
 		Numero_Avoir: {
 			field : 'Numero_Avoir',
 			type : DataTypes.STRING(500),
-			allowNull : false
+			allowNull : false,
+			unique : true
 		},
 		Date_Creation: {
 			field : 'Date_Creation',

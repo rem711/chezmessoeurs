@@ -36,6 +36,7 @@ const isAcessible = (url, method) => {
 }
 
 const auth = (req, res, next) => {    
+    return next()
     if(req.session.authenticated || isAcessible(req.originalUrl, req.method)) {
         return next()
     }

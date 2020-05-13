@@ -30,7 +30,7 @@ const fontFooter = 'Times-Roman'
 // const fontFooter = 'Helvetica'
 const fontSizeFooter = pixelsToPoints(12)
 
-const srcLogo = __dirname + '/../../public/img/logo_cmstraiteur.png'
+const srcLogo = __dirname + '/../../../public/img/logo_cmstraiteur.png'
 
 const paddingGeneralHeader = pixelsToPoints(15)
 const heightLogo = pixelsToPoints(80)
@@ -109,21 +109,21 @@ const drawGeneralHeader = () => {
     
     doc.image(srcLogo, doc.page.margins.left, yPos, { height : heightLogo, align : 'left' })
 
+    doc.fillColor('black', 1).fontSize(pixelsToPoints(21)).font(fontContent)
+
     const content = `Facture n° ${facture.Numero_Facture}`
     const options = { align : 'center'}
     const width = doc.widthOfString(content, options)
     const height = doc.heightOfString(content, { ...options, width })
 
     doc
-    .fillColor('black')
-    .fontSize(pixelsToPoints(21))
     .text(content, doc.page.margins.left, yPos - paddingGeneralHeader + (generalFooterHeight * 0.5), { ...options, height })
 
     yPos += generalHeaderHeight
 }
 
 const drawGeneralFooter = () => {
-    doc.fontSize(fontSizeFooter).font(fontFooter).fillColor('black')
+    doc.fontSize(fontSizeFooter).font(fontFooter).fillColor('black', 1)
     const string1 = 'Chez Mes Soeurs - 18 Avenue de la Concorde - 21000 DIJON'
     const string2 = '06 61 91 80 12 - chezmessoeurs@gmail.com'
     const string3 = 'SIRET - 831 826 672'
@@ -143,8 +143,8 @@ const drawGeneralFooter = () => {
     // console.log('generalFooterHeight : ', height, 'tempY : ', tempY)
     doc.rect(doc.page.margins.left, tempY, largeurPage, height).fillAndStroke(backgroundColor)
     tempY += padding + (padding * 0.5)
-    // doc.fontSize(fontSizeFooter).fillColor('black')
-    doc.fontSize(fontSizeFooter).font(fontFooter).fillColor('black')
+    // doc.fontSize(fontSizeFooter).fillColor('black', 1)
+    doc.fontSize(fontSizeFooter).font(fontFooter).fillColor('black', 1)
     doc.text(string1, doc.page.margins.left, tempY, options)
     tempY += padding + fontSizeFooter
     doc.text(string2, doc.page.margins.left, tempY, options)
@@ -154,7 +154,7 @@ const drawGeneralFooter = () => {
 
 const drawPagesNumber = () => {
     const range = doc.bufferedPageRange()
-    doc.fontSize(pixelsToPoints(12)).fillColor('black')
+    doc.fontSize(pixelsToPoints(12)).fillColor('black', 1)
     let i = 0
     let end = 0
     for(i = range.start, end = range.start + range.count, range.start <= end; i < end; i++) {
@@ -190,7 +190,7 @@ const drawIdentification = () => {
 
     doc.font(fontTitles).fontSize(fontSizeTitles)
     doc.text('Chez Mes Soeurs', xIdentificationEntreprise, doc.y, options)
-    doc.text('18 Avenue de la concorde', xIdentificationEntreprise, doc.y, options)
+    doc.text('18 Avenue de la Concorde', xIdentificationEntreprise, doc.y, options)
     doc.text('21000 DIJON', xIdentificationEntreprise, doc.y, options)
     doc.text('Tél : 06 61 91 80 12', xIdentificationEntreprise, doc.y, options)
     doc.text('Email : chezmessoeurs@gmail.com', xIdentificationEntreprise, doc.y, options)
@@ -313,7 +313,7 @@ const drawRefFactureDate = () => {
     // .lineTo(contours.topLeft.x, contours.topLeft.y)
     // .moveTo(contours.topCenter.x, contours.topCenter.y)
     // .lineTo(contours.bottomCenter.x, contours.bottomCenter.y)
-    // .strokeColor('black')
+    // .strokeColor('black', 1)
     // .stroke()
 
     // doc.y = bottom.y
@@ -323,7 +323,7 @@ const drawRefFactureDate = () => {
     doc
     .text(`Référence devis : ${facture.Devis.Numero_Devis}`, xFactureDate, doc.y)
     .text(`Référence facture : ${facture.Numero_Facture}`, xFactureDate, doc.y)
-    .text(`Date de facture : ${moment.utc().format('DD/MM/YYYY')}`)
+    .text(`Date d'émission : ${moment.utc().format('DD/MM/YYYY')}`)
 
     yPos = doc.y
 }
@@ -364,7 +364,7 @@ const drawTablesRecap = () => {
     let currentHeight = 0
     let maxHeightRow = 0
     // tableau avec les différentes coordonnées x,y lors de l'écriture pour savoir comment tracer le tableau
-    const tabPositions = []
+    let tabPositions = []
 
     const pageLeft = doc.page.margins.left + paddingPageContent.left
     const pageRight = doc.page.width - (doc.page.margins.right + paddingPageContent.right)
@@ -372,43 +372,133 @@ const drawTablesRecap = () => {
     const sizeCol1 = pageWidth * (2/3) 
     const sizeCol2 = (pageWidth * (1/3)) * 0.5 
     const sizeCol3 = (pageWidth * (1/3)) * 0.5 
+    let tableTop = 0
+    let tableBottom = 0
+    const aPayerLeft = pageWidth * 0.6
+    const aPayerRight = pageRight
+    const aPayerWidth = aPayerRight - aPayerLeft
+    let aPayerTop = 0
+    let aPayerBottom = 0
+    
+
+    const contoursTableau = () => {
+        tableBottom = yPos
+        // **** contours du tableau
+        // lignes
+        for(let i = 0; i < tabPositions.length; i += 2) {
+            const from = tabPositions[i]
+            const to = tabPositions[i+1]
+            doc.moveTo(from.x, from.y)
+            doc.lineTo(to.x, to.y)
+        }
+        // colonnes
+        doc
+        .moveTo(pageLeft, tableTop)
+        .lineTo(pageLeft, tableBottom)
+        .moveTo(pageLeft + sizeCol1, tableTop)
+        .lineTo(pageLeft + sizeCol1, tableBottom)
+        .moveTo(pageLeft + sizeCol1 + sizeCol2, tableTop)
+        .lineTo(pageLeft + sizeCol1 + sizeCol2, tableBottom)
+        .moveTo(pageRight, tableTop)
+        .lineTo(pageRight, tableBottom)
+        .strokeColor('black', 0.5)
+        .stroke()
+
+        tabPositions = []
+        tableTop = 0
+        tableBottom = 0
+    }
+
+    const contoursAPayer = () => {
+        // lignes
+        for(let i = 0; i < tabPositions.length; i += 2) {
+            const from = tabPositions[i]
+            const to = tabPositions[i+1]
+            doc.moveTo(from.x, from.y)
+            doc.lineTo(to.x, to.y)
+        }
+        // colonnes
+        doc
+        .moveTo(aPayerLeft, aPayerTop)
+        .lineTo(aPayerLeft, aPayerBottom)
+        .moveTo(aPayerRight, aPayerTop)
+        .lineTo(aPayerRight, aPayerBottom)
+        .strokeColor('black', 0.5)
+        .stroke()
+
+        tabPositions = []
+        aPayerTop = 0
+        aPayerBottom = 0
+    }
+
+    const enteteTableau = () => {
+        yPos = doc.y
+
+        // **** Ecriture ligne d'entête
+        // l'écriture se fait par ligne en se décalant vers la droite afin de remplir chaque case
+        doc.font(fontTitles).fontSize(fontSizeTitles)    
+        // top ligne entête gauche
+        tabPositions.push({x : pageLeft, y : yPos}) 
+        // top ligne entête droite
+        tabPositions.push({x : pageRight, y : yPos}) 
+        tableTop = yPos
+        yPos += paddingContent.top
+
+        // col1
+        maxHeightRow = tabRecapWriteFirstCol('Désignation\n(/pers = par personne)', maxHeightRow, sizeCol1, pageLeft, 'center')
+
+        // col2
+        maxHeightRow = tabRecapWriteSecondCol('Prix / Personne HT', maxHeightRow, sizeCol2, sizeCol1, 'center')
+
+        // col3
+        maxHeightRow = tabRecapWriteThirdCol('Total HT', maxHeightRow, sizeCol3, sizeCol2, 'center')
+
+        yPos += maxHeightRow
+        // bottom ligne entête gauche
+        tabPositions.push({x : pageLeft, y : yPos}) 
+        // bottom ligne entête droite
+        tabPositions.push({x : pageRight, y : yPos}) 
+        doc.font(fontContent).fontSize(fontSizeContent)
+    }
+
+    const nextPage = () => {
+        newPage()
+        doc.y = yPos
+        doc.moveDown(1)
+        yPos = doc.y        
+    }
 
     doc.moveDown(2)
-    yPos = doc.y
+    enteteTableau()
 
-    // **** Ecriture ligne d'entête
-    // l'écriture se fait par ligne en se décalant vers la droite afin de remplir chaque case
-    doc.font(fontTitles).fontSize(fontSizeTitles)    
-    // top ligne entête gauche
-    tabPositions.push({x : pageLeft, y : yPos}) 
-    // top ligne entête droite
-    tabPositions.push({x : pageRight, y : yPos}) 
-    const tableTop = yPos
-    yPos += paddingContent.top
-
-    // col1
-    maxHeightRow = tabRecapWriteFirstCol('Désignation\n(/pers = par personne)', maxHeightRow, sizeCol1, pageLeft, 'center')
-
-    // col2
-    maxHeightRow = tabRecapWriteSecondCol('Prix / Personne HT', maxHeightRow, sizeCol2, sizeCol1, 'center')
-
-    // col3
-    maxHeightRow = tabRecapWriteThirdCol('Total HT', maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-    yPos += maxHeightRow
     // tabPositions.push({x : pageLeft, y : yPos}) // top 1ère ligne gauche
     // tabPositions.push({x : pageRight, y : yPos}) // top 1ère ligne droite
 
     // **** contenu du tableau
     doc.font(fontContent).fontSize(fontSizeContent)
-    if(facture.Formule_Aperitif.isAperitif) {
-        // on ajoute la ligne du dessus de la row
-        tabPositions.push({x : pageLeft, y : yPos}) 
-        tabPositions.push({x : pageRight, y : yPos})   
+    if(facture.Formule_Aperitif.isAperitif) { 
+        const { Formule_Aperitif } = facture
+
+        // test d'espace
+        doc.fillColor('white', 0)
+        maxHeightRow = 0
+        content = `Formule Apéritif pour ${Formule_Aperitif.Nb_Convives} (${Formule_Aperitif.Nb_Pieces_Salees} pièces /pers)`
+        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Aperitif.Prix_HT / Formule_Aperitif.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Aperitif.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
+
+        // pas assez d'espace
+        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
+            contoursTableau()
+            nextPage()
+            enteteTableau()
+        }
+
         // on ajoute la padding top
         yPos += paddingContent.top
 
-        const { Formule_Aperitif } = facture
+        // écriture
+        doc.fillColor('black', 1)
         maxHeightRow = 0
         content = `Formule Apéritif pour ${Formule_Aperitif.Nb_Convives} (${Formule_Aperitif.Nb_Pieces_Salees} pièces /pers)`
         maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
@@ -417,15 +507,33 @@ const drawTablesRecap = () => {
 
         // on ajoute le padding bottom
         yPos += maxHeightRow
-    }
-    if(facture.Formule_Cocktail.isCocktail) {
-        // on ajoute la ligne du dessus de la row
+        // on ajoute la ligne du dessous de la row
         tabPositions.push({x : pageLeft, y : yPos}) 
         tabPositions.push({x : pageRight, y : yPos})   
+    }
+    if(facture.Formule_Cocktail.isCocktail) {  
+        const { Formule_Cocktail } = facture
+
+        // test d'espace
+        doc.fillColor('white', 0)
+        maxHeightRow = 0
+        content = `Formule Cocktail pour ${Formule_Cocktail.Nb_Convives} (${Formule_Cocktail.Nb_Pieces_Salees} pièces salées /pers, ${Formule_Cocktail.Nb_Pieces_Sucrees} pièces sucrée(s) /pers)`
+        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Cocktail.Prix_HT / Formule_Cocktail.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Cocktail.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
+
+        // pas assez d'espace
+        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
+            contoursTableau()
+            nextPage()
+            enteteTableau()
+        }
+
         // on ajoute la padding top
         yPos += paddingContent.top
 
-        const { Formule_Cocktail } = facture
+        // écriture
+        doc.fillColor('black', 1)
         maxHeightRow = 0
         content = `Formule Cocktail pour ${Formule_Cocktail.Nb_Convives} (${Formule_Cocktail.Nb_Pieces_Salees} pièces salées /pers, ${Formule_Cocktail.Nb_Pieces_Sucrees} pièces sucrée(s) /pers)`
         maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
@@ -434,15 +542,32 @@ const drawTablesRecap = () => {
 
         // on ajoute le padding bottom
         yPos += maxHeightRow
-    }
-    if(facture.Formule_Box.isBox) {
-        // on ajoute la ligne du dessus de la row
+        // on ajoute la ligne du dessous de la row
         tabPositions.push({x : pageLeft, y : yPos}) 
-        tabPositions.push({x : pageRight, y : yPos})   
+        tabPositions.push({x : pageRight, y : yPos}) 
+    }
+    if(facture.Formule_Box.isBox) { 
+        const { Formule_Box } = facture
+
+        // test d'espace
+        doc.fillColor('white', 0)
+        maxHeightRow = 0
+        maxHeightRow = tabRecapWriteFirstCol(`Formule Box Déjeuner pour ${Formule_Box.Nb_Convives}`, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Box.Prix_HT / Formule_Box.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Box.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
+
+        // pas assez d'espace
+        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
+            contoursTableau()
+            nextPage()
+            enteteTableau()
+        }
+
         // on ajoute la padding top
         yPos += paddingContent.top
 
-        const { Formule_Box } = facture
+        // écriture
+        doc.fillColor('black', 1)
         maxHeightRow = 0
         maxHeightRow = tabRecapWriteFirstCol(`Formule Box Déjeuner pour ${Formule_Box.Nb_Convives}`, maxHeightRow, sizeCol1, pageLeft, 'left')
         maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Box.Prix_HT / Formule_Box.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
@@ -450,15 +575,33 @@ const drawTablesRecap = () => {
 
         // on ajoute le padding bottom
         yPos += maxHeightRow
-    }
-    if(facture.Formule_Brunch.isBrunch) {
-        // on ajoute la ligne du dessus de la row
+        // on ajoute la ligne du dessous de la row
         tabPositions.push({x : pageLeft, y : yPos}) 
-        tabPositions.push({x : pageRight, y : yPos})   
+        tabPositions.push({x : pageRight, y : yPos}) 
+    }
+    if(facture.Formule_Brunch.isBrunch) { 
+        const { Formule_Brunch } = facture
+
+        // test d'espace
+        doc.fillColor('white', 0)
+        maxHeightRow = 0
+        content = `Formule Brunch Privé pour ${Formule_Brunch.Nb_Convives} (${Formule_Brunch.Nb_Pieces_Salees} pièces salées /pers, ${Formule_Brunch.Nb_Pieces_Sucrees} pièces sucrée(s) /pers)`
+        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Brunch.Prix_HT / Formule_Brunch.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Brunch.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
+
+        // pas assez d'espace
+        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
+            contoursTableau()
+            nextPage()
+            enteteTableau()
+        }
+
         // on ajoute la padding top
         yPos += paddingContent.top
-
-        const { Formule_Brunch } = facture
+        
+        // écriture
+        doc.fillColor('black', 1)
         maxHeightRow = 0
         content = `Formule Brunch Privé pour ${Formule_Brunch.Nb_Convives} (${Formule_Brunch.Nb_Pieces_Salees} pièces salées /pers, ${Formule_Brunch.Nb_Pieces_Sucrees} pièces sucrée(s) /pers)`
         maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
@@ -467,15 +610,33 @@ const drawTablesRecap = () => {
 
         // on ajoute le padding bottom
         yPos += maxHeightRow
-    }
-    // options
-    for(let i = 0; i < facture.Liste_Options.length; i++) {
-        // on ajoute la ligne du dessus de la row
+        // on ajoute la ligne du dessous de la row
         tabPositions.push({x : pageLeft, y : yPos}) 
-        tabPositions.push({x : pageRight, y : yPos})   
-        // on ajoute la padding top
+        tabPositions.push({x : pageRight, y : yPos}) 
+    }
+
+    // options
+    // let i = 0
+    // for (let n = 0; n < 11; n++) {
+    for(let i = 0; i < facture.Liste_Options.length; i++) {
+        // test d'espace
+        doc.fillColor('white', 0)
+        maxHeightRow = 0
+        maxHeightRow = tabRecapWriteFirstCol(facture.Liste_Options[i].Nom, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol('-', maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(facture.Liste_Options[i].Montant).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
+        
+        // pas assez d'espace
+        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
+            contoursTableau()
+            nextPage()
+            enteteTableau()
+        }
+
         yPos += paddingContent.top
 
+        // écriture
+        doc.fillColor('black', 1)
         maxHeightRow = 0
         maxHeightRow = tabRecapWriteFirstCol(facture.Liste_Options[i].Nom, maxHeightRow, sizeCol1, pageLeft, 'left')
         maxHeightRow = tabRecapWriteSecondCol('-', maxHeightRow, sizeCol2, sizeCol1, 'center')
@@ -483,14 +644,15 @@ const drawTablesRecap = () => {
 
         // on ajoute le padding bottom
         yPos += maxHeightRow
+
+        // on ajoute la ligne du dessous de la row
+        tabPositions.push({x : pageLeft, y : yPos}) 
+        tabPositions.push({x : pageRight, y : yPos})   
     }
     // remise
     if(facture.Remise !== null) {
-        // on ajoute la ligne du dessus de la row
-        tabPositions.push({x : pageLeft, y : yPos}) 
-        tabPositions.push({x : pageRight, y : yPos})   
-        // on ajoute la padding top
-        yPos += paddingContent.top
+        // test d'espace
+        doc.fillColor('white', 0)
         maxHeightRow = 0
         maxHeightRow = tabRecapWriteFirstCol(facture.Remise.Nom, maxHeightRow, sizeCol1, pageLeft, 'left')
         maxHeightRow = tabRecapWriteSecondCol('-', maxHeightRow, sizeCol2, sizeCol1, 'center')
@@ -499,113 +661,194 @@ const drawTablesRecap = () => {
             prixRemise = facture.Prix_HT * (facture.Remise.Valeur / 100)
         }
         maxHeightRow = tabRecapWriteThirdCol(`${Number(prixRemise).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
+
+        // pas assez d'espace
+        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
+            contoursTableau()
+            nextPage()
+            enteteTableau()
+        }
+
+        // on ajoute la padding top
+        yPos += paddingContent.top
+
+        // écriture
+        doc.fillColor('black', 1)
+        maxHeightRow = 0
+        maxHeightRow = tabRecapWriteFirstCol(facture.Remise.Nom, maxHeightRow, sizeCol1, pageLeft, 'left')
+        maxHeightRow = tabRecapWriteSecondCol('-', maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteThirdCol(`${Number(prixRemise).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
+
         // on ajoute le padding bottom
         yPos += maxHeightRow
+
+        // on ajoute la ligne du dessous de la row
+        tabPositions.push({x : pageLeft, y : yPos}) 
+        tabPositions.push({x : pageRight, y : yPos}) 
     }
 
-    // on ferme le tableau
-    tabPositions.push({x : pageLeft, y : yPos}) 
-    tabPositions.push({x : pageRight, y : yPos}) 
-    const tableBottom = yPos
+    contoursTableau()
+    
+    let yPosInit = yPos
+    let yTableauAPayer = 0
 
+    const divAPayer = () => {
+        console.log('départ : ', yPos)
+        // **** tableau A PAYER
+        doc.font(fontTitles).fontSize(fontSizeTitles)    
 
-    // **** tableau A PAYER
-    doc.font(fontTitles).fontSize(fontSizeTitles)
-    // const aPayerLeft = pageLeft + sizeCol1
-    // const aPayerRight = pageRight
-    // const aPayerWidth = sizeCol2 + sizeCol3
-    const aPayerLeft = pageWidth * 0.6
-    const aPayerRight = pageRight
-    const aPayerWidth = aPayerRight - aPayerLeft
+        yPos += paddingTitles.top
+        aPayerTop = yPos
+        xPos = aPayerLeft + paddingTitles.left
+        tabPositions.push({x : aPayerLeft, y : yPos})
+        tabPositions.push({x : aPayerRight, y : yPos})
 
-    yPos += paddingTitles.top
-    const aPayerTop = yPos
-    xPos = aPayerLeft + paddingTitles.left
-    tabPositions.push({x : aPayerLeft, y : yPos})
-    tabPositions.push({x : aPayerRight, y : yPos})
+        yTableauAPayer = yPos
 
-    // FIXME:
-    const yTableauAPayer = yPos
+        // Montant HT
+        maxHeightRow = 0
+        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
+        content = 'Montant HT'
+        yPos += paddingContent.top
+        doc.text(content, xPos, yPos, options)
+        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
+        content = `${Number.parseFloat(facture.Prix_HT).toFixed(2)}€`
+        doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
+        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+        yPos += maxHeightRow
 
-    maxHeightRow = 0
-    options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
-    content = 'Montant HT'
-    yPos += paddingContent.top
-    doc.text(content, xPos, yPos, options)
-    currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
-    maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
-    options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
-    content = `${Number.parseFloat(facture.Prix_HT).toFixed(2)}€`
-    doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
-    currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
-    maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
-    yPos += maxHeightRow
+        // TVA
+        maxHeightRow = 0
+        tabPositions.push({x : aPayerLeft, y : yPos})
+        tabPositions.push({x : aPayerRight, y : yPos})
+        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
+        content = 'TVA (10%)'
+        yPos += paddingContent.top
+        doc.text(content, xPos, yPos, options)
+        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
+        content = `${Number.parseFloat(facture.Prix_HT * 0.1).toFixed(2)}€`
+        doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
+        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+        yPos += maxHeightRow
 
-    maxHeightRow = 0
-    tabPositions.push({x : aPayerLeft, y : yPos})
-    tabPositions.push({x : aPayerRight, y : yPos})
-    options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
-    content = 'TVA (10%)'
-    yPos += paddingContent.top
-    doc.text(content, xPos, yPos, options)
-    currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
-    maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
-    options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
-    content = `${Number.parseFloat(facture.Prix_HT * 0.1).toFixed(2)}€`
-    doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
-    currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
-    maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
-    yPos += maxHeightRow
+        // Montant TTC
+        maxHeightRow = 0
+        tabPositions.push({x : aPayerLeft, y : yPos})
+        tabPositions.push({x : aPayerRight, y : yPos})
+        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
+        content = 'Montant TTC'
+        yPos += paddingContent.top
+        doc.text(content, xPos, yPos, options)
+        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
+        content = `${Number.parseFloat(facture.Prix_TTC).toFixed(2)}€`
+        doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
+        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+        yPos += maxHeightRow
 
-    maxHeightRow = 0
-    tabPositions.push({x : aPayerLeft, y : yPos})
-    tabPositions.push({x : aPayerRight, y : yPos})
-    options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
-    content = 'NET A PAYER'
-    yPos += paddingContent.top
-    doc.text(content, xPos, yPos, options)
-    currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
-    maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
-    options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
-    content = `${Number.parseFloat(facture.Prix_TTC).toFixed(2)}€`
-    doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
-    currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
-    maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
-    yPos += maxHeightRow
+        // acompte
+        maxHeightRow = 0
+        tabPositions.push({x : aPayerLeft, y : yPos})
+        tabPositions.push({x : aPayerRight, y : yPos})
+        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
+        content = 'ACOMPTE VERSE'
+        yPos += paddingContent.top
+        doc.text(content, xPos, yPos, options)
+        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
+        content = `${Number.parseFloat(facture.Acompte).toFixed(2)}€`
+        doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
+        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+        yPos += maxHeightRow
 
-    tabPositions.push({x : aPayerLeft, y : yPos})
-    tabPositions.push({x : aPayerRight, y : yPos})
-    const aPayerBottom = yPos
+        // Net à payer
+        maxHeightRow = 0
+        tabPositions.push({x : aPayerLeft, y : yPos})
+        tabPositions.push({x : aPayerRight, y : yPos})
+        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
+        content = 'NET A PAYER'
+        yPos += paddingContent.top
+        doc.text(content, xPos, yPos, options)
+        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
+        content = `${Number.parseFloat(facture.Reste_A_Payer).toFixed(2)}€`
+        doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
+        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+        yPos += maxHeightRow
 
+        tabPositions.push({x : aPayerLeft, y : yPos})
+        tabPositions.push({x : aPayerRight, y : yPos})
+        aPayerBottom = yPos
+
+        console.log('arrivée : ', yPos)
+    }
+
+    // 157.415 hauteur mesurée du tableau à payer
+    const heightTabAPayer = 157.415
+    console.log(`suffisamment d'espace car besoin de ${(yPos + heightTabAPayer + paddingContent.top + paddingContent.bottom + paddingPageContent.bottom)} > ${pageDrawingSpace.bottom}`)
+    // vérification approximative pour ne pas dessiner trop bas lors des tests et qu'il y ait des sauts de page générés automatiquement
+    if((yPos + heightTabAPayer + paddingContent.top + paddingContent.bottom + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
+        nextPage()
+        yPosInit = yPos
+    }
+
+    doc.fillColor('white', 0)
+    divAPayer()
+    // doc.moveDown(2)
+    drawReglement(yTableauAPayer)
+
+    if((yPos + paddingContent.top + paddingContent.bottom + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
+        nextPage()
+        yPosInit = yPos
+    }
+    
+    yPos = yPosInit
+
+    tabPositions = []
+    doc.fillColor('black', 1)
+    divAPayer()
+    drawReglement(yTableauAPayer)
+
+    contoursAPayer()
+
+    drawRIB()
 
     // **** contours du tableau
     // lignes
-    for(let i = 0; i < tabPositions.length; i += 2) {
-        const from = tabPositions[i]
-        const to = tabPositions[i+1]
-        doc.moveTo(from.x, from.y)
-        doc.lineTo(to.x, to.y)
-    }
-    // colonnes
-    doc
-    .moveTo(pageLeft, tableTop)
-    .lineTo(pageLeft, tableBottom)
-    .moveTo(pageLeft + sizeCol1, tableTop)
-    .lineTo(pageLeft + sizeCol1, tableBottom)
-    .moveTo(pageLeft + sizeCol1 + sizeCol2, tableTop)
-    .lineTo(pageLeft + sizeCol1 + sizeCol2, tableBottom)
-    .moveTo(pageRight, tableTop)
-    .lineTo(pageRight, tableBottom)
-    .moveTo(aPayerLeft, aPayerTop)
-    .lineTo(aPayerLeft, aPayerBottom)
-    .moveTo(aPayerRight, aPayerTop)
-    .lineTo(aPayerRight, aPayerBottom)
-    .strokeColor('black')
-    .stroke()
-
-    doc.moveDown(2)
-
-    drawReglement(yTableauAPayer)
+    // for(let i = 0; i < tabPositions.length; i += 2) {
+    //     const from = tabPositions[i]
+    //     const to = tabPositions[i+1]
+    //     doc.moveTo(from.x, from.y)
+    //     doc.lineTo(to.x, to.y)
+    // }
+    // // colonnes
+    // doc
+    // .moveTo(pageLeft, tableTop)
+    // .lineTo(pageLeft, tableBottom)
+    // .moveTo(pageLeft + sizeCol1, tableTop)
+    // .lineTo(pageLeft + sizeCol1, tableBottom)
+    // .moveTo(pageLeft + sizeCol1 + sizeCol2, tableTop)
+    // .lineTo(pageLeft + sizeCol1 + sizeCol2, tableBottom)
+    // .moveTo(pageRight, tableTop)
+    // .lineTo(pageRight, tableBottom)
+    // .moveTo(aPayerLeft, aPayerTop)
+    // .lineTo(aPayerLeft, aPayerBottom)
+    // .moveTo(aPayerRight, aPayerTop)
+    // .lineTo(aPayerRight, aPayerBottom)
+    // .strokeColor('black', 1)
+    // .stroke()
 }
 
 const drawReglement = (yTop) => {
@@ -622,16 +865,28 @@ const drawReglement = (yTop) => {
 
     if(facture.Client.Type === 'Professionnel') {
         doc.y += paddingContent.top
-        doc.text(`Date de règlement : ${moment.utc(facture.Date_Creation).add(1, 'months').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Date d'échéance : ${moment.utc(facture.Date_Creation).add(1, 'months').add(2, 'days').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
         doc.text(`Date d'exécution de la prestation : ${moment.utc(facture.Date_Evenement).format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
-        doc.text(`Taux de pénalité à compter du : ${moment.utc(facture.Date_Creation).add(1, 'months').add(1, 'days').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Taux de pénalité à compter du : -`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
         doc.text(`En l'absence de paiement : -`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
         doc.text(`Conditions d'escompte : Escompte pour paiement anticipé : néant`, pageLeft, doc.y, options)
     }
+
+    
+
+    return yTop
+}
+
+const drawRIB = () => {
+    const pageLeft = doc.page.margins.left + paddingPageContent.left + paddingContent.left
+    const pageRight = doc.page.width - (doc.page.margins.right + paddingPageContent.right)
+    const pageWidth = pageRight - pageLeft
+    const width = (pageWidth * 0.4) - paddingContent.right
+    let options = { align : 'left', width }
 
     let ribTop = doc.y + paddingTitles.top
     // 900x422 taille rib (Lxh)
@@ -663,9 +918,7 @@ const drawReglement = (yTop) => {
     const maxRibWidth = pageWidth - paddingTitles.left + paddingTitles.right
     if(ribWidth > maxRibWidth) ribWidth = maxRibWidth
     const ribLeft = (pageWidth - (paddingTitles.left + paddingTitles.right) - ribWidth) / 2
-    doc.image(__dirname + '/../../public/img/exemplerib.jpg', pageLeft + paddingTitles.left + ribLeft, ribTop, { height : ribHeight, width : ribWidth, align : 'center' })
-
-    return yTop
+    doc.image(__dirname + '/../../../public/img/exemplerib.jpg', pageLeft + paddingTitles.left + ribLeft, ribTop, { height : ribHeight, width : ribWidth, align : 'center' })
 }
 
 const drawLastPage = () => {

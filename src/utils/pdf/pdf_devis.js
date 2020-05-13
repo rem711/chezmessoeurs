@@ -30,7 +30,7 @@ const fontFooter = 'Times-Roman'
 // const fontFooter = 'Helvetica'
 const fontSizeFooter = pixelsToPoints(12)
 
-const srcLogo = __dirname + '/../../public/img/logo_cmstraiteur.png'
+const srcLogo = __dirname + '/../../../public/img/logo_cmstraiteur.png'
 
 const paddingGeneralHeader = pixelsToPoints(15)
 const heightLogo = pixelsToPoints(80)
@@ -122,22 +122,29 @@ const drawFirstPage = () => {
 }
 
 const drawHeaderFirstPage = () => {
+    let content = ''
+    if(devis.Client.Type === 'Particulier') {
+        content = `${devis.Client.Prenom} ${devis.Client.Nom}`
+    }
+    else {
+        content = `${devis.Client.Societe}`
+    }
+
     doc
     .rect(doc.x, doc.y, (doc.page.width - (doc.page.margins.left + doc.page.margins.right)), 85.488)
     .fillAndStroke(backgroundColor)
-    .fillColor('black')
+    .fillColor('black', 1)
     .fontSize(pixelsToPoints(21))
+    .font(fontContent)
     .moveDown()
-    .text(devis.Client.Nom_Prenom, { align : 'center' })
-    .moveDown()
-    .text(moment.utc(devis.Date_Evenement).format('DD/MM/YYYY HH:mm'), { align : 'center' })
+    .text(`${content}\n${moment.utc(devis.Date_Evenement).format('DD/MM/YYYY HH:mm')}\nDevis n° ${devis.Numero_Devis}`, { align : 'center' })
 }
 
 const drawTitleFirstPage = () => {
     const padding = pixelsToPoints(200)
     doc.moveDown()
     yPos = doc.y + padding
-    doc.fillColor('black').fontSize(pixelsToPoints(28))
+    doc.fillColor('black', 1).fontSize(pixelsToPoints(28))
     const string = 'PROPOSITION POUR EVENEMENT'
     const options = {width: (largeurPage / 2), align : 'center' }
     doc.text(string, (doc.x + (largeurPage / 4)), yPos, options)
@@ -153,7 +160,7 @@ const drawFooterFirstPage = () => {
 
     padding = pixelsToPoints(150)
     yPos += padding
-    doc.fontSize(pixelsToPoints(14)).fillColor('black')
+    doc.fontSize(pixelsToPoints(14)).fillColor('black', 1)
     const string1 = 'Anne-Sophie, Anne-Claire & Annabelle GRAPPIN'
     const string2 = 'CHEZ MES SOEURS - 18 AVENUE DE LA CONCORDE 21000 DIJON'
     const options = { align : 'center'}
@@ -172,13 +179,26 @@ const drawFooterFirstPage = () => {
 
 const drawGeneralHeader = () => {    
     doc.rect(doc.page.margins.left, yPos, largeurPage, generalHeaderHeight).fillAndStroke(backgroundColor)
+    
     yPos += paddingGeneralHeader
-    doc.fillColor('black').image(srcLogo, doc.page.margins.left, yPos, { height : heightLogo, align : 'left' })
+
+    doc.image(srcLogo, doc.page.margins.left, yPos, { height : heightLogo, align : 'left' })
+    
+    // const content = `Devis n° ${devis.Numero_Devis}`
+    // const options = { align : 'center'}
+    // const width = doc.widthOfString(content, options)
+    // const height = doc.heightOfString(content, { ...options, width })
+
+    // doc
+    // .fillColor('black', 1)
+    // .fontSize(pixelsToPoints(21))
+    // .text(content, doc.page.margins.left, yPos - paddingGeneralHeader + (generalFooterHeight * 0.5), { ...options, height })
+
     yPos += generalHeaderHeight
 }
 
 const drawGeneralFooter = () => {
-    doc.fontSize(fontSizeFooter).font(fontFooter).fillColor('black')
+    doc.fontSize(fontSizeFooter).font(fontFooter).fillColor('black', 1)
     const string1 = 'Chez Mes Soeurs - 18 Avenue de la Concorde - 21000 DIJON'
     const string2 = '06 61 91 80 12 - chezmessoeurs@gmail.com'
     const string3 = 'SIRET - 831 826 672'
@@ -198,8 +218,8 @@ const drawGeneralFooter = () => {
     // console.log('generalFooterHeight : ', height, 'tempY : ', tempY)
     doc.rect(doc.page.margins.left, tempY, largeurPage, height).fillAndStroke(backgroundColor)
     tempY += padding + (padding * 0.5)
-    // doc.fontSize(fontSizeFooter).fillColor('black')
-    doc.fontSize(fontSizeFooter).font(fontFooter).fillColor('black')
+    // doc.fontSize(fontSizeFooter).fillColor('black', 1)
+    doc.fontSize(fontSizeFooter).font(fontFooter).fillColor('black', 1)
     doc.text(string1, doc.page.margins.left, tempY, options)
     tempY += padding + fontSizeFooter
     doc.text(string2, doc.page.margins.left, tempY, options)
@@ -219,7 +239,7 @@ const newPage = (title = undefined) => {
 const drawTitleFormule = (title) => {
     const padding = pixelsToPoints(20)
     const fontSize = pixelsToPoints(20)
-    doc.fillColor('black').fontSize(fontSize)
+    doc.fillColor('black', 1).fontSize(fontSize)
     yPos += padding
     doc.text(title, doc.page.margins.left, yPos, { align : 'center' })
     yPos += fontSize + padding
@@ -227,7 +247,7 @@ const drawTitleFormule = (title) => {
 
 const drawPagesNumber = () => {
     const range = doc.bufferedPageRange()
-    doc.fontSize(pixelsToPoints(12)).fillColor('black')
+    doc.fontSize(pixelsToPoints(12)).fillColor('black', 1)
     let i = 0
     let end = 0
     for(i = range.start + 1, end = range.start + range.count, range.start <= end; i < end; i++) {
@@ -983,7 +1003,7 @@ const drawLastPage = () => {
     .lineTo(aPayerLeft, aPayerBottom)
     .moveTo(aPayerRight, aPayerTop)
     .lineTo(aPayerRight, aPayerBottom)
-    .strokeColor('black')
+    .strokeColor('black', 0.5)
     .stroke()
 
     doc.moveDown(2)
@@ -1034,7 +1054,7 @@ const drawLastPage = () => {
 
     // **** infos paiement
     doc.font(fontContent).fontSize(10)
-    content = "Un acompte de 30% sera demandé la validation du devis."
+    content = "Un acompte de 30% sera demandé à la validation du devis.\nPaiement sous 30 jours à réception de la facture."
     options = { align : 'center', oblique : true, width : (pageDrawingSpace.width - (paddingContent.left + paddingContent.right)) }
     height = doc.heightOfString(content, options)
     yPos = (pageDrawingSpace.bottom - height)
@@ -1046,7 +1066,7 @@ const drawLastPage = () => {
     xPos = doc.page.margins.left + paddingPageContent.left + paddingContent.left
 
     yPos += paddingContent.top
-    doc.text(`Devis n°${devis.Numero_Devis}.`, xPos, yPos)
+    doc.text(`Devis n° ${devis.Numero_Devis}.`, xPos, yPos)
     yPos += paddingContent.bottom
 
     yPos += paddingContent.top
@@ -1070,7 +1090,10 @@ const drawLastPage = () => {
         doc.text(`Pour ${devis.Client.Prenom} ${devis.Client.Nom}.`, xPos, yPos)
     }
     else {
-        doc.text(`Pour ${devis.Client.Societe}, a l'attention de ${devis.Client.Prenom} ${devis.Client.Nom}.`, xPos, yPos)
+        doc.text(`Pour ${devis.Client.Societe}, à l'attention de ${devis.Client.Prenom} ${devis.Client.Nom}.`, xPos, yPos)
+        yPos += paddingContent.bottom
+        yPos += paddingContent.top
+        doc.text(`Numéro TVA : ${devis.Client.Numero_TVA}.`, xPos, yPos)
     }
     yPos += paddingContent.bottom
 

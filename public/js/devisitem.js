@@ -906,7 +906,6 @@ const createDevis = async () => {
     }
 }
 
-// TODO:archiveDevis
 const archiveDevis = async () => {
     const div = document.getElementById('divInfos')
     div.innerHTML = ''
@@ -1079,8 +1078,11 @@ const toFacture = async () => {
                         div.innerHTML = infos.error
                     }
                     else if(infos.message) {
-                        alert(infos.message + ' Vous allez être redirigé.')
-                        window.location = '/factures'
+                        alert(infos.message + " Une facture d'acompte vient également d'être créée et sera disponible dans une nouvelle fenêtre.\nVous allez être redirigé.")
+                        window.open(`/factures/acomptes/generate/${facture.Id_Facture}/30/1`)
+                        setTimeout(() => {
+                            window.location = '/factures'
+                        }, 500)
                     }
                 }
             }

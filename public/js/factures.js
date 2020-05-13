@@ -19,18 +19,17 @@ const deleteFacture = async () => {
         const response = await fetch(url, options)
         if(response.ok) {
             const data = await response.json()
-            const { infos, urlAvoir } = data
+            const { infos, facture } = data
 
             if(infos.error) {
                 alert(infos.error)
             }
             else if(infos.message) {
                 alert(infos.message)
-                // TODO:Redirection vers avoir?
-                if(urlAvoir) {
-                    window.open(urlAvoir)
-                }
-                window.location.reload()
+                window.open(`/avoirs/generate/${facture.Id_Facture}`)
+                setTimeout(() => {
+                    window.location.reload()
+                }, 500)
             }
         }
     }

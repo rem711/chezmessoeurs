@@ -12,7 +12,8 @@ module.exports = {
 		Numero_Devis: {
 			field : 'Numero_Devis',
 			type : Sequelize.STRING(500),
-			allowNull : false
+			allowNull : false,
+			unique : true
 		},
 		Date_Creation: {
 			field : 'Date_Creation',

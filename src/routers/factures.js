@@ -3,9 +3,12 @@ const router = new express.Router()
 const { Factures, Devis, Clients, Prix_Unitaire } = global.db
 const { Op } = require("sequelize")
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
+const isSet = require('../utils/isSet')
 const compteurs = require('../utils/compteurs')
 const formatNumeroFacture = require('../utils/numeroFormatter')
-const createPDF = require('../utils/pdf_factures')
+const createPDFFacture = require('../utils/pdf/pdf_factures')
+const createPDFAcompte = require('../utils/pdf/pdf_acomptes')
+const { createAvoir } = require('./avoirs')
 const moment = require('moment')
 const formatDateHeure = 'DD/MM/YYYY HH:mm'
 
@@ -115,7 +118,7 @@ router
     let infos = undefined
     let facture = undefined
 
-    try {
+    try {        
         if(!isNaN(postIdFacture) && postIdFacture > 0) {
             facture = await Factures.findOne({
                 where : {
@@ -269,13 +272,8 @@ router
         infos
     })
 })
-// TODO:export pdf
-// voir plus tard pour renvoie email
 // https://www.service-public.fr/professionnels-entreprises/vosdroits/F31808
-// si première édition
-        // passe Statut à En attente de paiement
-        // passe Client.Dernier_Statut à Facture envoyée
-    // si facture déjà envoyée, juste sortir le pdf pour consultation
+// export pdf facture
 .get(`/factures/pdf/${encodeURI('CHEZ MES SOEURS - Facture ')}:Numero_Facture.pdf`, async (req, res) => {
     const postNumeroFacture = req.params.Numero_Facture
 
@@ -314,6 +312,8 @@ router
         toPDF.Commentaire = facture.Commentaire
         toPDF.Liste_Options = []
         toPDF.Remise = facture.Remise
+        toPDF.Acompte = facture.Acompte
+        toPDF.Reste_A_Payer = facture.Reste_A_Payer
         toPDF.Prix_HT = facture.Prix_HT
         toPDF.Prix_TTC = facture.Prix_TTC
 
@@ -336,7 +336,7 @@ router
             }
         }
 
-        createPDF(res, toPDF)
+        createPDFFacture(res, toPDF)
 
         if(facture.Statut === 'En attente') {
             facture.Statut = 'En attente de paiement'
@@ -346,7 +346,98 @@ router
         }
     }
     catch(error) {
-        res.send(getErrorMessage(error))
+        const infos = clientInformationObject(getErrorMessage(error), undefined)
+        res.send(infos.error)
+    }
+})
+// route tampon pour la création d'un acompte. Récupère les valeurs nécessaires et les passe à la route de génération du pdf (avec l'url formatée)
+.get('/factures/acomptes/generate/:Id_Facture/:Value/:IsPourcent',  async (req, res) => {
+    const postIdFacture = Number(req.params.Id_Facture)
+    const value = Number(req.params.Value)
+    const isPourcent = Number(req.params.IsPourcent)
+    let Numero_Acompte = undefined
+
+    try {
+        if(isNaN(postIdFacture) || postIdFacture < 1) {
+            throw "L'identifiant de la facture est incorrect."
+        }
+        if(isNaN(value) || value === 0) {
+            throw "La valeur de l'acompte est incorrecte."
+        }
+        if(isPourcent !== 0 && isPourcent !== 1) {
+            throw "La valeur du pourcentage est incorrecte."
+        }
+        if(isPourcent && value > 100) {
+            throw "Le pourcentage ne peut pas excéder 100%."
+        }
+
+        const facture = await Factures.findOne({
+            where : {
+                Id_Facture : postIdFacture
+            },
+            include : {
+                all : true,
+                nested : true
+            }
+        })
+
+        if(facture === null) {
+            throw "L'identifiant est incorrect ou la facture n'existe pas."
+        }
+        if(facture.Statut === 'Archivée' || facture.Statut === 'Annulée') {
+            throw "Cette facture n'es plus accessible."
+        }
+
+        if(!isPourcent && value > facture.Reste_A_Payer) {
+            throw "Le montant est supérieur à la somme restant à payer."
+        }
+
+        // les vérification sont bonnes
+        const numero = await compteurs.get(compteurs.COMPTEUR_ACOMPTES)
+        Numero_Acompte = `FAA_${moment.utc().format('YYYYMMDD')}_${formatNumeroFacture(numero)}_${facture.Client.Nom.toUpperCase()}`
+
+        // mise des valeurs nécessaires en session
+        req.session.Facture = facture
+        req.session.AcompteValue = Number(Number(value).toFixed(2))
+        req.session.IsPourcent = isPourcent
+    }
+    catch(error) {
+        const infos = clientInformationObject(getErrorMessage(error), undefined)
+
+        return res.send(infos.error)
+    }    
+
+    return res.redirect(`/factures/acomptes/pdf/${encodeURI('CHEZ MES SOEURS - Facture d\'Acompte ')}${Numero_Acompte}.pdf`)
+})
+// export pdf facture d'acompte
+.get(`/factures/acomptes/pdf/${encodeURI('CHEZ MES SOEURS - Facture d\'Acompte ')}:Numero_Acompte.pdf`, async (req, res) => {
+    const Numero_Acompte = req.params.Numero_Acompte
+    const facture = req.session.Facture
+    const value = req.session.AcompteValue
+    const isPourcent = req.session.IsPourcent
+
+    req.session.Facture = undefined
+    req.session.AcompteValue = undefined
+    req.session.IsPourcent = undefined
+
+    try {
+        if(!isSet(Numero_Acompte) || !isSet(facture) || !isSet(value) || !isSet(isPourcent)) {
+            throw "Vous n'avez pas accès à cette ressource."
+        }
+
+        const acompte = {
+            Numero_Acompte,
+            Facture : facture,
+            Valeur : value,
+            IsPourcent : isPourcent,
+            Montant : isPourcent ? Number(Number((value / 100) * facture.Reste_A_Payer).toFixed(2)) : value
+        }
+
+        createPDFAcompte(res, acompte)
+    }
+    catch(error) {
+        const infos = clientInformationObject(getErrorMessage(error), undefined)
+        res.send(infos.error)
     }
 })
 // envoie relance
@@ -401,7 +492,6 @@ router
     const postIdFacture = Number(req.params.Id_Facture)
     let infos = undefined
     let facture = undefined
-    let urlAvoir = undefined
 
     try {
         if(!isNaN(postIdFacture) && postIdFacture > 0) {
@@ -416,7 +506,7 @@ router
                 throw "L'identifiant est incorrect ou la facture n'existe pas."
             }
 
-            const isCreateAvoir = facture.Statut === 'En attente de paiement'
+            const avoir = await createAvoir(facture)
 
             facture.Statut = 'Annulée'
             await facture.save()
@@ -424,16 +514,7 @@ router
             facture.Client.Dernier_Statut = 'Facture annulée'
             await facture.Client.save()
 
-            // la facture a été transmise au client, il faut donc un avoir
-            if(isCreateAvoir) {
-                // FIXME:envoie avoir client
-                // const avoir = await createAvoir()
-                infos = clientInformationObject(undefined, `La facture ${facture.Numero_Facture} a été annulée. Un avoir a été créé.`)
-                urlAvoir = 'url avoir à ouvrir dans une tab'
-            }
-            else {
-                infos = clientInformationObject(undefined, `La facture ${facture.Numero_Facture} a été annulée.`)
-            }    
+            infos = clientInformationObject(undefined, `La facture ${facture.Numero_Facture} a été annulée. Un avoir a été créé.`) 
         }
         else {
             throw "L'identifiant est incorrect ou la facture n'existe pas."
@@ -446,8 +527,7 @@ router
 
     res.send({
         infos,
-        facture,
-        urlAvoir
+        facture
     })
 })
 

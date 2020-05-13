@@ -8,7 +8,7 @@ const { createOrLoadClient, updateClient }  = require('./clients')
 const { checksListeOptions } = require('../utils/gestion_prix_unitaire')
 const { createOrLoadRemise, getRemise } = require('../utils/gestion_remise')
 const formatNumeroDevis = require('../utils/numeroFormatter')
-const createPDF = require('../utils/pdf_devis')
+const createPDF = require('../utils/pdf/pdf_devis')
 const { createFacture } = require('./factures')
 const { Op } = require('sequelize')
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
@@ -1129,7 +1129,8 @@ router
         await devis.Client.save()
     }
     catch(error) {
-        res.send(getErrorMessage(error))
+        const infos = clientInformationObject(getErrorMessage(error), undefined)
+        res.send(infos.error)
     }
 })
 // valide un devis pour créer une facture
