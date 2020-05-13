@@ -6,6 +6,20 @@ const logFolder = path.join(__dirname, '../../logs/infos/')
 const errorFolder = path.join(__dirname, '../../logs/errors/')
 const combinedFolder = path.join(__dirname, '../../logs/combinedLogs/')
 
+const customFormat = format.combine(   
+    format.errors({ stack : true }), 
+    format.splat(),
+    format.timestamp({
+        format : 'YYYY-MM-DD HH:mm:ss'
+    }),
+    format.align(),
+    format.printf(info => {
+        if(info.stack) return `[${info.level}][${info.timestamp}] ${info.message} \n${info.stack}`
+
+        return `[${info.level}][${info.timestamp}] ${info.message}`
+    })
+)
+
 const errorTransporter = new (transports.DailyRotateFile)({
     level : 'warn',
     handleExceptions : true,
@@ -15,16 +29,9 @@ const errorTransporter = new (transports.DailyRotateFile)({
     dirname : errorFolder,
     maxSize : '100m',
     maxFiles : '31d',
-    utc : true
+    utc : true,
+    format : customFormat
 })
-
-const customFormat = format.combine(
-    format.timestamp({
-        format : 'YYYY-MM-DD HH:mm:ss'
-    }),
-    format.align(),
-    format.printf(info => `[${info.level}][${info.timestamp}] ${info.message}`)
-)
 
 const infoFilter = format((info, opts) => {
     return info.level === 'info' ? info : false
@@ -76,7 +83,7 @@ if(process.env.NODE_ENV === 'development') {
         level : 'silly',
         format : format.combine(
             format.colorize(),
-            format.simple()
+            customFormat
         )
     }))
 }

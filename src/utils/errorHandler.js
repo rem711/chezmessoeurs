@@ -56,7 +56,8 @@ const getErrorMessage = (error) => {
         }
     }
     catch(e) {
-        logger.error(e)
+        // logger.error(e)
+        logger.log({ level : 'error', message : e})
     }
 
     return message
