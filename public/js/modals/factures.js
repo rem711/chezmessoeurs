@@ -230,14 +230,15 @@ const sendReminder = async () => {
     const response = await fetch(url, options)
     if(response.ok) {
         const data = await response.json()
-        const { infos } = data
+        const { infos, facture } = data
 
         if(infos.error) {
             showError(infos.error)
         }
-        else if(infos.message) {
+        else if(infos.message && facture) {
             isUpdated = true
             showMessage(infos.message)
+            window.open(`/factures/${facture.Id_Facture}/relance`)
         }
     }
 }

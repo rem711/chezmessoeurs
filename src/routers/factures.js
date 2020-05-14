@@ -288,6 +288,10 @@ router
             }
         })
 
+        if(facture === null) {
+            throw "La facture n'existe pas."
+        }
+
         const toPDF = {}
         toPDF.Id_Facture = facture.Id_Facture
         toPDF.Numero_Facture = facture.Numero_Facture
@@ -461,15 +465,16 @@ router
             if(facture.Reste_A_Payer === 0) {
                 throw 'La facture a déjà été réglée.'
             }
+            if(facture.Statut === 'En attente') {
+                throw "Cette facture n'as pas encore été envoyée."
+            }
 
             // augmente le nombre de relances, ajoute la date de dernière relance
             facture.Nb_Relances = Number(facture.Nb_Relances) + 1
             facture.Date_Derniere_Relance = moment.utc()
 
-            // FIXME:envoie la relance
-
             facture.save()
-            infos = clientInformationObject(undefined, 'La relance a bien été envoyée.')
+            infos = clientInformationObject(undefined, 'La relance est disponible dans une nouvelle fenêtre.')
         }
         else {
             throw "L'identifiant est incorrect ou la facture n'existe pas."
@@ -485,7 +490,114 @@ router
         facture
     })
 })
-// TODO:annule une facture
+.get('/factures/:Id_Facture/relance', async (req, res) => {
+    const postIdFacture = req.params.Id_Facture
+    let facture = undefined
+
+    try {
+        facture = await Factures.findOne({
+            where : {
+                Id_Facture : postIdFacture
+            }
+        })
+
+        if(facture === null) {
+            throw "La facture n'existe pas."
+        }
+        if(facture.Statut === 'Archivée' || facture.Statut === 'Annulée') {
+            throw "Cette facture n'es plus accessible."
+        }
+        if(facture.Statut === 'En attente') {
+            throw "Cette facture n'as pas encore été envoyée."
+        }
+
+    }
+    catch(error) {
+        const infos = clientInformationObject(getErrorMessage(error), undefined)
+
+        return res.send(infos.error)
+    }
+
+    return res.redirect(`/factures/relance/pdf/${encodeURI('CHEZ MES SOEURS - Relance Facture ')}${facture.Numero_Facture}.pdf`)
+})
+// réécriture de l'url pour générer le pdf de relance de facture
+.get(`/factures/relance/pdf/${encodeURI('CHEZ MES SOEURS - Relance Facture ')}:Numero_Facture.pdf`, async (req, res) => {
+    const postNumeroFacture = req.params.Numero_Facture
+
+    try {
+        const facture = await Factures.findOne({
+            where : {
+                Numero_Facture : postNumeroFacture
+            },
+            include : {
+                all : true,
+                nested : true
+            }
+        })
+
+        if(facture === null) {
+            throw "La facture n'existe pas."
+        }
+
+        const toPDF = {}
+        toPDF.Id_Facture = facture.Id_Facture
+        toPDF.Numero_Facture = facture.Numero_Facture
+        toPDF.Date_Creation = facture.Date_Creation
+        toPDF.Devis = JSON.parse(JSON.stringify(facture.Devis))
+        toPDF.Date_Evenement = facture.Date_Evenement
+        toPDF.Adresse_Livraison_Adresse = facture.Adresse_Livraison_Adresse
+        toPDF.Adresse_Livraison_Adresse_Complement_1 = facture.Adresse_Livraison_Adresse_Complement_1
+        toPDF.Adresse_Livraison_Adresse_Complement_2 = facture.Adresse_Livraison_Adresse_Complement_2
+        toPDF.Adresse_Livraison_CP = facture.Adresse_Livraison_CP
+        toPDF.Adresse_Livraison_Ville = facture.Adresse_Livraison_Ville
+        toPDF.Client = JSON.parse(JSON.stringify(facture.Client))
+        // la méthode {...} est utilisée pour si la formule est null avoir un objet et pouvoir définir isAperitif etc.
+        toPDF.Formule_Aperitif = {...JSON.parse(JSON.stringify(facture.Formule_Aperitif))} 
+        toPDF.Formule_Aperitif.isAperitif = false
+        toPDF.Formule_Cocktail = {...JSON.parse(JSON.stringify(facture.Formule_Cocktail))}
+        toPDF.Formule_Cocktail.isCocktail = false
+        toPDF.Formule_Box = {...JSON.parse(JSON.stringify(facture.Formule_Box))}
+        toPDF.Formule_Box.isBox = false
+        toPDF.Formule_Brunch = {...JSON.parse(JSON.stringify(facture.Formule_Brunch))}
+        toPDF.Formule_Brunch.isBrunch = false
+        toPDF.Commentaire = facture.Commentaire
+        toPDF.Liste_Options = []
+        toPDF.Remise = facture.Remise
+        toPDF.Acompte = facture.Acompte
+        toPDF.Reste_A_Payer = facture.Reste_A_Payer
+        toPDF.Nb_Relances = facture.Nb_Relances
+        toPDF.Prix_HT = facture.Prix_HT
+        toPDF.Prix_TTC = facture.Prix_TTC
+
+        if(facture.Id_Formule_Aperitif !== null) toPDF.Formule_Aperitif.isAperitif = true
+        if(facture.Id_Formule_Cocktail !== null) toPDF.Formule_Cocktail.isCocktail = true
+        if(facture.Id_Formule_Box !== null) toPDF.Formule_Box.isBox = true
+        if(facture.Id_Formule_Brunch !== null) toPDF.Formule_Brunch.isBrunch = true
+
+        // récupérer liste options avec nom et prix
+        if(facture.Liste_Options !== null && facture.Liste_Options !== '') {
+            const tabOptions = facture.Liste_Options.split(';')
+            for(let id of tabOptions) {
+                if(id === '') continue
+                const option = await Prix_Unitaire.findOne({
+                    where : {
+                        Id_Prix_Unitaire : id
+                    }
+                })
+                if(option !== null) toPDF.Liste_Options.push({ Nom : option.Nom_Type_Prestation, Montant : option.Montant })
+            }
+        }
+
+        createPDFFacture(res, toPDF, true)
+
+        facture.Client.Dernier_Statut = 'Relance envoyée'
+        await facture.Client.save()
+    }
+    catch(error) {
+        const infos = clientInformationObject(getErrorMessage(error), undefined)
+        res.send(infos.error)
+    }
+})
 // Une facture remise à un client ne peut pas être supprimée. Il faut procéder à un avoir qui va comptablement annuler la facture. Vous devrez impérativement remettre cet avoir au client en cas d’annulation de la facture.
 // cf : https://www.clicfacture.com/numerotation-de-vos-factures/
 .patch('/factures/cancel/:Id_Facture', async (req, res) => {

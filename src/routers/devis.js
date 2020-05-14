@@ -68,7 +68,6 @@ const createDevis = async (estimation) => {
             Telephone : estimation.client.Telephone.trim()
         })
 
-        // FIXME:
         client = await updateClient(client.Id_Client, estimation.client)
 
         // ajout des nouvelles informations à la fausse estimation

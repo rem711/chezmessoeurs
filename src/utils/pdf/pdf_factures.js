@@ -46,6 +46,7 @@ const pageDrawingSpace = {
     width : 0
 }
 
+let relance = false
 let facture = undefined
 const setFacture = (f) => {
     facture = f
@@ -55,6 +56,7 @@ module.exports = (res, facture, isRelance = false) => {
         throw 'Facture indisponible'
     }
     setFacture(facture)
+    relance = isRelance
     
     try {
         doc = new PDFDocument({ 
@@ -111,13 +113,17 @@ const drawGeneralHeader = () => {
 
     doc.fillColor('black', 1).fontSize(pixelsToPoints(21)).font(fontContent)
 
-    const content = `Facture n° ${facture.Numero_Facture}`
+    const content1 = relance ? `Relance ${facture.Nb_Relances}\n` : ''
+    const content2 = `Facture n° ${facture.Numero_Facture}`
     const options = { align : 'center'}
-    const width = doc.widthOfString(content, options)
-    const height = doc.heightOfString(content, { ...options, width })
+    let width = doc.widthOfString(content1, options)
+    let height = doc.heightOfString(content1, { ...options, width })
+    width = doc.widthOfString(content2, options)
+    height += doc.heightOfString(content2, { ...options, width })
+    const baseline = relance ? 'bottom' : 'middle'
 
     doc
-    .text(content, doc.page.margins.left, yPos - paddingGeneralHeader + (generalFooterHeight * 0.5), { ...options, height })
+    .text(`${content1}${content2}`, doc.page.margins.left, yPos - paddingGeneralHeader + (generalHeaderHeight * 0.5), { ...options, height, baseline })
 
     yPos += generalHeaderHeight
 }
