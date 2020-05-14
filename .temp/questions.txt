@@ -93,9 +93,14 @@ Général :
 - gérer agenda (avec estimations et devis)
 - gérer la carte
 - fonctions de validation, vérifier que le client soit complètement renseigné
+- express handle wrong routes
+
+Options et prix :
+- créer un nouvel onglet dans le menu qui mène à une page de gestion des options et des prix (options et menus)
 
 
 Pour Wendy :
 - Affichage modal clients
 - Affichage devisItem
 - Affichage factures et modal factures
+- CSS carte ajouter une class indisponible qui soit grisée (dans le style de devis en cours peut être, comme lorsque sélectionnés) pour les recettes non disponibles en ce moment

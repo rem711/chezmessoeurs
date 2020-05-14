@@ -385,17 +385,23 @@ router
         // récupération des recettes
         const listeRecettesSalees = await Recettes.findAll({
             where : {
-                Categorie : 'Salée'
+                Categorie : 'Salée',
+                Disponible : 1,
+                Visible : 1
             }
         })
         const listeRecettesSucrees = await Recettes.findAll({
             where : {
-                Categorie : 'Sucrée'
+                Categorie : 'Sucrée',
+                Disponible : 1,
+                Visible : 1
             }
         })
         const listeRecettesBoissons = await Recettes.findAll({
             where : {
-                Categorie : 'Boisson'
+                Categorie : 'Boisson',
+                Disponible : 1,
+                Visible : 1
             }
         })
 
@@ -594,7 +600,9 @@ router
                     for(const Id_Recette of tabRecettesSalees) {
                         const recette = await Recettes.findOne({
                             where : {
-                                Id_Recette : Id_Recette
+                                Id_Recette : Id_Recette,
+                                Disponible : 1,
+                                Visible : 1
                             }
                         })
                         if(recette !== null) {
@@ -612,7 +620,9 @@ router
                     for(const Id_Recette of tabRecettesBoissons) {
                         const recette = await Recettes.findOne({
                             where : {
-                                Id_Recette : Id_Recette
+                                Id_Recette : Id_Recette,
+                                Disponible : 1,
+                                Visible : 1
                             }
                         })
                         if(recette !== null) {
@@ -638,7 +648,9 @@ router
                     for(const Id_Recette of tabRecettesSalees) {
                         const recette = await Recettes.findOne({
                             where : {
-                                Id_Recette : Id_Recette
+                                Id_Recette : Id_Recette,
+                                Disponible : 1,
+                                Visible : 1
                             }
                         })
                         if(recette !== null) {
@@ -656,7 +668,9 @@ router
                     for(const Id_Recette of tabRecettesSucrees) {
                         const recette = await Recettes.findOne({
                             where : {
-                                Id_Recette : Id_Recette
+                                Id_Recette : Id_Recette,
+                                Disponible : 1,
+                                Visible : 1
                             }
                         })
                         if(recette !== null) {
@@ -674,7 +688,9 @@ router
                     for(const Id_Recette of tabRecettesBoissons) {
                         const recette = await Recettes.findOne({
                             where : {
-                                Id_Recette : Id_Recette
+                                Id_Recette : Id_Recette,
+                                Disponible : 1,
+                                Visible : 1
                             }
                         })
                         if(recette !== null) {
@@ -699,7 +715,9 @@ router
                     for(const Id_Recette of tabRecettesSalees) {
                         const recette = await Recettes.findOne({
                             where : {
-                                Id_Recette : Id_Recette
+                                Id_Recette : Id_Recette,
+                                Disponible : 1,
+                                Visible : 1
                             }
                         })
                         if(recette !== null) {
@@ -717,7 +735,9 @@ router
                     for(const Id_Recette of tabRecettesSucrees) {
                         const recette = await Recettes.findOne({
                             where : {
-                                Id_Recette : Id_Recette
+                                Id_Recette : Id_Recette,
+                                Disponible : 1,
+                                Visible : 1
                             }
                         })
                         if(recette !== null) {
@@ -735,7 +755,9 @@ router
                     for(const Id_Recette of tabRecettesBoissons) {
                         const recette = await Recettes.findOne({
                             where : {
-                                Id_Recette : Id_Recette
+                                Id_Recette : Id_Recette,
+                                Disponible : 1,
+                                Visible : 1
                             }
                         })
                         if(recette !== null) {
@@ -760,7 +782,9 @@ router
                     for(const Id_Recette of tabRecettesSalees) {
                         const recette = await Recettes.findOne({
                             where : {
-                                Id_Recette : Id_Recette
+                                Id_Recette : Id_Recette,
+                                Disponible : 1,
+                                Visible : 1
                             }
                         })
                         if(recette !== null) {
@@ -778,7 +802,9 @@ router
                     for(const Id_Recette of tabRecettesSucrees) {
                         const recette = await Recettes.findOne({
                             where : {
-                                Id_Recette : Id_Recette
+                                Id_Recette : Id_Recette,
+                                Disponible : 1,
+                                Visible : 1
                             }
                         })
                         if(recette !== null) {
@@ -796,7 +822,9 @@ router
                     for(const Id_Recette of tabRecettesBoissons) {
                         const recette = await Recettes.findOne({
                             where : {
-                                Id_Recette : Id_Recette
+                                Id_Recette : Id_Recette,
+                                Disponible : 1,
+                                Visible : 1
                             }
                         })
                         if(recette !== null) {
@@ -831,17 +859,23 @@ router
             // récupération des recettes
             const listeRecettesSalees = await Recettes.findAll({
                 where : {
-                    Categorie : 'Salée'
+                    Categorie : 'Salée',
+                    Disponible : 1,
+                    Visible : 1
                 }
             })
             const listeRecettesSucrees = await Recettes.findAll({
                 where : {
-                    Categorie : 'Sucrée'
+                    Categorie : 'Sucrée',
+                    Disponible : 1,
+                    Visible : 1
                 }
             })
             const listeRecettesBoissons = await Recettes.findAll({
                 where : {
-                    Categorie : 'Boisson'
+                    Categorie : 'Boisson',
+                    Disponible : 1,
+                    Visible : 1
                 }
             })
 
