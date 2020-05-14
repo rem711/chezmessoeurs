@@ -699,7 +699,6 @@ const drawTablesRecap = () => {
     let yTableauAPayer = 0
 
     const divAPayer = () => {
-        console.log('départ : ', yPos)
         // **** tableau A PAYER
         doc.font(fontTitles).fontSize(fontSizeTitles)    
 
@@ -797,13 +796,10 @@ const drawTablesRecap = () => {
         tabPositions.push({x : aPayerLeft, y : yPos})
         tabPositions.push({x : aPayerRight, y : yPos})
         aPayerBottom = yPos
-
-        console.log('arrivée : ', yPos)
     }
 
     // 157.415 hauteur mesurée du tableau à payer
     const heightTabAPayer = 157.415
-    console.log(`suffisamment d'espace car besoin de ${(yPos + heightTabAPayer + paddingContent.top + paddingContent.bottom + paddingPageContent.bottom)} > ${pageDrawingSpace.bottom}`)
     // vérification approximative pour ne pas dessiner trop bas lors des tests et qu'il y ait des sauts de page générés automatiquement
     if((yPos + heightTabAPayer + paddingContent.top + paddingContent.bottom + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
         nextPage()

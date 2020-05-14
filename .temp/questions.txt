@@ -56,14 +56,14 @@ Facture :
 - ?ajouter bouton pour créer un autre avoir
 - V pdf facture, pour chaque nouvelle ligne du tableau vérifier l'espace disponible, si plus assez de place, relier la partie en cours, sauter de page, (remettre entête tableau?)
   écrire les lignes suivantes. La partie récap montant doit être sur une seule page
-- pdf Facture voir pour relance. Utiliser une route pour relance, variable de session relance à true qui redirige vers pdf facture. Dans pdf juste ajouter en titre relance
+- V pdf Facture voir pour relance. Utiliser une route pour relance, variable de session relance à true qui redirige vers pdf facture. Dans pdf juste ajouter en titre relance
 
 Compteurs :
 - V Créer un compteur commun pour factures et avoir à incrémenter à chaque nouveau document
 - V Créer un compteur pour les factures d'acompte
 
 Gestion acomptes :
-- voir ici : https://zyfro.fr/blog/quest-ce-quune-facture-dacompte/#Le_montant_des_acomptes
+- V voir ici : https://zyfro.fr/blog/quest-ce-quune-facture-dacompte/#Le_montant_des_acomptes
 - V acompte de 30 %
 - V paiement sous 30j
 - V La facture d'acompte doit comporter la date de création, le numéro de facture d'acompte (FAA_YYYYMMDD_00001_[Nom_Client]), le numéro du devis, l'identification des deux parties
@@ -88,7 +88,7 @@ Client :
 
 Général :
 - Suppression possible uniquement pour recettes (visible = false, pour garder une trace et que les anciens devis/factures puissent accéder à ces recettes)
-- Faire en sorte que le brunch n'est pas de limite de min et max
+- X Faire en sorte que le brunch n'est pas de limite de min et max
 - V gérer authentification et créer page de connexion
 - gérer agenda (avec estimations et devis)
 - gérer la carte
