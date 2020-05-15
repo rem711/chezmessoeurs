@@ -57,6 +57,7 @@ Facture :
 - V pdf facture, pour chaque nouvelle ligne du tableau vérifier l'espace disponible, si plus assez de place, relier la partie en cours, sauter de page, (remettre entête tableau?)
   écrire les lignes suivantes. La partie récap montant doit être sur une seule page
 - V pdf Facture voir pour relance. Utiliser une route pour relance, variable de session relance à true qui redirige vers pdf facture. Dans pdf juste ajouter en titre relance
+- pdf facture, voir yPos pour client particulier pour drawRIB
 
 Compteurs :
 - V Créer un compteur commun pour factures et avoir à incrémenter à chaque nouveau document
@@ -78,6 +79,8 @@ Devis :
 - V pdf devis, modifier affichage pour noter paiement sous 30 jours à compter de la date [d'expédition de la facture | de réception]
 - V pdf ajouter numéro TVA pour les professionnels
 - voir pour ajouter double clic pour ajouter une recette
+- corriger problème des "+" lorsque l'on choisi moins de pièces que précédemment
+- mettre valeur min par défaut pour les select
 
 Client : 
 - V Retirer la suppression client
@@ -93,9 +96,14 @@ Général :
 - gérer agenda (avec estimations et devis)
 - gérer la carte
 - fonctions de validation, vérifier que le client soit complètement renseigné
+- express handle wrong routes
+
+Options et prix :
+- créer un nouvel onglet dans le menu qui mène à une page de gestion des options et des prix (options et menus)
 
 
 Pour Wendy :
 - Affichage modal clients
 - Affichage devisItem
 - Affichage factures et modal factures
+- CSS carte ajouter une class indisponible qui soit grisée (dans le style de devis en cours peut être, comme lorsque sélectionnés) pour les recettes non disponibles en ce moment

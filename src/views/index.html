@@ -18,21 +18,27 @@
             </li>
             <li>
                 <a href="/devis">Devis</a>
+            </li>            
+            <li>
+                <a href="/factures">Factures</a>
             </li>
             <li>
                 <a href="/clients">Clients</a>
             </li>
             <li>
-                <a href="/factures">Factures</a>
+                <a href="/carte">Carte</a>
             </li>
             <li>
-                <a href="/carte">Carte</a>
+                <a href="/prix&options">Prix & Options</a>
             </li>
             <li>
                 <a href="/statistiques">Statistiques</a>
             </li>
             <li>
                 <a href="/archives">Archives</a>
+            </li>
+            <li>
+                <a href="/authentification/logout">Déconnexion</a>
             </li>
 
         </ul>
@@ -62,14 +68,17 @@
         <% if(locals.isDevisItem) { %> 
             <%- include('partials/devisitem.html') %>
         <% } %>
-        <% if(locals.isClients) { %> 
-            <%- include('partials/clients.html') %>
-        <% } %>
         <% if(locals.isFactures) { %> 
             <%- include('partials/factures.html') %>
         <% } %>
+        <% if(locals.isClients) { %> 
+            <%- include('partials/clients.html') %>
+        <% } %>        
         <% if(locals.isCarte) { %> 
             <%- include('partials/carte.html') %>
+        <% } %>
+        <% if(locals.isPrix) { %> 
+            <%- include('partials/prix.html') %>
         <% } %>
         <% if(locals.isStatistiques) { %> 
             <%- include('partials/statistiques.html') %>

@@ -1,0 +1,69 @@
+<link rel="stylesheet" href="/css/prix.css">
+<script defer src="/js/prix.js"></script>
+<script defer src="/js/modals/prix.js"></script>
+        
+    <div class="content_inner">
+        <h1>Prix & Options</h1>
+        <% if(locals.infos && infos.error) { %>
+            <h3><%= infos.error %> </h3>
+        <% } else { %>             
+            <% if(locals.prix) { %> 
+                <h2>Menus et Pièces</h2>
+                <% const { Menus } = prix %> 
+                <% if(Menus.infos && Menus.infos.error) { %> 
+                    <p><%= Menus.infos.error %></p>
+                <% } else { %>
+                    <ul class="liste_carte custom_scrollbar">
+                        <% for(const item of Menus.items) { %>
+                            <li id="menu_<%= item.Id_Prix_Unitaire %>">
+                                <%= item.Nom_Type_Prestation %> : <%= item.Montant %> € 
+                            </li>
+                        <% } %> 
+                    </ul>
+                <% } %> 
+                <h2>Options</h2>
+                <% const { Options } = prix %> 
+                <% if(Options.infos && Options.infos.error) { %> 
+                    <p><%= Options.infos.error %></p>
+                <% } else { %>
+                    <ul class="liste_carte custom_scrollbar">
+                        <% for(const item of Options.items) { %>
+                            <li id="option_<%= item.Id_Prix_Unitaire %>">
+                                <%= item.Nom_Type_Prestation %> : <%= item.Montant %> € 
+                            </li>
+                        <% } %>
+                    </ul>
+                <% } %>
+            <% } else { %>
+                <h3>Une erreur est survenue, veuillez recharger la page. Si cette erreur persiste, contactez votre webmaster.</h3>
+            <% } %> 
+        <% } %> 
+    </div>
+
+    <div id="modalPrix" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle"></h2>
+            <form id="formPrix">
+                <input id="Id_Prix_Unitaire" type="hidden">
+                <input id="IsOption" type="hidden">
+                <div class="rowinput">
+                    <label>Nom</label>
+                    <input id="Nom_Type_Prestation" name="Nom_Type_Prestation" type="text" placeholder="Nom option" required>
+                    <label>Prix</label>
+                    <input id="Montant" name="Montant" type="number" min="0" step=".01" required>
+                </div>
+                <div>
+                    <p id="modalError" class="messageError"></p>
+                    <p id="modalMessage" class="messageConf"></p>
+                </div>
+                <button id="btnUpdate">&check;</button>
+            </form>
+        </div>
+    </div>
+        
+    <div class="btntopright">
+        <button id="btnAjouteOption">+</button>
+    </div>
+    <div class="btnbotright">
+        <button id="btnModifie">0</button>
+    </div>

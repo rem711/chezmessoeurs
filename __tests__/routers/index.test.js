@@ -6,7 +6,7 @@ describe("index" , () => {
     let cookie = undefined
 
     beforeAll(async () => {
-        const response = await request(app).post('/authentification').send({ password : 'demo@2020crm-CMS' }).expect(302)
+        const response = await request(app).post('/authentification/login').send({ password : 'demo@2020crm-CMS' }).expect(302)
         
         cookie = response.header['set-cookie']
     })

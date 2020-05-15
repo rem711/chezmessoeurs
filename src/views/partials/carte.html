@@ -1,98 +1,98 @@
 <link rel="stylesheet" href="/css/carte.css">
-
-
-
-
- 
+<script defer src="/js/carte.js"></script>
+<script defer src="/js/modals/carte.js"></script>
         
-        <div class="content_inner">
+    <div class="content_inner">
         <h1>Carte</h1>
-            <h2>Carte salée</h2>
-            <ul class="liste_carte custom_scrollbar">
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>       
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-            </ul>
-             
-            <h2>Carte sucrée</h2>
-            <ul class="liste_carte custom_scrollbar">
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>       
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-                <li>Nom Plat</li>
-            </ul>
-        </div>
+        <% if(locals.infos && infos.error) { %>
+            <h3><%= infos.error %> </h3>
+        <% } else { %>             
+            <% if(locals.recettes) { %> 
+                <h2>Carte salée</h2>
+                <% const { Salees } = recettes %> 
+                <% if(Salees.infos && Salees.infos.error) { %>
+                    <p><%= Salees.infos.error %></p>
+                <% } else { %> 
+                    <ul class="liste_carte custom_scrollbar">
+                        <% for(const recette of Salees.recettes) { %> 
+                            <% const classCSS = recette.Disponible === 0 ? 'indisponible' : '' %> 
+                            <li id="recette_<%= recette.Id_Recette %>" class="<%= classCSS %>">
+                                <%= recette.Nom %> 
+                            </li>
+                        <% } %> 
+                    </ul>
+                <% } %>              
+                <h2>Carte sucrée</h2>
+                <% const { Sucrees } = recettes %>
+                <% if(Sucrees.infos && Sucrees.infos.error) { %>
+                    <p><%= Sucrees.infos.error %></p>
+                <% } else { %> 
+                    <ul class="liste_carte custom_scrollbar">
+                        <% for(const recette of Sucrees.recettes) { %> 
+                            <% const classCSS = recette.Disponible === 0 ? 'indisponible' : '' %> 
+                            <li id="recette_<%= recette.Id_Recette %>" class="<%= classCSS %>">
+                                <%= recette.Nom %> 
+                            </li>
+                        <% } %> 
+                    </ul>
+                <% } %> 
+                <h2>Carte boissons</h2>
+                <% const { Boissons } = recettes %>
+                <% if(Boissons.infos && Boissons.infos.error) { %>
+                    <p><%= Boissons.infos.error %></p>
+                <% } else { %> 
+                    <ul class="liste_carte custom_scrollbar">
+                        <% for(const recette of Boissons.recettes) { %> 
+                            <% const classCSS = recette.Disponible === 0 ? 'indisponible' : '' %> 
+                            <li id="recette_<%= recette.Id_Recette %>" class="<%= classCSS %>">
+                                <%= recette.Nom %> 
+                            </li>
+                        <% } %> 
+                    </ul>
+                <% } %> 
+            <% } else { %>
+                <h3>Une erreur est survenue, veuillez recharger la page. Si cette erreur persiste, contactez votre webmaster.</h3>
+            <% } %> 
+        <% } %> 
+    </div>
 
-        <div class="modal">
-            <div class="modal-content">
-                <span class="close closespan">&times;</span>
-                <h2>Recette</h2>
+    <div id="modalRecette" class="modal">
+        <div class="modal-content">
+            <h2>Recette</h2>
+            <form id="formRecette">
+                <input id="Id_Recette" type="hidden">
                 <div class="rowinput">
-                    <label>Catégorie recette </label>
-                    <input id="Particulier" name="Type" value="Particulier" type="radio" required><label>Recette salée </label>
-                    <input id="Professionnel" name="Type" value="Professionnel" type="radio" required><label>Recette sucrée</label>
+                    <label>Catégorie </label>
+                    <label><input id="Categorie_Salée" name="Categorie" value="Salée" type="radio" required>Recette salée </label>
+                    <label><input id="Categorie_Sucrée" name="Categorie" value="Sucrée" type="radio" required>Recette sucrée</label>
+                    <label><input id="Categorie_Boisson" name="Categorie" value="Boisson" type="radio" required>Boisson</label>
                 </div>
                 <div class="rowinput">
                     <label>Intitulé recette</label>
-                    <input id="intitule_recette" name="intitule_recette" type="text" placeholder="Nom de la recette" required>
+                    <input id="Nom" name="Nom" type="text" placeholder="Nom de la recette" required>
                 </div>
                 <div class="rowinput">
                     <label>Description recette</label>
-                    <input id="desc_recette" name="desc_recette" type="text" placeholder="Ceci est la description de la recette" required>
+                    <textarea id="Description" name="Description" maxlength="1000" rows="5" cols="100" placeholder="Ceci est la description de la recette"></textarea>
+                </div>
+                <div class="rowinput">
+                    <label>Disponibilité</label>
+                    <label><input id="Disponible" name="Disponible" value="1" type="radio" required>Disponible</label>
+                    <label><input id="Indisponible" name="Disponible" value="0" type="radio" required>Indisponible</label>
+                </div>
+                <div>
+                    <p id="modalError" class="messageError"></p>
+                    <p id="modalMessage" class="messageConf"></p>
                 </div>
                 <button id="btnUpdate">&check;</button>
-            </div>
+            </form>
         </div>
-        
-        <div class="btntopright">
-            <button>+</button>
-        </div>
-        <div class="btnbotright">
-            <button>Modifier</button>
-            <button>Supprimer</button>
-        </div>
+    </div>
+				
+    <div class="btntopright">
+        <button id="btnAjouteRecette">+</button>
+    </div>
+    <div class="btnbotright">
+        <button id="btnModifieRecette">0</button>
+        <button id="btnDeleteRecette">X</button>
+    </div>
