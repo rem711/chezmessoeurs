@@ -33,3 +33,7 @@
     background-color : #e06128;
     cursor: pointer;
 }
+
+.liste_carte .selected:hover{
+    color : #ffffff;
+}

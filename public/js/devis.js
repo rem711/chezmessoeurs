@@ -22,7 +22,7 @@ const modifyDevis = () => {
 
 const archiveDevis = async () => {
     const trSelected = document.getElementsByClassName('selected')[0]
-    if(trSelected && trSelected.getAttribute('id' !== null)) {
+    if(trSelected && trSelected.getAttribute('id') !== null) {
         const Id_Devis = trSelected.getAttribute('id').split('_')[1]
         const url = `/devis/archive/${Id_Devis}`
         const options = {

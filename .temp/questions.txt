@@ -57,7 +57,7 @@ Facture :
 - V pdf facture, pour chaque nouvelle ligne du tableau vérifier l'espace disponible, si plus assez de place, relier la partie en cours, sauter de page, (remettre entête tableau?)
   écrire les lignes suivantes. La partie récap montant doit être sur une seule page
 - V pdf Facture voir pour relance. Utiliser une route pour relance, variable de session relance à true qui redirige vers pdf facture. Dans pdf juste ajouter en titre relance
-- pdf facture, voir yPos pour client particulier pour drawRIB
+- V pdf facture, voir yPos pour client particulier pour drawRIB
 
 Compteurs :
 - V Créer un compteur commun pour factures et avoir à incrémenter à chaque nouveau document

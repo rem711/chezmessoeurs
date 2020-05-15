@@ -34,10 +34,13 @@
     cursor: pointer;
 }
 
+.liste_carte .selected:hover{
+    color : #ffffff;
+}
 
 .liste_carte .indisponible{
     color : #f6c9b4;
     border-color : #f6c9b4;
-    pointer-events: none;
+    cursor: pointer;
 }
 
