@@ -29,7 +29,7 @@
                 <a href="/carte">Carte</a>
             </li>
             <li>
-                <a href="/prix">Prix & Options</a>
+                <a href="/prix&options">Prix & Options</a>
             </li>
             <li>
                 <a href="/statistiques">Statistiques</a>
@@ -68,14 +68,17 @@
         <% if(locals.isDevisItem) { %> 
             <%- include('partials/devisitem.html') %>
         <% } %>
-        <% if(locals.isClients) { %> 
-            <%- include('partials/clients.html') %>
-        <% } %>
         <% if(locals.isFactures) { %> 
             <%- include('partials/factures.html') %>
         <% } %>
+        <% if(locals.isClients) { %> 
+            <%- include('partials/clients.html') %>
+        <% } %>        
         <% if(locals.isCarte) { %> 
             <%- include('partials/carte.html') %>
+        <% } %>
+        <% if(locals.isPrix) { %> 
+            <%- include('partials/prix.html') %>
         <% } %>
         <% if(locals.isStatistiques) { %> 
             <%- include('partials/statistiques.html') %>

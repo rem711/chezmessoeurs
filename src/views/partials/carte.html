@@ -6,9 +6,9 @@
         <h1>Carte</h1>
         <% if(locals.infos && infos.error) { %>
             <h3><%= infos.error %> </h3>
-        <% } else { %> 
-            <h2>Carte salée</h2>
+        <% } else { %>             
             <% if(locals.recettes) { %> 
+                <h2>Carte salée</h2>
                 <% const { Salees } = recettes %> 
                 <% if(Salees.infos && Salees.infos.error) { %>
                     <p><%= Salees.infos.error %></p>
@@ -58,7 +58,6 @@
 
     <div id="modalRecette" class="modal">
         <div class="modal-content">
-            <span class="close closespan">&times;</span>
             <h2>Recette</h2>
             <form id="formRecette">
                 <input id="Id_Recette" type="hidden">

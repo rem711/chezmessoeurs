@@ -98,6 +98,14 @@ const createOrUpdate = (event) => {
 }
 
 const createRecette = async () => {
+    const modalError = document.getElementById('modalError')
+    const modalMessage = document.getElementById('modalMessage')
+
+    modalError.innerHTML = ''
+    modalError.style.display = 'none'
+    modalMessage.innerHTML = ''
+    modalMessage.style.display = 'none'
+
     const params = {
         Categorie : document.querySelector('input[name=Categorie]:checked').value,
         Nom : document.getElementById('Nom').value,
@@ -117,8 +125,6 @@ const createRecette = async () => {
     if(response.ok) {
         const data = await response.json()
         const { infos, recette } = data
-        const modalError = document.getElementById('modalError')
-        const modalMessage = document.getElementById('modalMessage')
 
         if(infos && infos.error) {
             modalError.innerHTML = infos.error
@@ -144,6 +150,14 @@ const createRecette = async () => {
 }
 
 const updateRecette = async () => {
+    const modalError = document.getElementById('modalError')
+    const modalMessage = document.getElementById('modalMessage')
+
+    modalError.innerHTML = ''
+    modalError.style.display = 'none'
+    modalMessage.innerHTML = ''
+    modalMessage.style.display = 'none'
+
     const params = {
         Categorie : document.querySelector('input[name=Categorie]:checked').value,
         Nom : document.getElementById('Nom').value,
@@ -163,8 +177,6 @@ const updateRecette = async () => {
     if(response.ok) {
         const data = await response.json()
         const { infos, recette } = data
-        const modalError = document.getElementById('modalError')
-        const modalMessage = document.getElementById('modalMessage')
 
         if(infos && infos.error) {
             modalError.innerHTML = infos.error
