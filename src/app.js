@@ -6,7 +6,9 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 const MemoryStore = require('memorystore')(session)
 const crypto = require('crypto')
-const auth = require('./middlewares/authentification/auth')
+const authMiddleware = require('./middlewares/authentification/auth')
+const errorMiddleware = require('./middlewares/erreurs/errorHandler')
+const error404Middleware = require('./middlewares/erreurs/404-handler')
 const logger = require('./utils/logger')
 const morgan = require('morgan')
 // const hbs = require('hbs') pour handlebars
@@ -42,10 +44,12 @@ app.use(session({
         checkPeriod : 86400000
     }),
     secret : crypto.randomBytes(20).toString('hex'),
-    resave: false,
-    saveUninitialized: true
+    // don't save session if unmodified
+    resave: false, 
+    // create session until something stored
+    saveUninitialized: true 
 }))
-app.use(auth)
+app.use(authMiddleware)
 
 // chemins pour config Express
 const publicDirectoryPath = path.join(__dirname, '../public')
@@ -84,5 +88,8 @@ app
         
     })
 })
+
+app.use(errorMiddleware)
+app.use(error404Middleware)
 
 module.exports = app

@@ -12,7 +12,7 @@ const whiteList = [
         method : 'GET'
     },
     {
-        url : '/authentification',
+        url : '/authentification/login',
         method : 'POST'
     },
     {
@@ -37,7 +37,7 @@ const isAcessible = (url, method) => {
 
 const auth = (req, res, next) => {    
     return next()
-    if(req.session.authenticated || isAcessible(req.originalUrl, req.method)) {
+    if((req.session.authenticated && req.session.userId) || isAcessible(req.originalUrl, req.method)) {
         return next()
     }
     
