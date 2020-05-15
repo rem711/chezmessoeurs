@@ -33,3 +33,11 @@
     background-color : #e06128;
     cursor: pointer;
 }
+
+
+.liste_carte .indisponible{
+    color : #f6c9b4;
+    border-color : #f6c9b4;
+    pointer-events: none;
+}
+
