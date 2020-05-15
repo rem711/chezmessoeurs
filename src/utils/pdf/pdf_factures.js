@@ -825,6 +825,7 @@ const drawTablesRecap = () => {
 
     contoursAPayer()
 
+    doc.y = yPos
     drawRIB()
 
     // **** contours du tableau
