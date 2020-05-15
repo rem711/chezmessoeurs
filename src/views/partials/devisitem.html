@@ -20,37 +20,50 @@
             <div>
                 <div class="info_client_devis">
                     <div class="moitie">
+				  <div class="rowinput">
                         <label for="Date_Evenement">Date de l'événement :</label>
                         <input type="text" id="Date_Evenement" value="<%= moment.utc(devis.Date_Evenement).format('DD/MM/YYYY') %>">
+</div>
                         <div id="horaire">
-                            <label for="heureEvenement">Horaire de l'évènement</label>
-                            <% const heure = moment.utc(devis.Date_Evenement).format('HH') %> 
-                            <% const minutes = moment.utc(devis.Date_Evenement).format('mm') %> 
-                            <select id="heureEvenement">
-                                <% for( let h = 0; h < 24; h++ ) { %>
-                                    <% const outH = h < 10 ? `0${h}` : h %>
-                                    <% const selected = heure == outH ? 'selected' : '' %> 
-                                    <option value="<%= outH %>" <%= selected %> ><%= outH %></option>
-                                <% } %>                            
-                            </select>
-                            <select id="minutesEvenement">
-                                <% for( let m = 0; m < 60; m += 15 ) { %>
-                                    <% const outM = m < 10 ? `0${m}` : m %> 
-                                    <% const selected = minutes == outM ? 'selected' : '' %> 
-                                    <option value="<%= outM %>" <%= selected %> > <%= outM %> </option>
-                                <% } %> 
-                            </select>
+							<div class="rowinput">
+								<label for="heureEvenement">Horaire de l'évènement</label>
+								<% const heure = moment.utc(devis.Date_Evenement).format('HH') %> 
+								<% const minutes = moment.utc(devis.Date_Evenement).format('mm') %> 
+								<select id="heureEvenement">
+									<% for( let h = 0; h < 24; h++ ) { %>
+										<% const outH = h < 10 ? `0${h}` : h %>
+										<% const selected = heure == outH ? 'selected' : '' %> 
+										<option value="<%= outH %>" <%= selected %> ><%= outH %></option>
+									<% } %>                            
+								</select>
+								<select id="minutesEvenement">
+									<% for( let m = 0; m < 60; m += 15 ) { %>
+										<% const outM = m < 10 ? `0${m}` : m %> 
+										<% const selected = minutes == outM ? 'selected' : '' %> 
+										<option value="<%= outM %>" <%= selected %> > <%= outM %> </option>
+									<% } %> 
+								</select>
+						</div>
                         </div>
                         <div>
-                            <label for="Adresse_Livraison">Adresse de livraison :</label>
+<!--                            <label for="Adresse_Livraison">Adresse de livraison :</label>-->
                             <div id="Adresse_Livraison">
+								<div class="rowinput">
                                 <label for="Adresse_Livraison_Adresse">Adresse Livraison : </label><input id="Adresse_Livraison_Adresse" name="Adresse_Livraison_Adresse" type="text" value="<%= devis.Adresse_Livraison_Adresse %>" placeholder="18 Avenue de la Concorde" required><br>
+								</div>
+								<div class="rowinput">
                                 <label for="Adresse_Livraison_Adresse_Complement_1">Adresse Livraison suite (facultatif) : </label><input id="Adresse_Livraison_Adresse_Complement_1" name="Adresse_Livraison_Adresse_Complement_1" type="text" value="<%= devis.Adresse_Livraison_Adresse_Complement_1 %>" placeholder="2ième étage"><br>
+								</div>
+								<div class="rowinput">
                                 <label for="Adresse_Livraison_Adresse_Complement_2">Adresse Livraison suite (facultatif) : </label><input id="Adresse_Livraison_Adresse_Complement_2" name="Adresse_Livraison_Adresse_Complement_2" type="text" value="<%= devis.Adresse_Livraison_Adresse_Complement_2 %>" placeholder="Porte gauche"><br>
+								</div>
+								<div class="rowinput">
                                 <label for="Adresse_Livraison_CP">Code Postal : </label><input id="Adresse_Livraison_CP" name="Adresse_Livraison_CP" type="text" value="<%= devis.Adresse_Livraison_CP %>" placeholder="21000" required>
                                 <label for="Adresse_Livraison_Ville">Ville : </label><input id="Adresse_Livraison_Ville" name="Adresse_Livraison_Ville" type="text" value="<%= devis.Adresse_Livraison_Ville %>" placeholder="Dijon" required><br>
+								</div>
                             </div>
                         </div>
+											<div class="rowinput">
                         <label for="divPrestation">Prestation :</label>
                         <div id="divPrestation">
                             <% let typeFormuleChecked = '' %> 
@@ -67,17 +80,20 @@
                             <% typeFormuleChecked = devis.Formule_Brunch !== null ? 'checked' : '' %> 
                             <input type="checkbox" id="isBrunch" <%= typeFormuleChecked %> >
                         </div>
+                        </div>
+								
                     </div>
                     <div class="moitie">
                         <div>
                             <label>Ref client :</label>
                             <span id="Id_Client"><%= devis.Client.Id_Client %></span>
                         </div>
-                        <div>
+                        <div class="rowinput">
                             <label for="Nom">Nom :</label><input type="text" id="Nom" value="<%= devis.Client.Nom %>">
                             <label for="Prenom">Prénom :</label><input type="text" id="Prenom" value="<%= devis.Client.Prenom %>">
                         </div>
                         <div>
+							<div class="rowinput">
                             <label>Type :</label>
                             <% let typeClientChecked = '' %> 
                             <label for="typeParticulier">Particulier</label>
@@ -86,27 +102,37 @@
                             <label for="typeProfessionnel">Professionnel</label>
                             <% typeClientChecked = devis.Client.Type === 'Professionnel' ? 'checked' : '' %>
                             <input type="radio" id="typeProfessionnel" name="Type" value="Professionnel" <%= typeClientChecked %> ><br>
+								</div>
+								<div class="rowinput">
                             <label for="Societe">Nom Société : </label><input id="Societe" name="Societe" type="text" value="<%= devis.Client.Societe %>" placeholder="chezmessoeurs">
                             <label for="Numero_TVA">Numéro TVA : </label><input id="Numero_TVA" name="Numero_TVA" type="text" value="<%= devis.Client.Numero_TVA %>" placeholder="FR99999999999" pattern="^(FR|fr)[0-9]{2}[0-9]{9}$"><br>
+									</div>
                         </div>
                         <div>
-                            <label for="Adresse_Facturation">Adresse de facturation :</label>
+<!--                            <label for="Adresse_Facturation">Adresse de facturation :</label>-->
                             <div id="Adresse_Facturation">
+								<div class="rowinput">
                                 <label for="Adresse_Facturation_Adresse">Adresse Facturation : </label><input id="Adresse_Facturation_Adresse" name="Adresse_Facturation_Adresse" type="text" value="<%= devis.Client.Adresse_Facturation_Adresse %>" placeholder="18 Avenue de la Concorde" required><br>
+									</div>
+									<div class="rowinput">
                                 <label for="Adresse_Facturation_Adresse_Complement_1">Adresse Facturation suite (facultatif) : </label><input id="Adresse_Facturation_Adresse_Complement_1" name="Adresse_Facturation_Adresse_Complement_1" type="text" value="<%= devis.Client.Adresse_Facturation_Adresse_Complement_1 %>" placeholder="2ième étage"><br>
+										</div>
+										<div class="rowinput">
                                 <label for="Adresse_Facturation_Adresse_Complement_2">Adresse Facturation suite (facultatif) : </label><input id="Adresse_Facturation_Adresse_Complement_2" name="Adresse_Facturation_Adresse_Complement_2" type="text" value="<%= devis.Client.Adresse_Facturation_Adresse_Complement_2 %>" placeholder="Porte gauche"><br>
+											</div>
+											<div class="rowinput">
                                 <label for="Adresse_Facturation_CP">Code Postal : </label><input id="Adresse_Facturation_CP" name="Adresse_Facturation_CP" type="text" value="<%= devis.Client.Adresse_Facturation_CP %>" placeholder="21000" required>
                                 <label for="Adresse_Facturation_Ville">Ville : </label><input id="Adresse_Facturation_Ville" name="Adresse_Facturation_Ville" type="text" value="<%= devis.Client.Adresse_Facturation_Ville %>" placeholder="Dijon" required><br>
+												</div>
                             </div>
                         </div>
-                        <div>
+                        <div class="rowinput">
                             <label>Téléphone :</label>
                             <input type="tel" id="Telephone" value="<%= devis.Client.Telephone %>">
-                        </div>
-                        <div>
-                            <label>Email :</label>
+							<label>Email :</label>
                             <input type="email" id="Email" value="<%= devis.Client.Email %> ">
                         </div>
+             
                     </div>
                 </div>
             </div>

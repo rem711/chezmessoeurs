@@ -157,6 +157,29 @@ tr:focus-within{
     background-color: #e06128;
 }
 
+.rowinput{
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    padding: 5px 0;
+}
+
+.rowinput label{
+    padding-right: 15px;
+    min-width :150px;
+}
+
+.rowinput p{
+    padding :0;
+    margin: 0;
+}
+
+.rowinput input[type="text"], .rowinput input[type="tel"], .rowinput input[type="email"]{
+	border-bottom: 1px solid #000;
+	        display: flex;
+    flex: 1;
+}
+
 .btntopright button {
     width: 100px;
     height: 75px;
