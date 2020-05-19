@@ -93,13 +93,13 @@ Général :
 - Suppression possible uniquement pour recettes (visible = false, pour garder une trace et que les anciens devis/factures puissent accéder à ces recettes)
 - X Faire en sorte que le brunch n'est pas de limite de min et max
 - V gérer authentification et créer page de connexion
-- gérer agenda (avec estimations et devis)
-- gérer la carte
-- fonctions de validation, vérifier que le client soit complètement renseigné
-- express handle wrong routes
+- V gérer agenda (avec estimations et devis)
+- V gérer la carte
+- V fonctions de validation, vérifier que le client soit complètement renseigné
+- V express handle wrong routes
 
 Options et prix :
-- créer un nouvel onglet dans le menu qui mène à une page de gestion des options et des prix (options et menus)
+- V créer un nouvel onglet dans le menu qui mène à une page de gestion des options et des prix (options et menus)
 
 
 Pour Wendy :

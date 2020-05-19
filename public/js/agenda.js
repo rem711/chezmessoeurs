@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     calendar = new FullCalendar.Calendar(calendarEl, {
         plugins : ['dayGrid', 'timeGrid'],
         height : 'auto',
+        timeZone : 'UTC',
         locale : 'fr',
         buttonText: {
             today:    "Aujourd'hui",

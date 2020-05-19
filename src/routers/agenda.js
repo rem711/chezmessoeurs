@@ -1,6 +1,6 @@
 const express = require('express')
 const router = new express.Router()
-const { Estimations, Devis, Formules } = global.db
+const { Estimations, Devis } = global.db
 const { Op } = require('sequelize')
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -12,6 +12,7 @@ const moment = require('moment')
 //     "start": "2019-09-05T09:00:00",
 //     "end": "2019-09-05T18:00:00"
 // },
+// https://fullcalendar.io/docs/event-object
 const formatter = (liste) => {
     const formattedListe = []
 
