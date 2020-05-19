@@ -52,7 +52,7 @@ Facture :
 - V pdf, Faire figurer le numéro TVA client
 - V pdf facture, absence de paiment : 0%
 - V pdf facture faire apparaître l'acompte versé
-- relance, renvoyer le lien d'accès à la facture
+- V relance, renvoyer le lien d'accès à la facture
 - ?ajouter bouton pour créer un autre avoir
 - V pdf facture, pour chaque nouvelle ligne du tableau vérifier l'espace disponible, si plus assez de place, relier la partie en cours, sauter de page, (remettre entête tableau?)
   écrire les lignes suivantes. La partie récap montant doit être sur une seule page

@@ -1168,6 +1168,14 @@ const initUX = () => {
     else {
         document.getElementById('btnCreateDevis').onclick = createDevis
     }
+
+    // initialisation des quantités sélectionnées par défaut
+    document.querySelectorAll('select[id*=nbPieces], select[id*=typeBrunch]').forEach(select => {
+        const selectedValue = select.querySelector('option:checked').value
+        if(selectedValue == 0) {
+            select.children[1].selected = true
+        }
+    })
 }
 
 window.addEventListener("DOMContentLoaded", () => {
