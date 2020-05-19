@@ -1,4 +1,32 @@
 ﻿<?php
+$message = '';
+$stop = false;
+
+if(!isset($_POST['nom']) || $_POST['nom'] == '') {
+    $message = 'Le nom doit être défini.';
+    $stop = true;
+}
+if(!isset($_POST['prenom']) || $_POST['prenom'] == '') {
+    $message = 'Le prénom doit être défini.';
+    $stop = true;
+}
+if(!isset($_POST['mail']) || $_POST['mail'] == '') {
+    $message = "L'adresse e-mail doit être définie.";
+    $stop = true;
+}
+if(!isset($_POST['date_event']) || $_POST['date_event'] == '') {
+    $message = "La date de l'événement doit être définie.";
+    $stop = true;
+}
+if(!(isset($_POST['sale']) && isset($_POST['sucre']) && isset($_POST['box']) && isset($_POST['brunch'])) || ($_POST['sale'] == 0 && $_POST['sucre'] == 0 && $_POST['box'] == 0 && $_POST['brunch'] == 0)) {
+    $message = "Une formule doit être choisie.";
+    $stop = true;
+}
+
+if($message != '' && $stop) {
+    echo $message;
+    exit();
+}
 
 ini_set('display_errors', 1);
 
@@ -169,7 +197,7 @@ $message_html = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD XHTML 1.0 Transitional //EN'
                                                     </table>
 ";
 
-if($_POST['isale'] != 0){
+if(isset($_POST['isale']) && $_POST['isale'] != 0){
 $sale ="                                               <table class='w580' width='580' cellspacing='0' cellpadding='0' border='0'>
                                                         <tbody>
                                                             <tr>
@@ -264,7 +292,7 @@ $sale ="                                               <table class='w580' width
     $sale = "";
 }         
                                         
-if($_POST['isucre'] != 0){
+if(isset($_POST['isucre']) && $_POST['isucre'] != 0){
 $sucre = "                                          <table class='w580' width='580' cellspacing='0' cellpadding='0' border='0'>
                                                         <tbody>
                                                             <tr>
@@ -357,7 +385,7 @@ $sucre = "                                          <table class='w580' width='5
 }else{
     $sucre = "";
 }    
-if($_POST['pbox'] != 0){
+if(isset($_POST['pbox']) && $_POST['pbox'] != 0){
 $box = "                                        <table class='w580' width='580' cellspacing='0' cellpadding='0' border='0'>
                                                         <tbody>
                                                             <tr>
@@ -436,7 +464,7 @@ else{
  $box = "";
 }  
 
-if($_POST['pbrunch'] != 0){
+if(isset($_POST['pbrunch']) && $_POST['pbrunch'] != 0){
 $brunch = "                                         <table class='w580' width='580' cellspacing='0' cellpadding='0' border='0'>
                                                         <tbody>
                                                             <tr>
@@ -807,7 +835,7 @@ $header = "From: \"Chez mes soeurs\"<traiteur@chezmessoeurs.fr>".$passage_ligne;
 //==========
 
 //=====Envoi de l'e-mail.
-    $test = mail($mail,$sujet,$message,$header);
+    //$test = mail($mail,$sujet,$message,$header);
 
     $sujet = "Devis traiteur Chez mes soeurs";
 
@@ -838,7 +866,9 @@ $header = "From: \"Chez mes soeurs\"<$mail>".$passage_ligne;
 
 //=====Envoi de l'e-mail.
 $mail2 = "wendy@qualicom-conseil.fr";
+$mail3 = "johan@qualicom-conseil.fr";
 
-    $test = mail($mail,$sujet,$message,$header);
-	$test = mail($mail2,$sujet,$message,$header);
-    var_dump($test);
+ //    $test = mail($mail,$sujet,$message,$header);
+	// $test = mail($mail2,$sujet,$message,$header);
+    // $test = mail($mail3,$sujet,$message,$header);
+    // var_dump($test);

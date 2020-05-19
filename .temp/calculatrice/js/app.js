@@ -231,30 +231,31 @@ const submitEstimation = async () => {
         }
     });
 
+
     if(error.length == 0){
         // envoie estimation
-        const infos = await sendEstimation()
+        // const infos = await sendEstimation()
 
         // tout s'estbien passé, on envoie le mail
-        if(infos === undefined || !infos.error) {
-            $('#nom').val("");
-            $('#prenom').val("");
-            $('#mail').val("");
-            $('#tel').val("");
-            $('#date_event').val("");
-            $('#comm').val("");
-            $('#autor').prop('checked', false);
+        // if(infos === undefined || !infos.error) {
+        //     $('#nom').val("");
+        //     $('#prenom').val("");
+        //     $('#mail').val("");
+        //     $('#tel').val("");
+        //     $('#date_event').val("");
+        //     $('#comm').val("");
+        //     $('#autor').prop('checked', false);
 
-            // sendMail()        
-            $('form > p').html("Le mail a bien été envoyé");
-            $('form > p').css("visibility", "visible");
-            $('form > p').css("color", "green");
-        }
-        else {
-            $('form > p').html(infos.error);
-            $('form > p').css("color", "red");
-            $('form > p').css("visibility", "visible");
-        }
+            sendMail()   
+            // $('form > p').html("Le mail a bien été envoyé");
+            // $('form > p').css("visibility", "visible");
+            // $('form > p').css("color", "green");
+        // }
+        // else {
+        //     $('form > p').html(infos.error);
+        //     $('form > p').css("color", "red");
+        //     $('form > p').css("visibility", "visible");
+        // }
     }else{
         $('form > p').css("color", "red");
         $('form > p').css("visibility", "visible");
@@ -352,10 +353,24 @@ const sendMail = () => {
         method: 'POST',
         url: 'php/mail.php',
         data: prix
-    }).done((event) => {
-        $('form > p').html("Le mail a bien été envoyé");
-        $('form > p').css("visibility", "visible");
-        $('form > p').css("color", "green");
+    }).done((error) => {
+        if(error !== '') {
+            $('form > p').html(error);
+            $('form > p').css("color", "red");
+            $('form > p').css("visibility", "visible");
+        }
+        else {
+            $('#nom').val("");
+            $('#prenom').val("");
+            $('#mail').val("");
+            $('#tel').val("");
+            $('#date_event').val("");
+            $('#comm').val("");
+            $('#autor').prop('checked', false);
+            $('form > p').html("Le mail a bien été envoyé");
+            $('form > p').css("visibility", "visible");
+            $('form > p').css("color", "green");
+        }        
     });
 }
 

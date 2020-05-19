@@ -84,9 +84,10 @@ app.use(statistiquesRouter)
 app
 // entrée
 .get('', (req, res) => {
-    res.render('index', {
+    // res.render('index', {
         
-    })
+    // })
+    res.redirect('/agenda')
 })
 
 app.use(errorMiddleware)
