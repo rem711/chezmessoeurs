@@ -78,9 +78,9 @@ Devis :
 - V Ajouter Numero_Devis de la forme : DE_YYYYMMDD_0001_[Nom_Client]
 - V pdf devis, modifier affichage pour noter paiement sous 30 jours à compter de la date [d'expédition de la facture | de réception]
 - V pdf ajouter numéro TVA pour les professionnels
-- voir pour ajouter double clic pour ajouter une recette
+- V voir pour ajouter double clic pour ajouter une recette
 - corriger problème des "+" lorsque l'on choisi moins de pièces que précédemment
-- mettre valeur min par défaut pour les select
+- V mettre valeur min par défaut pour les select
 
 Client : 
 - V Retirer la suppression client
@@ -90,7 +90,7 @@ Client :
 - V Modifier les Champs Adresse_Livraison et Adresse_Facturation pour les exploser en plusieurs bloc (numéro, adresse, complément1 (facultatif), complément2 (facultatif), CP, Ville)
 
 Général :
-- Suppression possible uniquement pour recettes (visible = false, pour garder une trace et que les anciens devis/factures puissent accéder à ces recettes)
+- V Suppression possible uniquement pour recettes (visible = false, pour garder une trace et que les anciens devis/factures puissent accéder à ces recettes)
 - X Faire en sorte que le brunch n'est pas de limite de min et max
 - V gérer authentification et créer page de connexion
 - V gérer agenda (avec estimations et devis)

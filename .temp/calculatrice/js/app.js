@@ -1,6 +1,6 @@
 let tab = {
     prixsucre:5,
-    prixbox: 15
+    prixbox: 15.36
 }
 
 let tab_prix_piece = {
@@ -141,7 +141,7 @@ $('#nb_invite_brunch').change( (el) => {
     
     if ((value !== '') && (value.indexOf('.') === -1)) {
         
-        $('#nb_invite_brunch').val(Math.max(Math.min(value, 100000), 15));
+        $('#nb_invite_brunch').val(Math.max(Math.min(value, 100000), 15.36));
     }
 
     changeBrunch();

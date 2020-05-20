@@ -36,7 +36,7 @@ module.exports = {
         {
             Nom_Type_Prestation : 'Box',
             IsOption : 0,
-            Montant : 15
+            Montant : 15.36
         },
         {
             Nom_Type_Prestation : 'Service sur-place',

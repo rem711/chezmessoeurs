@@ -201,6 +201,16 @@ padding: 0 25px;
     
 }
 
+li::-moz-selection {
+    outline: none;
+    background-color: transparent;
+}
+
+li::selection {
+    outline: none;
+    background-color: transparent;
+}
+
 
 
 

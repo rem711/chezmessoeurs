@@ -602,8 +602,14 @@ const selectElementList = (event) => {
 
     // on récupère le nouvel élément, l'ajoute dans notre objet de gestion et lui donne la class selected
     const li = event.target
-    li.setAttribute('class', 'selected')
-    selectedElements.element = li
+    // désélectionne en cas de nouveau clic sur le même élément
+    if(selectedElements.element === li) {
+        selectedElements.element = null
+    }
+    else {
+        li.setAttribute('class', 'selected')
+        selectedElements.element = li
+    }    
 }
 
 // ajoute la class selected à une li de recette pour pouvoir la sélectionner
@@ -616,8 +622,14 @@ const selectRecette = (event) => {
 
     // on récupère la nouvelle recette, l'ajoute à notre objet de gestion et lui donne la class selected
     const li = event.target
-    li.setAttribute('class', 'selected')
-    selectedElements.recette = li
+    // désélectionne en cas de nouveau clic sur la même recette
+    if(selectedElements.recette === li) {
+        selectedElements.recette = null
+    }
+    else {
+        li.setAttribute('class', 'selected')
+        selectedElements.recette = li
+    }
 }
 
 // ajoute la recette sélectionnée dans la liste de recettes sélectionnées adéquate
@@ -649,6 +661,7 @@ const ajouteRecette = (event) => {
             li.innerHTML = '+'
             li.setAttribute('data-for', element.getAttribute('data-for'))
             li.onclick = selectElementList
+            li.ondblclick = addDoubleClickElement
             element.parentElement.append(li)
         }
 
@@ -669,6 +682,7 @@ const ajouteRecette = (event) => {
                 li.innerHTML = '+'
                 li.setAttribute('data-for', element.getAttribute('data-for'))
                 li.onclick = selectElementList
+                li.ondblclick = addDoubleClickElement
                 element.parentElement.append(li)
             }
             
@@ -697,6 +711,8 @@ const retireRecette = (event) => {
             const li = document.createElement('li')
             li.setAttribute('id', element.getAttribute('id'))
             li.setAttribute('data-for', 'Options')
+            li.onclick = selectRecette
+            li.ondblclick = addDoubleClickRecette
             li.innerHTML = element.innerHTML            
             document.getElementById('Options').appendChild(li)      
         }
@@ -709,6 +725,7 @@ const retireRecette = (event) => {
         else {
             // modifie l'élément
             element.removeAttribute('id')
+            element.removeAttribute('class')
             element.innerHTML = '+'
         }
 
@@ -721,6 +738,31 @@ const retireRecette = (event) => {
         if(element.getAttribute('data-for').indexOf('Box') !== -1) saveFormuleBox()
         if(element.getAttribute('data-for').indexOf('Brunch') !== -1) saveFormuleBrunch()
     }
+}
+
+const addDoubleClickRecette = ({ target }) => {
+    // ajoute la recette sélectionnée ici pour être certain que le double clic fonctionne et que ce ne soit pas un second clic pour désélectionner
+    selectedElements.recette = target
+    const dataFor = target.getAttribute('data-for')
+    const dataForAdapted = dataFor.replace('Sale', 'Salees').replace('Sucre', 'Sucrees')
+    let liste = document.getElementById(`listeRecettes${dataForAdapted}`)
+    if(dataFor === 'Options') {
+        liste = document.getElementById(`liste${dataForAdapted}`)
+    }
+    for(const li_element of liste.children) {
+        if(li_element.innerText === "+") {
+            li_element.click()
+            document.querySelector(`button.btnAjouteRecette[data-for=${dataFor}]`).click()
+            break
+        }
+    }
+}
+
+const addDoubleClickElement = ({ target }) => {
+    // ajoute l'élément sélectionné ici pour être certain que le double clic fonctionne et que ce ne soit pas un second clic pour désélectionner
+    selectedElements.element = target
+    const dataFor = target.getAttribute('data-for')
+    document.querySelector(`button.btnRetireRecette[data-for=${dataFor}]`).click()
 }
 
 const ajouteRemise = (event) => {
@@ -776,6 +818,12 @@ const retireRemise = () => {
     div.innerHTML = "<p>Aucune</p>"
 
     saveRemise()
+}
+
+const addDoubleClickRemise = ({ target }) => {
+    // ajoute la remise sélectionnée ici pour être certain que le double clic fonctionne et que ce ne soit pas un second clic pour désélectionner
+    selectedElements.recette = target
+    document.querySelector('.btnAjouteRemise').click()
 }
 
 // met à jour l'affichage des prix depuis l'objet prix
@@ -1157,6 +1205,21 @@ const initUX = () => {
     // ajoute le clic sur les boutons d'ajout et de retrait de remises
     document.getElementsByClassName('btnAjouteRemise')[0].onclick = ajouteRemise
     document.getElementsByClassName('btnRetireRemise')[0].onclick = retireRemise
+
+    // ajoute le double clic sur les recettes pour les sélectionner
+    document.querySelectorAll('ul[id*=recettes] li[id*=recette_], ul[id*=Options] li[id*=option]').forEach(li_recette => {
+        li_recette.ondblclick = addDoubleClickRecette
+    })
+
+    // ajoute le double clic sur les recettes sélectionnées pour les retirer
+    document.querySelectorAll('ul[id*=listeRecettes] li, ul[id*=listeOptions] li').forEach(li_recette => {
+        li_recette.ondblclick = addDoubleClickElement
+    })
+
+    // ajoute le double clic sur les remises pour les sélectionner
+    document.querySelectorAll('ul[id=Remises] li[data-for=Remises]').forEach(li_remise => {
+        li_remise.ondblclick = addDoubleClickRemise
+    })
 
     // ajout des clics des boutons d'action de bas de page
     if(document.getElementById('Id_Devis') !== null) {
