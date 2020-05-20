@@ -234,22 +234,12 @@ const submitEstimation = async () => {
 
     if(error.length == 0){
         // envoie estimation
-        // const infos = await sendEstimation()
+        const infos = await sendEstimation()
+        console.log(infos)
 
         // tout s'estbien passé, on envoie le mail
         // if(infos === undefined || !infos.error) {
-        //     $('#nom').val("");
-        //     $('#prenom').val("");
-        //     $('#mail').val("");
-        //     $('#tel').val("");
-        //     $('#date_event').val("");
-        //     $('#comm').val("");
-        //     $('#autor').prop('checked', false);
-
             sendMail()   
-            // $('form > p').html("Le mail a bien été envoyé");
-            // $('form > p').css("visibility", "visible");
-            // $('form > p').css("color", "green");
         // }
         // else {
         //     $('form > p').html(infos.error);
@@ -384,6 +374,7 @@ const sendEstimation = async () => {
     const { Nom, Prenom, Email, Telephone } = getClient()
 
     const url = 'http://localhost:3000/estimations'
+    // const url = 'http://www.crm.chezmessoeurs.fr/estimations'
     const params = {
         Date_Evenement, Commentaire,
         isAperitif, nbConvivesAperitif, nbPiecesSaleesAperitif,

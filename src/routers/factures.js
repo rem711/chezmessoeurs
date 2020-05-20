@@ -67,6 +67,19 @@ const createFacture = async (devis) => {
     return facture
 }
 
+const getRetardPaiementStatus = (Date_Creation) => {
+    const today = moment.utc()
+    const creationDate = moment.utc(Date_Creation)
+    const dueTo = creationDate.add(1, 'months').add(2, 'days')
+    const diff = today.diff(dueTo, 'days')
+
+    if(diff <= 0) {
+        return 'Non'
+    }
+    
+    return `+${diff}j`
+}
+
 router
 // tableau factures
 .get('/factures', async (req, res) => {
@@ -85,10 +98,7 @@ router
                     [Op.notIn] : ['Archivée', 'Annulée'] 
                 }
             },
-            include : {
-                all : true,
-                nested : true
-            }
+            include : Clients
         })
 
         // il y a un problème pour récupérer les factures
@@ -99,6 +109,16 @@ router
         else if(factures.length === 0) {        
             infos = clientInformationObject(undefined, 'Aucune facture')
         }
+
+        const tabPromises = []
+        for(const facture of factures) {
+            const retard = getRetardPaiementStatus(facture.Date_Creation)
+            if(retard !== facture.Paiement_En_Retard) {
+                facture.Paiement_En_Retard = retard
+                tabPromises.push(facture.save())
+            }
+        }
+        await Promise.all(tabPromises)
     }
     catch(error) {
         infos = clientInformationObject(getErrorMessage(error), undefined)
@@ -169,16 +189,23 @@ router
             }
 
             facture.Statut = body.Statut
-
-            body.Acompte = (body.Acompte === undefined || body.Acompte === 'undefined') ? 0 : Number(Number(body.Acompte).toFixed(2))
-            if(body.Acompte < 0) {
-                throw "La valeur de l'acompte ne peut pas être négative."
+            if(body.Statut === 'Payée') {
+                facture.Reste_A_Payer = 0
             }
-            facture.Acompte = body.Acompte
-            facture.Reste_A_Payer = Number(Number(facture.Prix_TTC - facture.Acompte).toFixed(2))
 
-            if(facture.Reste_A_Payer === 0 && facture.Acompte === facture.Prix_TTC) {
-                facture.Statut = 'Payée'
+            if(facture.Statut !== 'Payée') {
+                body.Acompte = (body.Acompte === undefined || body.Acompte === 'undefined') ? 0 : Number(Number(body.Acompte).toFixed(2))
+                if(body.Acompte < 0) {
+                    throw "La valeur de l'acompte ne peut pas être négatif."
+                }
+                facture.Acompte = body.Acompte
+                facture.Reste_A_Payer = Number(Number(facture.Prix_TTC - facture.Acompte).toFixed(2))
+
+                if(facture.Reste_A_Payer === 0 && facture.Acompte === facture.Prix_TTC) {
+                    facture.Statut = 'Payée'
+                }
+
+                facture.Paiement_En_Retard = getRetardPaiementStatus(facture.Date_Creation)
             }
 
             facture.save()
@@ -472,6 +499,7 @@ router
             // augmente le nombre de relances, ajoute la date de dernière relance
             facture.Nb_Relances = Number(facture.Nb_Relances) + 1
             facture.Date_Derniere_Relance = moment.utc()
+            facture.Paiement_En_Retard = getRetardPaiementStatus(facture.Date_Creation)
 
             facture.save()
             infos = clientInformationObject(undefined, 'La relance est disponible dans une nouvelle fenêtre.')

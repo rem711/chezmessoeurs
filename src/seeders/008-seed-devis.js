@@ -37,8 +37,8 @@ module.exports = {
           Id_Formule_Box : 5,
           Id_Formule_Brunch : 10,
           Statut : 'En cours',
-          Liste_Options : null,
-          Id_Remise : null,
+          Liste_Options : '9;',
+          Id_Remise : 1,
           Prix_HT : 1016.73,
           Prix_TTC : 1018.4
       }

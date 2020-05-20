@@ -28,7 +28,7 @@ module.exports = {
           Prix_HT : 100.8,
           Nb_Pieces_Salees : 7,
           Nb_Pieces_Sucrees : 0,
-          Liste_Id_Recettes_Salees : ''
+          Liste_Id_Recettes_Salees : '1;1;2;2;3;3;4;'
         },
         {
           Id_Formule : 4,
@@ -37,8 +37,8 @@ module.exports = {
           Prix_HT : 168.75,
           Nb_Pieces_Salees : 9,
           Nb_Pieces_Sucrees : 3,
-          Liste_Id_Recettes_Salees : '',
-          Liste_Id_Recettes_Sucrees : ''
+          Liste_Id_Recettes_Salees : '1;1;1;2;2;3;3;4;4;',
+          Liste_Id_Recettes_Sucrees : '5;6;7;'
         },
         {
           Id_Formule : 5,
@@ -47,8 +47,9 @@ module.exports = {
           Prix_HT : 135.0,
           Nb_Pieces_Salees : 3,
           Nb_Pieces_Sucrees : 1,
-          Liste_Id_Recettes_Salees : '',
-          Liste_Id_Recettes_Sucrees : ''
+          Liste_Id_Recettes_Salees : '1;2;3;',
+          Liste_Id_Recettes_Sucrees : '8;',
+          Liste_Id_Recettes_Boissons : '10;'
         },
         {
           Id_Formule : 6,
@@ -97,8 +98,8 @@ module.exports = {
           Prix_HT : 612.18,
           Nb_Pieces_Salees : 8,
           Nb_Pieces_Sucrees : 4,
-          Liste_Id_Recettes_Salees : '',
-          Liste_Id_Recettes_Sucrees : ''
+          Liste_Id_Recettes_Salees : '1;1;1;2;2;3;3;4;',
+          Liste_Id_Recettes_Sucrees : '5;6;7;8;'
         }
     ])
   },

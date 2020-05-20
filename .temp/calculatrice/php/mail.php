@@ -868,7 +868,7 @@ $header = "From: \"Chez mes soeurs\"<$mail>".$passage_ligne;
 $mail2 = "wendy@qualicom-conseil.fr";
 $mail3 = "johan@qualicom-conseil.fr";
 
- //    $test = mail($mail,$sujet,$message,$header);
-	// $test = mail($mail2,$sujet,$message,$header);
-    // $test = mail($mail3,$sujet,$message,$header);
+    $test = mail($mail,$sujet,$message,$header);
+	$test = mail($mail2,$sujet,$message,$header);
+    $test = mail($mail3,$sujet,$message,$header);
     // var_dump($test);

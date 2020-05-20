@@ -534,11 +534,19 @@ const drawFormuleBox = () => {
     yPos += paddingTitles.bottom
 
     // **** entrée + plats
+    const isCollectif = Formule_Box.Liste_Recettes_Salees.length === Formule_Box.Nb_Pieces_Salees
     let numRecetteSalee = 0
+    let numRecetteSucreeBoisson = 0
     doc.font(fontContent).fontSize(fontSizeContent)
     for(let numBox = 0; numBox < Formule_Box.Nb_Convives; numBox++) {
         const num = numBox + 1
         content = `${num}) `
+        
+        numRecetteSucreeBoisson = numBox
+        if(isCollectif) {
+            numRecetteSalee = 0
+            numRecetteSucreeBoisson = 0
+        }
         
         let i = 0
         // for(numRecetteSalee; numRecetteSalee < (numRecetteSalee + 3); numRecetteSalee++) {
@@ -561,8 +569,8 @@ const drawFormuleBox = () => {
         }
 
         // dessert + boisson
-        content += `et en dessert ${Formule_Box.Liste_Recettes_Sucrees[numBox]}. `
-        content += `Boisson : ${Formule_Box.Liste_Recettes_Boissons[numBox]}.`
+        content += `et en dessert ${Formule_Box.Liste_Recettes_Sucrees[numRecetteSucreeBoisson]}. `
+        content += `Boisson : ${Formule_Box.Liste_Recettes_Boissons[numRecetteSucreeBoisson]}.`
 
         const heightOfString = doc.heightOfString(content)
         const height = paddingContent.top + heightOfString + paddingPageContent.bottom
