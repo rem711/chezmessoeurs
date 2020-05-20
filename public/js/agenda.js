@@ -93,6 +93,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 trigger: 'hover',
                 container: 'body'
             })
+        },
+        loading : (isLoading) => {
+            if(isLoading) {
+                spinner.show()
+            }
+            else {
+                spinner.hide()
+            }
         }
     })
 

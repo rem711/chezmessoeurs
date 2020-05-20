@@ -54,7 +54,7 @@ module.exports = {
                 Adresse_Facturation_Adresse : '',
                 Adresse_Facturation_Adresse_Complement_1 : '',
                 Adresse_Facturation_Adresse_Complement_2 : '',
-                Adresse_Facturation_CP : '',
+                Adresse_Facturation_CP : '00000',
                 Adresse_Facturation_Ville : '',
                 Email : 'client4@mail.com',
                 Telephone : '4444444444',
