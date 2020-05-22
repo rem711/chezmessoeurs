@@ -5,4 +5,10 @@ const main = async (password) => {
     console.log(paswwordEncrypted)
 }
 
-main('test')
+const args = process.argv.slice(2)
+if(args.length === 1 && args[0] !== '') {
+    main(args[0])
+}
+else {
+    console.log("Aucun mot de passe fourni!")
+}
