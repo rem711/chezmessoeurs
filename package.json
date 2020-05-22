@@ -4,8 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prod": "env-cmd src/config/production.env node index.js",
-    "start": "pm2-runtime start ecosystem.config.js",
     "deploy": ".\\install.sh",
     "dev": "env-cmd src/config/dev.env nodemon index.js -e js,html",
     "dev-inspect": "env-cmd src/config/dev.env nodemon --inspect index.js -e js,html",
