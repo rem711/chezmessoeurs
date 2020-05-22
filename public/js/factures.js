@@ -32,6 +32,13 @@ const deleteFacture = async () => {
                 }, 500)
             }
         }
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            alert("Une erreur est survenue, veuillez recommencer plus tard.")
+        }
     }
 }
 

@@ -47,7 +47,8 @@ const fillModal = async (isUpdate = null) => {
             location.reload()
         }
         else {
-            alert("Une erreur est survenue, veuillez recommencer plus tard.")
+            modalError.innerHTML = "Une erreur est survenue, veuillez réesayer plus tard."
+            modalError.style.display = 'block'
         }
     }
     else {
@@ -145,7 +146,8 @@ const createRecette = async () => {
         location.reload()
     }
     else {
-        alert("Une erreur est survenue, veuillez recommencer plus tard.")
+        modalError.innerHTML = "Une erreur est survenue, veuillez réesayer plus tard."
+        modalError.style.display = 'block'
     }
 }
 
@@ -197,7 +199,8 @@ const updateRecette = async () => {
         location.reload()
     }
     else {
-        alert("Une erreur est survenue, veuillez recommencer plus tard.")
+        modalError.innerHTML = "Une erreur est survenue, veuillez réesayer plus tard."
+        modalError.style.display = 'block'
     }
 }
 

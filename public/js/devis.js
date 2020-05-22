@@ -39,10 +39,15 @@ const archiveDevis = async () => {
                 location.replace('/devis')
             }
             if(infos.error) {
-                // div.style.color = 'red'
-                // div.innerHTML = infos.error
                 alert(infos.error)
             }
+        }
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            alert("Une erreur est survenue, veuillez recommencer plus tard.")
         }
     }
 }

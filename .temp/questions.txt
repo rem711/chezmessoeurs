@@ -97,6 +97,9 @@ Général :
 - V gérer la carte
 - V fonctions de validation, vérifier que le client soit complètement renseigné
 - V express handle wrong routes
+- modifier toutes les méthodes fetch pour avertir l'utilisateur
+- spinner Retirer console.log
+- faire le tour pour vérifier lesnoms des boutons
 
 Options et prix :
 - V créer un nouvel onglet dans le menu qui mène à une page de gestion des options et des prix (options et menus)

@@ -30,6 +30,13 @@ const toDevis = async () => {
                 location.replace(`/devis/${devis.Id_Devis}`)
             }
         }
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            alert("Une erreur est survenue, veuillez recommencer plus tard.")
+        }
     }
 }
 
@@ -57,6 +64,13 @@ const archiveEstimation = async () => {
             if(infos.error) {
                 alert(infos.error)
             }
+        }
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            alert("Une erreur est survenue, veuillez recommencer plus tard.")
         }
     }
 }

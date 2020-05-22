@@ -947,6 +947,14 @@ const createDevis = async () => {
                 div.innerHTML = infos.error
             }
         }
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            div.classList.add('messageError')
+            div.innerHTML = "Une erreur est survenue, veuillez recommencer plus tard."
+        }
     }
     else {
         div.classList.add('messageError')
@@ -978,6 +986,14 @@ const archiveDevis = async () => {
             div.classList.add('messageError')
             div.innerHTML = infos.error
         }
+    }
+    else if(response.status === 401) {
+        alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+        location.reload()
+    }
+    else {
+        div.classList.add('messageError')
+        div.innerHTML = "Une erreur est survenue, veuillez recommencer plus tard."
     }
 }
 
@@ -1016,6 +1032,14 @@ const saveDevis = async () => {
                 div.classList.add('messageError')
                 div.innerHTML = infos.error
             }
+        }
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            div.classList.add('messageError')
+            div.innerHTML = "Une erreur est survenue, veuillez recommencer plus tard."
         }
     }
     else {
@@ -1065,6 +1089,14 @@ const sendDevis = async () => {
                 url = `/devis/pdf/${encodeURI('CHEZ MES SOEURS - Devis ')}${global.Numero_Devis}.pdf`
                 window.open(url)
             }
+        }
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            div.classList.add('messageError')
+            div.innerHTML = "Une erreur est survenue, veuillez recommencer plus tard."
         }
     }
     else {
@@ -1133,7 +1165,23 @@ const toFacture = async () => {
                         }, 500)
                     }
                 }
+                else if(response.status === 401) {
+                    alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                    location.reload()
+                }
+                else {
+                    div.classList.add('messageError')
+                    div.innerHTML = "Une erreur est survenue, veuillez recommencer plus tard."
+                }
             }
+        }
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            div.classList.add('messageError')
+            div.innerHTML = "Une erreur est survenue, veuillez recommencer plus tard."
         }
     }
     else {

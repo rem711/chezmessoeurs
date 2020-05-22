@@ -134,7 +134,9 @@ const updateElmt = async (event) => {
     location.reload()
   }
   else {
-    alert("Une erreur est survenue, veuillez recommencer plus tard.")
+    const modalError = document.getElementById('modalError')
+    modalError.innerHTML = "Une erreur est survenue, veuillez réesayer plus tard."
+    modalError.style.display = 'block'
   }
 }
 

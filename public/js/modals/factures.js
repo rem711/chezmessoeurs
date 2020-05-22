@@ -99,9 +99,15 @@ const openModal = async () => {
             const data = await response.json()
             const { infos, facture } = data
             fillModal(infos, facture)
+            modalUpdate.style.display = 'block'
         }
-
-        modalUpdate.style.display = 'block'
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            alert("Une erreur est survenue, veuillez réesayer plus tard.")
+        }
     }
 }
 
@@ -174,6 +180,13 @@ const updateFacture = async () => {
                 isUpdated = true
             }
         }
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            showError("Une erreur est survenue, veuillez réesayer plus tard.")
+        }
     }
     else {
         showMessage('La facture est déjà à jour.')
@@ -215,6 +228,13 @@ const archiveFacture = async () => {
                 isUpdated = true
             }
         }
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            showError("Une erreur est survenue, veuillez réesayer plus tard.")
+        }
     }
 }
 
@@ -240,6 +260,13 @@ const sendReminder = async () => {
             showMessage(infos.message)
             window.open(`/factures/${facture.Id_Facture}/relance`)
         }
+    }
+    else if(response.status === 401) {
+        alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+        location.reload()
+    }
+    else {
+        showError("Une erreur est survenue, veuillez réesayer plus tard.")
     }
 }
 
@@ -272,6 +299,13 @@ const sendFacture = async () => {
                 url = `/factures/pdf/${encodeURI('CHEZ MES SOEURS - Facture ')}${document.getElementById('Numero_Facture').innerHTML}.pdf`
                 window.open(url)
             }
+        }
+        else if(response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            showError("Une erreur est survenue, veuillez réesayer plus tard.")
         }
     }
 }

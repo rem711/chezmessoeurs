@@ -59,7 +59,8 @@ const fillModal = async (isUpdate) => {
             location.reload()
         }
         else {
-            alert("Une erreur est survenue, veuillez recommencer plus tard.")
+            modalError.innerHTML = "Une erreur est survenue, veuillez réesayer plus tard."
+            modalError.style.display = 'block'
         }
     }
     else {
@@ -128,7 +129,8 @@ const createOption = async () => {
             modalMessage.style.display = 'block'
         }
         else {
-            alert("Une erreur est survenue, veuillez recommencer plus tard.")
+            modalError.innerHTML = "Une erreur est survenue, veuillez réesayer plus tard."
+            modalError.style.display = 'block'
         }
     }
     else if(response.status === 401) {
@@ -136,7 +138,8 @@ const createOption = async () => {
         location.reload()
     }
     else {
-        alert("Une erreur est survenue, veuillez recommencer plus tard.")
+        modalError.innerHTML = "Une erreur est survenue, veuillez réesayer plus tard."
+        modalError.style.display = 'block'
     }
 } 
 
@@ -199,7 +202,8 @@ const updateMenu = async () => {
             modalMessage.style.display = 'block'
         }
         else {
-            alert("Une erreur est survenue, veuillez recommencer plus tard.")
+            modalError.innerHTML = "Une erreur est survenue, veuillez réesayer plus tard."
+            modalError.style.display = 'block'
         }
     }
     else if(response.status === 401) {
@@ -207,7 +211,8 @@ const updateMenu = async () => {
         location.reload()
     }
     else {
-        alert("Une erreur est survenue, veuillez recommencer plus tard.")
+        modalError.innerHTML = "Une erreur est survenue, veuillez réesayer plus tard."
+        modalError.style.display = 'block'
     }
 }
 
@@ -248,7 +253,8 @@ const updateOption = async () => {
             modalMessage.style.display = 'block'
         }
         else {
-            alert("Une erreur est survenue, veuillez recommencer plus tard.")
+            modalError.innerHTML = "Une erreur est survenue, veuillez réesayer plus tard."
+            modalError.style.display = 'block'
         }
     }
     else if(response.status === 401) {
@@ -256,7 +262,8 @@ const updateOption = async () => {
         location.reload()
     }
     else {
-        alert("Une erreur est survenue, veuillez recommencer plus tard.")
+        modalError.innerHTML = "Une erreur est survenue, veuillez réesayer plus tard."
+        modalError.style.display = 'block'
     }
 }
 
