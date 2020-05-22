@@ -2,6 +2,7 @@
 const path = require('path')
 const compression = require('compression')
 const express = require('express')
+const keepHTTPS = require('./middlewares/https/keepHTTPS')
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const MemoryStore = require('memorystore')(session)
@@ -11,7 +12,6 @@ const errorMiddleware = require('./middlewares/erreurs/errorHandler')
 const error404Middleware = require('./middlewares/erreurs/404-handler')
 const logger = require('./utils/logger')
 const morgan = require('morgan')
-// const hbs = require('hbs') pour handlebars
 
 // chargement base de données
 const db = require('./models')
@@ -32,6 +32,10 @@ const avoirsRouter = require('./routers/avoirs').router
 const statistiquesRouter = require('./routers/statistiques')
 
 const app = express()
+if(process.env.NODE_ENV === 'production') {
+    app.enable('trust proxy')
+    app.use(keepHTTPS)
+}
 app.use(morgan('short', { stream : logger.stream }))
 app.use(compression())
 app.use(bodyParser.urlencoded({ extended : true }))
