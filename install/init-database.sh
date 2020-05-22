@@ -28,7 +28,7 @@ if [ $env != "production" ]
 then
     npx sequelize-cli db:seed:all $envString
 else
-    npx sequelize-cli db:seed --seed 001-seed-type_formule.js 003-seed-recettes.js 004-seed-prix_unitaire.js $envString
+    npx sequelize-cli db:seed --seed 001-seed-type_formule.js 003-seed-recettes.js 004-seed-prix_unitaire.js 012-seed-compteurs.js $envString
 fi
 echo -e "Déploiement terminé. \n"
 cd ..
