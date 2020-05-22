@@ -3,111 +3,102 @@
 <script defer src="/js/modals/clients.js"></script>
 
 
-        
-        
-        
-         
-        <div class="content_inner">
-            <h1>Clients</h1>
-            <%# Affiche si une erreur est survenue %>      
-            <% if (locals.infos && infos.error) { %>
-                <h3>
-                    <%= infos.error %> 
-                </h3>
-            <%# Affiche le contenu s'il n'y a pas de problème sur le serveur %> 
-            <% } else { %>
-                <table>
-                    <thead>
-                        <th>Prénom Nom</th>
-                        <th>Adresse</th>
-                        <th>Téléphone</th>
-                        <th>Email</th>
-                        <th>Type</th>
-                        <th>Nb Prestations</th>
-                        <th>Dernier Statut</th>
-                        <th>Paiement(s) en retard</th>
+    <div class="content_inner">
+        <h1>Clients</h1>
+        <%# Affiche si une erreur est survenue %>      
+        <% if (locals.infos && infos.error) { %>
+            <h3>
+                <%= infos.error %> 
+            </h3>
+        <%# Affiche le contenu s'il n'y a pas de problème sur le serveur %> 
+        <% } else { %>
+            <table>
+                <thead>
+                    <th>Prénom Nom</th>
+                    <th>Adresse</th>
+                    <th>Téléphone</th>
+                    <th>Email</th>
+                    <th>Type</th>
+                    <th>Nb Prestations</th>
+                    <th>Dernier Statut</th>
+                    <th>Paiement(s) en retard</th>
 
-                    </thead>
-                    <tbody>
-                    <% if(locals.infos && infos.message) { %>
-                        <tr><td colspan="8">
-                            <%= infos.message %>
-                        </td></tr>         
-                    <% } else { %>                    
-                        <% if(locals.clients) { %>
-                            <% clients.forEach(client => { %>
-                                <% const { Id_Client, Nom, Prenom, Adresse_Facturation_Adresse, Adresse_Facturation_CP, Adresse_Facturation_Ville, Telephone, Email, Type, Nombre_Prestations, Dernier_Statut, Paiement_En_Retard } = client %>
-                                <% const id = 'client_' + Id_Client %>
-                                <tr id="<%= id %>">
-                                    <td><%= Prenom + ' ' + Nom %></td>
-                                    <% const Adresse_Facturation = (Adresse_Facturation_Adresse === '' && Adresse_Facturation_CP === '00000' && Adresse_Facturation_Ville === '') ? '-' : Adresse_Facturation_Adresse + ', ' + Adresse_Facturation_CP + ' ' + Adresse_Facturation_Ville %> 
-                                    <td><%= Adresse_Facturation %></td>
-                                    <td><%= Telephone %></td>
-                                    <td><%= Email %></td>
-                                    <td><%= Type %></td>
-                                    <td><%= Nombre_Prestations %></td>
-                                    <td><%= Dernier_Statut %></td>
-                                    <td><%= Paiement_En_Retard %></td>    
-                                </tr>
-                            <% }) %>
-                        <% } %>
-                    <% } %>                          
-                    </tbody>
-                </table>
-            <% } %> 
+                </thead>
+                <tbody>
+                <% if(locals.infos && infos.message) { %>
+                    <tr><td colspan="8">
+                        <%= infos.message %>
+                    </td></tr>         
+                <% } else { %>                    
+                    <% if(locals.clients) { %>
+                        <% clients.forEach(client => { %>
+                            <% const { Id_Client, Nom, Prenom, Adresse_Facturation_Adresse, Adresse_Facturation_CP, Adresse_Facturation_Ville, Telephone, Email, Type, Nombre_Prestations, Dernier_Statut, Paiement_En_Retard } = client %>
+                            <% const id = 'client_' + Id_Client %>
+                            <tr id="<%= id %>">
+                                <td><%= Prenom + ' ' + Nom %></td>
+                                <% const Adresse_Facturation = (Adresse_Facturation_Adresse === '' && Adresse_Facturation_CP === '00000' && Adresse_Facturation_Ville === '') ? '-' : Adresse_Facturation_Adresse + ', ' + Adresse_Facturation_CP + ' ' + Adresse_Facturation_Ville %> 
+                                <td><%= Adresse_Facturation %></td>
+                                <td><%= Telephone %></td>
+                                <td><%= Email %></td>
+                                <td><%= Type %></td>
+                                <td><%= Nombre_Prestations %></td>
+                                <td><%= Dernier_Statut %></td>
+                                <td><%= Paiement_En_Retard %></td>    
+                            </tr>
+                        <% }) %>
+                    <% } %>
+                <% } %>                          
+                </tbody>
+            </table>
+        <% } %> 
+    </div>
+
+    <div class="modal" id="modalUpdate">
+        <div class="modal-content">
+            <span class="close closespan">&times;</span>
+            <h2>Client</h2>
+            <form id="formUpdate" action="/clients/" method="PATCH">
+                <div class="rowinput">
+                    <label for="Nom">Nom : </label><input id="Nom" name="Nom" type="text" placeholder="Nom" required><br>
+                </div>
+                <div class="rowinput">
+                    <label for="Prenom">Prénom : </label><input id="Prenom" name="Prenom" type="text" placeholder="Prénom" required><br>
+                </div>
+                <div class="rowinput">
+                    <label for="Adresse_Facturation_Adresse">Adresse Facturation : </label><input id="Adresse_Facturation_Adresse" name="Adresse_Facturation_Adresse" type="text" placeholder="18 Avenue de la Concorde" required><br>
+                </div>
+                <div class="rowinput">
+                    <label for="Adresse_Facturation_Adresse_Complement_1">Adresse Facturation suite (facultatif) : </label><input id="Adresse_Facturation_Adresse_Complement_1" name="Adresse_Facturation_Adresse_Complement_1" type="text" placeholder="2ième étage"><br>
+                </div>
+                <div class="rowinput">
+                    <label for="Adresse_Facturation_Adresse_Complement_2">Adresse Facturation suite (facultatif) : </label><input id="Adresse_Facturation_Adresse_Complement_2" name="Adresse_Facturation_Adresse_Complement_2" type="text" placeholder="Porte gauche"><br>
+                </div>
+                <div class="rowinput">
+                    <label for="Adresse_Facturation_CP">Code Postal : </label><input id="Adresse_Facturation_CP" name="Adresse_Facturation_CP" type="text" placeholder="21000" required>
+                    <label for="Adresse_Facturation_Ville">Ville : </label><input id="Adresse_Facturation_Ville" name="Adresse_Facturation_Ville" type="text" placeholder="Dijon" required><br>
+                </div>
+                <div class="rowinput">
+                    <label for="Telephone">Téléphone : </label><input id="Telephone" name="Telephone" type="text" placeholder="0661918012" required><br>
+                </div>
+                <div class="rowinput">
+                    <label for="Email">E-mail : </label><input id="Email" name="Email" type="email" placeholder="traiteur@chezmessoeurs.fr" required><br>
+                </div>
+                <div class="rowinput">
+                    <label>Type : </label>
+                    <input id="Particulier" name="Type" value="Particulier" type="radio" required><label>Particulier</label>
+                    <input id="Professionnel" name="Type" value="Professionnel" type="radio" required><label>Professionnel</label><br>
+                </div>
+                <div class="rowinput">
+                    <label for="Societe">Nom Société : </label><input id="Societe" name="Societe" type="text" placeholder="chezmessoeurs">
+                    <label for="Numero_TVA">Numéro TVA : </label><input id="Numero_TVA" name="Numero_TVA" type="text" placeholder="FR99999999999" pattern="^(FR|fr)[0-9]{2}[0-9]{9}$"><br>
+                </div>
+                <p id="modalError" class="messageError"></p><br>
+                <p id="modalMessage" class="messageConf"></p><br>
+                <button id="btnUpdate">&check;</button>
+            </form>
         </div>
-
-        <div class="modal" id="modalUpdate">
-            <div class="modal-content">
-                <span class="close closespan">&times;</span>
-                <h2>Client</h2>
-                <form id="formUpdate" action="/clients/" method="PATCH">
-                    <div class="rowinput">
-                        <label for="Nom">Nom : </label><input id="Nom" name="Nom" type="text" placeholder="Nom" required><br>
-                    </div>
-                    <div class="rowinput">
-                        <label for="Prenom">Prénom : </label><input id="Prenom" name="Prenom" type="text" placeholder="Prénom" required><br>
-                    </div>
-                    <div class="rowinput">
-                        <label for="Adresse_Facturation_Adresse">Adresse Facturation : </label><input id="Adresse_Facturation_Adresse" name="Adresse_Facturation_Adresse" type="text" placeholder="18 Avenue de la Concorde" required><br>
-                    </div>
-                    <div class="rowinput">
-                        <label for="Adresse_Facturation_Adresse_Complement_1">Adresse Facturation suite (facultatif) : </label><input id="Adresse_Facturation_Adresse_Complement_1" name="Adresse_Facturation_Adresse_Complement_1" type="text" placeholder="2ième étage"><br>
-                    </div>
-                    <div class="rowinput">
-                        <label for="Adresse_Facturation_Adresse_Complement_2">Adresse Facturation suite (facultatif) : </label><input id="Adresse_Facturation_Adresse_Complement_2" name="Adresse_Facturation_Adresse_Complement_2" type="text" placeholder="Porte gauche"><br>
-                    </div>
-                    <div class="rowinput">
-                        <label for="Adresse_Facturation_CP">Code Postal : </label><input id="Adresse_Facturation_CP" name="Adresse_Facturation_CP" type="text" placeholder="21000" required>
-                        <label for="Adresse_Facturation_Ville">Ville : </label><input id="Adresse_Facturation_Ville" name="Adresse_Facturation_Ville" type="text" placeholder="Dijon" required><br>
-                    </div>
-                    <div class="rowinput">
-                        <label for="Telephone">Téléphone : </label><input id="Telephone" name="Telephone" type="text" placeholder="0661918012" required><br>
-                    </div>
-                    <div class="rowinput">
-                        <label for="Email">E-mail : </label><input id="Email" name="Email" type="email" placeholder="traiteur@chezmessoeurs.fr" required><br>
-                    </div>
-                    <div class="rowinput">
-                        <label>Type : </label>
-                        <input id="Particulier" name="Type" value="Particulier" type="radio" required><label>Particulier</label>
-                        <input id="Professionnel" name="Type" value="Professionnel" type="radio" required><label>Professionnel</label><br>
-                    </div>
-                    <div class="rowinput">
-                        <label for="Societe">Nom Société : </label><input id="Societe" name="Societe" type="text" placeholder="chezmessoeurs">
-                        <label for="Numero_TVA">Numéro TVA : </label><input id="Numero_TVA" name="Numero_TVA" type="text" placeholder="FR99999999999" pattern="^(FR|fr)[0-9]{2}[0-9]{9}$"><br>
-                    </div>
-                    <p id="modalError" class="messageError"></p><br>
-                    <p id="modalMessage" class="messageConf"></p><br>
-                    <button id="btnUpdate">&check;</button>
-                </form>
-            </div>
-        </div>
-        
-
-        <div class="btnbotright">
-            <button id="btnOpenModalUpdate">Modifier</button>     
-        </div>
-
+    </div>
     
-
-        </div>
+    <div class="btnbotright">
+        <button id="btnOpenModalUpdate">Modifier</button>     
+    </div>

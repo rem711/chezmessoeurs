@@ -12,7 +12,6 @@ const spinner = new (function() {
         }
         this.counter += 1
         this.spinner.style.display = 'block'
-        console.log('show', this.counter)
     }
 
     this.hide = () => {
@@ -23,7 +22,6 @@ const spinner = new (function() {
         if(this.counter === 0) {
             this.spinner.style.display = 'none'
         }
-        console.log('hide', this.counter)
     }
 })()
 
@@ -32,9 +30,9 @@ const fetchMock = window.fetch
 window.fetch = async (...args) => {
     // do something before
     spinner.show()
-
+    
     const response = await fetchMock(...args)
-
+    
     // do something after
     spinner.hide()
 
