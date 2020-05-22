@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 slotEventOverlap: false,
                 minTime : '08:00:00',
                 maxTime : '22:00:00',
-                nowIndicator : true
+                // nowIndicator : true
             },
             timeGridDay : {
                 titleFormat : {
