@@ -50,10 +50,12 @@ router
             // trim du commentaire si possible
             postEstimation.Commentaire = postEstimation.Commentaire === undefined ? null : postEstimation.Commentaire.trim()
 
+            postEstimation.Date_Evenement = moment.utc(postEstimation.Date_Evenement).add(10, 'hours').format('YYYY-MM-DD hh:mm:ss')
+
             // puis création de l'estimation
             estimation = await Estimations.create({
                 Id_Client : client.Id_Client,
-                Date_Evenement : moment.utc(postEstimation.Date_Evenement),
+                Date_Evenement : postEstimation.Date_Evenement,
                 Id_Formule_Aperitif : idFormuleAperitif,
                 Id_Formule_Cocktail : idFormuleCocktail,
                 Id_Formule_Box : idFormuleBox,
