@@ -94,3 +94,65 @@
   margin-left: 0;
   margin-right: 0;
 }
+
+
+
+
+
+
+
+
+
+.blue{
+	background-color : #3788d8;
+}
+
+.orange{
+	background-color : orange;
+}
+.purple{
+	background-color : purple;
+}
+
+
+
+.container_calegende{
+	display: flex;
+	flex-direction: row;
+}
+
+#calendar{
+	width : 70%;
+}
+
+.legende{
+	width : 30%;
+	padding: 25px;
+	padding-top: 100px;
+}
+
+.legendeitem{
+		display: flex;
+	flex-direction: row;
+	margin-bottom: 25px;
+}
+
+.legendeitem div{
+	width : 17px;
+	height : 17px;
+	margin-right: 10px;
+
+}
+.legendeitem p{
+	margin-right: 10px;
+}
+
+.labellegende{
+	min-width : 100px;
+}
+
+
+
+
+
+
