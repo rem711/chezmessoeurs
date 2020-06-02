@@ -3,14 +3,54 @@
 <head>
     <title>CRM chezmessoeurs</title>
     <link rel="icon" type="image/png" href="/img/favicon.png" />
+
+    <!--  CSS -->
     <link rel="stylesheet" href="/css/loadingSpinner.css">
     <link rel="stylesheet" href="/css/modal.css">
     <link rel="stylesheet" href="/css/main.css">
+
+    <% if(locals.isAgenda) { %> 
+        <link rel="stylesheet" href="/assets/@fullcalendar/core/main.min.css">
+        <link rel="stylesheet" href="/assets/@fullcalendar/daygrid/main.min.css">
+        <link rel="stylesheet" href="/assets/@fullcalendar/timegrid/main.min.css">
+        <link rel="stylesheet" href="/css/agenda.css">
+    <% } %>
+    <% if(locals.isEstimations) { %> 
+        <link rel="stylesheet" type="text/css" href="/css/estimations.css">
+    <% } %>
+    <% if(locals.isDevis) { %> 
+        <link rel="stylesheet" type="text/css" href="/css/devis.css">
+    <% } %>
+    <% if(locals.isDevisItem) { %> 
+        <link rel="stylesheet" type="text/css" href="/css/devisitem.css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <% } %>
+    <% if(locals.isFactures) { %> 
+        <link rel="stylesheet" href="/css/factures.css">
+    <% } %>
+    <% if(locals.isClients) { %> 
+        <link rel="stylesheet" href="/css/clients.css">
+    <% } %>        
+    <% if(locals.isCarte) { %> 
+        <link rel="stylesheet" href="/css/carte.css">
+    <% } %>
+    <% if(locals.isPrix) { %> 
+        <link rel="stylesheet" href="/css/prix.css">
+    <% } %>
+    <% if(locals.isStatistiques) { %> 
+        
+    <% } %>
+    <% if(locals.isArchives) { %> 
+        
+    <% } %>
+
     <link rel="stylesheet" href="/css/responsivephone.css">
     <link rel="stylesheet" href="/css/responsivetablet.css">
+    <link href="https://fonts.googleapis.com/css?family=Alegreya+Sans&display=swap" rel="stylesheet">
+
+    <!--  JS -->
     <script src="/js/spinner.js"></script>
     <script defer src="/js/utils.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Alegreya+Sans&display=swap" rel="stylesheet">
 </head>
 <body>
     <!--  MENU -->
