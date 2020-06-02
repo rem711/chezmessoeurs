@@ -57,7 +57,7 @@
 								<div class="rowinput">
                                 <label for="Adresse_Livraison_Adresse_Complement_2">Adresse Livraison suite (facultatif) : </label><input id="Adresse_Livraison_Adresse_Complement_2" name="Adresse_Livraison_Adresse_Complement_2" type="text" value="<%= devis.Adresse_Livraison_Adresse_Complement_2 %>" placeholder="Porte gauche"><br>
 								</div>
-								<div class="rowinput">
+								<div class="rowinput_four">
                                 <label for="Adresse_Livraison_CP">Code Postal : </label><input id="Adresse_Livraison_CP" name="Adresse_Livraison_CP" type="text" value="<%= devis.Adresse_Livraison_CP %>" placeholder="21000" required>
                                 <label for="Adresse_Livraison_Ville">Ville : </label><input id="Adresse_Livraison_Ville" name="Adresse_Livraison_Ville" type="text" value="<%= devis.Adresse_Livraison_Ville %>" placeholder="Dijon" required><br>
 								</div>
@@ -88,12 +88,12 @@
                             <label>Ref client :</label>
                             <span id="Id_Client"><%= devis.Client.Id_Client %></span>
                         </div>
-                        <div class="rowinput">
+                        <div class="rowinput_four">
                             <label for="Nom">Nom :</label><input type="text" id="Nom" value="<%= devis.Client.Nom %>">
                             <label for="Prenom">Prénom :</label><input type="text" id="Prenom" value="<%= devis.Client.Prenom %>">
                         </div>
                         <div>
-							<div class="rowinput">
+							<div class="rowinput_four">
                             <label>Type :</label>
                             <% let typeClientChecked = '' %> 
                             <label for="typeParticulier">Particulier</label>
@@ -120,13 +120,13 @@
 										<div class="rowinput">
                                 <label for="Adresse_Facturation_Adresse_Complement_2">Adresse Facturation suite (facultatif) : </label><input id="Adresse_Facturation_Adresse_Complement_2" name="Adresse_Facturation_Adresse_Complement_2" type="text" value="<%= devis.Client.Adresse_Facturation_Adresse_Complement_2 %>" placeholder="Porte gauche"><br>
 											</div>
-											<div class="rowinput">
+											<div class="rowinput_four">
                                 <label for="Adresse_Facturation_CP">Code Postal : </label><input id="Adresse_Facturation_CP" name="Adresse_Facturation_CP" type="text" value="<%= devis.Client.Adresse_Facturation_CP %>" placeholder="21000" required>
                                 <label for="Adresse_Facturation_Ville">Ville : </label><input id="Adresse_Facturation_Ville" name="Adresse_Facturation_Ville" type="text" value="<%= devis.Client.Adresse_Facturation_Ville %>" placeholder="Dijon" required><br>
 												</div>
                             </div>
                         </div>
-                        <div class="rowinput">
+                        <div class="rowinput_four">
                             <label>Téléphone :</label>
                             <input type="tel" id="Telephone" value="<%= devis.Client.Telephone %>">
 							<label>Email :</label>
