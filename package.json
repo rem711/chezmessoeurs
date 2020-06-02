@@ -41,6 +41,9 @@
     "winston-daily-rotate-file": "^4.4.2"
   },
   "devDependencies": {
+    "@fullcalendar/core": "^4.4.2",
+    "@fullcalendar/daygrid": "^4.4.2",
+    "@fullcalendar/timegrid": "^4.4.2",
     "env-cmd": "^8.0.2",
     "eslint": "^6.8.0",
     "husky": "^4.2.5",

@@ -32,10 +32,16 @@ const avoirsRouter = require('./routers/avoirs').router
 const statistiquesRouter = require('./routers/statistiques')
 
 const app = express()
-if(process.env.NODE_ENV === 'production') {
-    app.enable('trust proxy')
-    app.use(keepHTTPS)
-}
+// if(process.env.NODE_ENV === 'production') {
+//     app.enable('trust proxy')
+//     app.use(keepHTTPS)
+// }
+// app.use((req, res, next) => {
+//     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+//     res.header('Expires', '-1');
+//     res.header('Pragma', 'no-cache');
+//     next();
+// })
 app.use(morgan('short', { stream : logger.stream }))
 app.use(compression())
 app.use(bodyParser.urlencoded({ extended : true }))

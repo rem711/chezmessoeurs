@@ -63,7 +63,7 @@ router
             }
         }
 
-        infos = clientInformationObject(undefined, getErrorMessage("Vous avez été déconnecté."))
+        infos = clientInformationObject(undefined, "Vous avez été déconnecté.")
     }
     catch(error) {
         infos = clientInformationObject(getErrorMessage(error), undefined)

@@ -3,5 +3,5 @@ module.exports = (req, res, next) => {
         return next()
     }
 
-    return res.redirect('https://' + req.headers.host + req.url)
+    return res.status(301).redirect('https://' + req.headers.host + req.url)
 }

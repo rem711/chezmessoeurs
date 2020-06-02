@@ -1,0 +1,18 @@
+## http -> https
+#RewriteEngine on
+#RewriteCond %{HTTPS} !=on
+#RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [NE,QSA,R=301,L]
+#Header set Strict-Transport-Security "max-age=15811200" env=HTTPS
+
+RewriteEngine On
+
+# If we receive a forwarded http request from a proxy...
+RewriteCond %{HTTP:X-Forwarded-Proto} =http [OR]
+
+# ...or just a plain old http request directly from the client
+RewriteCond %{HTTP:X-Forwarded-Proto} =""
+RewriteCond %{HTTPS} !=on
+
+# Redirect to https version
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [NE,QSA,R=301,L]
+Header set Strict-Transport-Security "max-age=15811200" env=HTTPS
