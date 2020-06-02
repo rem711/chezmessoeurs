@@ -1,222 +1,247 @@
-.info_client_devis{
-    display: flex;
-    flex-direction: row;
-    width: 100%;   
-    margin: 5px 0;
+.info_client_devis {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	margin: 5px 0;
 }
 
-.info_client_devis label{
-        padding : 0 5px;
+.info_client_devis label {
+	padding: 0 5px;
 }
 
-.info_client_devis input{
-    margin : 0 25px 0 5px;
-    color : #e06128;
-    border : none;
+.info_client_devis input {
+	margin: 0 25px 0 5px;
+	color: #e06128;
+	border: none;
 }
 
-.moitie{
-    width : 50%;
+.moitie {
+	width: 50%;
 }
 
-.content_inner .info_client_devis:nth-child(5){
-    margin-top: 50px; 
+.content_inner .info_client_devis:nth-child(5) {
+	margin-top: 50px;
 }
 
-.content_inner{
-    height: 1000px;
-    overflow-y: scroll;
+.content_inner {
+	height: 1000px;
+	overflow-y: scroll;
 }
 
 .select_option_ctn {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    padding: 39px;
-    width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	padding: 39px;
+	width: 100%;
 }
 
-.select_recette_ctn{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-}
-.select_recette, .list_recettes{
-    width: 45%;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-padding: 25px 0 0 25px;        
+.select_recette_ctn {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
 }
 
-.list_recettes{
-    position: relative;
+.select_recette,
+.list_recettes {
+	width: 45%;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	padding: 25px 0 0 25px;
 }
 
-.list_selected{
-    height: 300px;
-    overflow-y: scroll;
-    padding: 15px;
-    box-sizing: border-box;
+.list_recettes {
+	position: relative;
+}
+
+.list_selected {
+	height: 300px;
+	overflow-y: scroll;
+	padding: 15px;
+	box-sizing: border-box;
 
 }
 
-.list_selected li{
-    display: flex;
-    border : 2px solid #e06128;
-    margin: 5px 0;
-    justify-content: center;
-    color : #e06128;
-        height: 30px;
-    align-items: center;
-    font-size: 15px;
-}
-.list_selected li:hover, .list_selected li:active, .list_selected li:focus, .list_selected li:focus-within{
-    border : 3px solid #cccccc;
-    color : #cccccc;
-    cursor : pointer;
+.list_selected li {
+	display: flex;
+	padding: 2px 5px;
+	border: 2px solid #e06128;
+	margin: 5px 0;
+	justify-content: center;
+	color: #e06128;
+	height: 30px;
+	align-items: center;
+	font-size: 15px;
 }
 
-.ctn_recettes{
-    border : 2px solid #e06128;
-    margin: 15px 0;
-    padding: 15px 25px 0 25px;
-    box-sizing: border-box;
-    position: relative;
-    height : 300px;
-    overflow-y: scroll;
+.list_selected li:hover,
+.list_selected li:active,
+.list_selected li:focus,
+.list_selected li:focus-within {
+	border: 3px solid #cccccc;
+	color: #cccccc;
+	cursor: pointer;
 }
 
-.ctn_recettes li{
-    list-style: none;
-    line-height: 25px;
-    font-size: 15px;
+.ctn_recettes {
+	border: 2px solid #e06128;
+	margin: 15px 0;
+	padding: 15px 25px 0 25px;
+	box-sizing: border-box;
+	position: relative;
+	height: 300px;
+	overflow-y: scroll;
 }
 
-.ctn_recettes li:hover, .ctn_recettes li:active, .ctn_recettes li:focus, .ctn_recettes li:focus-within{
-    color : #cccccc;
-    cursor : pointer;
+.ctn_recettes li {
+	list-style: none;
+	line-height: 25px;
+	font-size: 15px;
+}
+
+.ctn_recettes li:hover,
+.ctn_recettes li:active,
+.ctn_recettes li:focus,
+.ctn_recettes li:focus-within {
+	color: #cccccc;
+	cursor: pointer;
 }
 
 .ctn_recettes .selected {
-    color: #e06128 !important;
-    border : none !important;
+	color: #e06128 !important;
+	border: none !important;
 }
 
 .selected {
-    border: 3px solid #cccccc !important;
-    background: white;
-    color: #cccccc !important;
+	border: 3px solid #cccccc !important;
+	background: white;
+	color: #cccccc !important;
 }
 
 .selected:hover {
-    color: #cccccc;
-    background: white;
+	color: #cccccc;
+	background: white;
 }
 
-.list_recettes button{
-    position: absolute;
-    right: 0;
-    bottom: 15px;
-    height : 50px;
-    width : 70px;
-    background: #e06128;
-    color : #ffffff;
-    border : none;
-    transition : all 0.2s;
-}
-.btnRetireRecette, .btnRetireRemise{
-    right : 70px !important;
+.list_recettes button {
+	position: absolute;
+	right: 0;
+	bottom: 15px;
+	height: 50px;
+	width: 70px;
+	background: #e06128;
+	color: #ffffff;
+	border: none;
+	transition: all 0.2s;
 }
 
-
-
-.list_recettes button:hover{
-        border : 3px solid #e06128;
-    background-color: #ffffff;
-    color : #e06128;
-    cursor: pointer;
+.btnRetireRecette,
+.btnRetireRemise {
+	right: 70px !important;
 }
 
 
 
-.recap_ctn{
-    display: flex;
-    flex-direction: row;
-}
-
-.recap_item{
-        display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.recap_right{
-    border-left : 3px solid #000000;
-    margin-left: 0px !important;
+.list_recettes button:hover {
+	border: 3px solid #e06128;
+	background-color: #ffffff;
+	color: #e06128;
+	cursor: pointer;
 }
 
 
 
-.recap{
-    width: 45%;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-margin: 0 25px;        
-padding: 0 25px;        
+.recap_ctn {
+	display: flex;
+	flex-direction: row;
 }
 
-.orange{ 
-    color : #e06128 !important;
+.recap_item {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.recap_right {
+	border-left: 3px solid #000000;
+	margin-left: 0px !important;
 }
 
 
-.totalprix{
-    height: 80px;
-    background-color: #e06128;
-    width : 100%;
-    color : #ffffff;
-    font-size: 20px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    align-content: center;
-    margin :50px 0;
+
+.recap {
+	width: 45%;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	margin: 0 25px;
+	padding: 0 25px;
 }
 
-.totalprix p{
-    width: 45%;
-    box-sizing: border-box;
+.orange {
+	color: #e06128 !important;
+}
+
+
+.totalprix {
+	height: 80px;
+	background-color: #e06128;
+	width: 100%;
+	color: #ffffff;
+	font-size: 20px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: center;
+	align-content: center;
+	margin: 50px 0;
+}
+
+.totalprix p {
+	width: 45%;
+	box-sizing: border-box;
 
 }
- 
-.traitementDevisBtns{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-content: center;
-    padding: 0 20%;
-    
+
+.traitementDevisBtns {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-content: center;
+	padding: 0 20%;
+
 }
 
 li::-moz-selection {
-    outline: none;
-    background-color: transparent;
+	outline: none;
+	background-color: transparent;
 }
 
 li::selection {
-    outline: none;
-    background-color: transparent;
+	outline: none;
+	background-color: transparent;
 }
 
 
 
+.rowinput_four {
+	display: flex;
+	flex-direction: row;
+	align-items: baseline;
+	padding: 5px 0;
+	width: 100%;
+}
 
+.rowinput_four label {
+	/*	min-width: 75px;*/
+}
 
-
-
+.rowinput_four input {
+	border-bottom: 1px solid #000;
+	display: flex;
+	flex: 1;
+}
 
 
 

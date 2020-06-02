@@ -1,0 +1,187 @@
+
+
+
+@media screen and (max-width: 1100px) {
+	
+		/***************************** GENERAL  ****************************/
+
+	td {
+    font-size: 9px;
+		padding: 5px 0;
+
+}
+		/***************************** AGENDA  ****************************/
+
+	
+	.container_calegende {
+    display: flex;
+    flex-direction: column-reverse;
+}
+	
+	.legende {
+    width: 100%;
+    padding: 0;
+    /* padding-top: 100px; */
+}
+
+#calendar {
+    width: 100%;
+}
+	/***************************** DEVIS ITEM  ****************************/
+
+	.info_client_devis {
+		flex-direction: column;
+	}
+
+	.moitie {
+		width: 100%;
+	}
+
+	.recap_ctn {
+
+		flex-direction: column;
+	}
+
+	.recap {
+		width: 100%;
+		margin: 0;
+		padding: 0;
+	}
+
+	.recap_right {
+		border: none;
+		margin-left: 0
+	}
+	
+	.traitementDevisBtns {
+
+    padding: 0; 
+}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		/***************************** CARTE  ****************************/
+
+	
+	.liste_carte li {
+    width: 45%;
+    text-align: center;
+		
+	}
+	/***************************** PRIX ET OPTIONS  ****************************/
+
+	.liste_carte li {
+    width: 45%;
+	
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media screen and (max-width: 850px) {
+
+
+    /***************************** GENERAL ****************************/
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+    
+    
+}
+
+
+
+
+
+
+
+
