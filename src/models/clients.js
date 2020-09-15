@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
 			defaultValue : null,
 			validate : {
 				len : {
-					args : [1, 500],
+					args : [3, 500],
 					msg : 'Le nom de la société ne peut pas contenir plus de 500 cractères.'
 				}
 			}

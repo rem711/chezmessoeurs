@@ -160,12 +160,50 @@ router
 // création d'un client
 .post('/clients', async (req, res) => {
     // récupération des données client
-    const postClient = req.query   
+    const postClient = req.body   
     let infos = undefined 
     let client = undefined
 
     try {
-        client = await createOrLoadClient(postClient)
+        // vérification des données
+        if(postClient.Nom === undefined || postClient.Nom === 'undefined' || postClient.Nom === '') {
+            throw "Le nom doit être défini."
+        }
+        if(postClient.Prenom === undefined || postClient.Prenom === 'undefined' || postClient.Prenom === '') {
+            throw "Le prénom doit être défini."
+        }
+        if(postClient.Email === undefined || postClient.Email === 'undefined' || postClient.Email === '') {
+            throw "L'adresse e-mail doit être définie."
+        }
+        else if(postClient.Email.match(/^.+@.+\.[a-z][a-z]+$/ig) === null) {
+            throw "L'adresse e-mail est incorrecte."
+        }
+        if(postClient.Telephone === undefined || postClient.Telephone === 'undefined' || postClient.Telephone === '') {
+            throw "Le numéro de téléphone doit être défini."
+        }
+        else {
+            postClient.Telephone = postClient.Telephone.replace(/ /g, '').replace(/-/g, '').replace(/_/g, '').replace(/\./g, '')
+            if(postClient.Telephone.match(/^[0-9]{10}$/g) === null) {
+                throw "Le numéro de téléphone est incorrect."
+            }
+        }
+
+        const temp_client = await Clients.findOne({
+            where : {
+                Nom : postClient.Nom,
+                Prenom : postClient.Prenom,
+                Telephone : postClient.Telephone,
+                Email : postClient.Email,
+                Adresse_Facturation_CP : postClient.Adresse_Facturation_CP,
+                Adresse_Facturation_Ville : postClient.Adresse_Facturation_Ville
+            }
+        })
+
+        if(temp_client) throw "Le client existe déjà."
+
+        client = await Clients.create(postClient)
+
+        infos = clientInformationObject(undefined, "Le client a bien été ajouté.")
     }
     catch(error) {
         client = undefined
@@ -248,7 +286,7 @@ router
     // récupération de l'Id_Client
     const getId_Client = req.params.Id_Client
     // récupération des données client
-    const postClient = req.query
+    const postClient = req.body
 
     // init valeurs retour
     let infos = undefined
