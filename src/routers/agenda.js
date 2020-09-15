@@ -1,6 +1,6 @@
 const express = require('express')
 const router = new express.Router()
-const { Estimations, Devis } = global.db
+const { Ventes } = global.db
 const { Op } = require('sequelize')
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -59,84 +59,84 @@ router
     })
 })
 // renvoie une liste json au format event de fullcalendar des estimations comprises entre start et end (start <= envents < end)
-.get('/agenda/estimations', async (req, res) => {
-    let start = moment(req.query.start)
-    let end = moment(req.query.end)
+// .get('/agenda/estimations', async (req, res) => {
+//     let start = moment(req.query.start)
+//     let end = moment(req.query.end)
 
-    let returnedValue = undefined
+//     let returnedValue = undefined
 
-    try {
-        if(!(start.isValid() && end.isValid())) {
-            throw "La date de début ou de fin est incorrecte."
-        }
+//     try {
+//         if(!(start.isValid() && end.isValid())) {
+//             throw "La date de début ou de fin est incorrecte."
+//         }
 
-        const estimations = await Estimations.findAll({
-            where : {
-                Statut : {
-                    [Op.notLike] : 'Archivée'
-                },
-                Date_Evenement : {
-                    [Op.between] : [start, end]
-                }
-            },
-            include : {
-                all : true,
-                nested : true
-            }
-        })
+//         const estimations = await Estimations.findAll({
+//             where : {
+//                 Statut : {
+//                     [Op.notLike] : 'Archivée'
+//                 },
+//                 Date_Evenement : {
+//                     [Op.between] : [start, end]
+//                 }
+//             },
+//             include : {
+//                 all : true,
+//                 nested : true
+//             }
+//         })
 
-        if(estimations === null) {
-            throw "Une erreur est survenue."
-        }
+//         if(estimations === null) {
+//             throw "Une erreur est survenue."
+//         }
         
-        returnedValue = formatter(estimations)
-    }
-    catch(error) {
-        returnedValue = clientInformationObject(getErrorMessage(error), undefined)
-        res.status(409)
-    }
+//         returnedValue = formatter(estimations)
+//     }
+//     catch(error) {
+//         returnedValue = clientInformationObject(getErrorMessage(error), undefined)
+//         res.status(409)
+//     }
 
-    res.send(returnedValue)
-})
+//     res.send(returnedValue)
+// })
 // renvoie une liste json au format event de fullcalendar des devis compris entre start et end (start <= envents < end)
-.get('/agenda/devis', async (req, res) => {
-    let start = moment(req.query.start)
-    let end = moment(req.query.end)
+// .get('/agenda/devis', async (req, res) => {
+//     let start = moment(req.query.start)
+//     let end = moment(req.query.end)
 
-    let returnedValue = undefined
+//     let returnedValue = undefined
 
-    try {
-        if(!(start.isValid() && end.isValid())) {
-            throw "La date de début ou de fin est incorrecte."
-        }
+//     try {
+//         if(!(start.isValid() && end.isValid())) {
+//             throw "La date de début ou de fin est incorrecte."
+//         }
 
-        const devis = await Devis.findAll({
-            where : {
-                Statut : {
-                    [Op.notLike] : 'Archivée'
-                },
-                Date_Evenement : {
-                    [Op.between] : [start, end]
-                }
-            },
-            include : {
-                all : true,
-                nested : true
-            }
-        })
+//         const devis = await Devis.findAll({
+//             where : {
+//                 Statut : {
+//                     [Op.notLike] : 'Archivée'
+//                 },
+//                 Date_Evenement : {
+//                     [Op.between] : [start, end]
+//                 }
+//             },
+//             include : {
+//                 all : true,
+//                 nested : true
+//             }
+//         })
 
-        if(devis === null) {
-            throw "Une erreur est survenue."
-        }
+//         if(devis === null) {
+//             throw "Une erreur est survenue."
+//         }
         
-        returnedValue = formatter(devis)
-    }
-    catch(error) {
-        returnedValue = clientInformationObject(getErrorMessage(error), undefined)
-        res.status(409)
-    }
+//         returnedValue = formatter(devis)
+//     }
+//     catch(error) {
+//         returnedValue = clientInformationObject(getErrorMessage(error), undefined)
+//         res.status(409)
+//     }
 
-    res.send(returnedValue)
-})
+//     res.send(returnedValue)
+// })
 
 module.exports = router

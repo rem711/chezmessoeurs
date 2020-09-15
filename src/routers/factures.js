@@ -1,14 +1,10 @@
 const express = require('express')
 const router = new express.Router()
-const { Factures, Devis, Clients, Prix_Unitaire } = global.db
+const { Ventes } = global.db
 const { Op } = require("sequelize")
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
-const compteurs = require('../utils/compteurs')
-const formatNumeroFacture = require('../utils/numeroFormatter')
 const createPDFFacture = require('../utils/pdf/pdf_factures')
-const createPDFAcompte = require('../utils/pdf/pdf_acomptes')
-const { createAvoir } = require('./avoirs')
 const moment = require('moment')
 const formatDateHeure = 'DD/MM/YYYY HH:mm'
 
@@ -673,6 +669,5 @@ router
 
 module.exports = {
     router,
-    formatNumeroFacture,
     createFacture
 }

@@ -21,14 +21,8 @@ global.db = db
 // chargement des routers
 const authRouter = require('./routers/auth')
 const agendaRouter = require('./routers/agenda')
-const archivesRouter = require('./routers/archives')
-const carteRouter = require('./routers/carte')
-const prixRouter = require('./routers/prix')
 const clientsRouter = require('./routers/clients').router
-const devisRouter = require('./routers/devis').router
-const estimationsRouter = require('./routers/estimations')
 const facturesRouter = require('./routers/factures').router
-const avoirsRouter = require('./routers/avoirs').router
 const statistiquesRouter = require('./routers/statistiques')
 
 const app = express()
@@ -81,14 +75,8 @@ app.use(express.static(publicDirectoryPath))
 // setup des routers
 app.use(authRouter)
 app.use(agendaRouter)
-app.use(archivesRouter)
-app.use(carteRouter)
-app.use(prixRouter)
 app.use(clientsRouter)
-app.use(devisRouter)
 app.use(facturesRouter)
-app.use(avoirsRouter)
-app.use(estimationsRouter)
 app.use(statistiquesRouter)
 
 app

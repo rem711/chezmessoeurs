@@ -74,17 +74,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
         eventSources : [
-            {
-                url : '/agenda/estimations',
-                method : 'GET',
-                failure : handleError,
-                color : 'purple'
-            },
-            {
-                url : '/agenda/devis',
-                method : 'GET',
-                failure : handleError,
-            }
+            // {
+            //     url : '/agenda/estimations',
+            //     method : 'GET',
+            //     failure : handleError,
+            //     color : 'purple'
+            // },
+            // {
+            //     url : '/agenda/devis',
+            //     method : 'GET',
+            //     failure : handleError,
+            // }
         ],
         eventRender : function(info) {
             const tooltip = new Tooltip(info.el, {

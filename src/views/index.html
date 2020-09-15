@@ -15,32 +15,13 @@
         <link rel="stylesheet" href="/assets/@fullcalendar/timegrid/main.min.css">
         <link rel="stylesheet" href="/css/agenda.css">
     <% } %>
-    <% if(locals.isEstimations) { %> 
-        <link rel="stylesheet" type="text/css" href="/css/estimations.css">
-    <% } %>
-    <% if(locals.isDevis) { %> 
-        <link rel="stylesheet" type="text/css" href="/css/devis.css">
-    <% } %>
-    <% if(locals.isDevisItem) { %> 
-        <link rel="stylesheet" type="text/css" href="/css/devisitem.css">
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <% } %>
     <% if(locals.isFactures) { %> 
         <link rel="stylesheet" href="/css/factures.css">
     <% } %>
     <% if(locals.isClients) { %> 
         <link rel="stylesheet" href="/css/clients.css">
-    <% } %>        
-    <% if(locals.isCarte) { %> 
-        <link rel="stylesheet" href="/css/carte.css">
-    <% } %>
-    <% if(locals.isPrix) { %> 
-        <link rel="stylesheet" href="/css/prix.css">
-    <% } %>
+    <% } %> 
     <% if(locals.isStatistiques) { %> 
-        
-    <% } %>
-    <% if(locals.isArchives) { %> 
         
     <% } %>
 
@@ -60,13 +41,7 @@
             <ul class="menuleft">
                 <li>
                     <a href="/agenda">Agenda</a>
-                </li>
-                <li>
-                    <a href="/estimations">Estimations</a>
-                </li>
-                <li>
-                    <a href="/devis">Devis</a>
-                </li>            
+                </li>        
                 <li>
                     <a href="/factures">Factures</a>
                 </li>
@@ -74,16 +49,7 @@
                     <a href="/clients">Clients</a>
                 </li>
                 <li>
-                    <a href="/carte">Carte</a>
-                </li>
-                <li>
-                    <a href="/prix&options">Prix & Options</a>
-                </li>
-                <li>
                     <a href="/statistiques">Statistiques</a>
-                </li>
-                <li>
-                    <a href="/archives">Archives</a>
                 </li>
                 <li>
                     <a href="/authentification/logout">Déconnexion</a>
@@ -96,32 +62,14 @@
             <% if(locals.isAgenda) { %> 
                 <%- include('partials/agenda.html') %> 
             <% } %>
-            <% if(locals.isEstimations) { %> 
-                <%- include('partials/estimations.html') %>
-            <% } %>
-            <% if(locals.isDevis) { %> 
-                <%- include('partials/devis.html') %>
-            <% } %>
-            <% if(locals.isDevisItem) { %> 
-                <%- include('partials/devisitem.html') %>
-            <% } %>
             <% if(locals.isFactures) { %> 
                 <%- include('partials/factures.html') %>
             <% } %>
             <% if(locals.isClients) { %> 
                 <%- include('partials/clients.html') %>
-            <% } %>        
-            <% if(locals.isCarte) { %> 
-                <%- include('partials/carte.html') %>
-            <% } %>
-            <% if(locals.isPrix) { %> 
-                <%- include('partials/prix.html') %>
-            <% } %>
+            <% } %>  
             <% if(locals.isStatistiques) { %> 
                 <%- include('partials/statistiques.html') %>
-            <% } %>
-            <% if(locals.isArchives) { %> 
-                <%- include('partials/archives.html') %>
             <% } %>
 
             <div id="spinner" class="overlay content_inner">
