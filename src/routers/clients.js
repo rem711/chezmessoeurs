@@ -223,12 +223,14 @@ router
     let clients = undefined
 
     try {
-        clients = await Clients.findAll()
+        clients = await Clients.findAll({
+            order : [['Nom', 'ASC'], ['Prenom', 'ASC']]
+        })
         if(clients === null) {
             throw 'Une erreur s\'est produite, impossible de charger les clients.'
         }
         else if(clients.length === 0) {
-            infos = clientInformationObject(undefined, 'Aucun client')
+            infos = clientInformationObject(undefined, 'Aucun client.')
         }
     }
     catch(error) {
@@ -239,6 +241,32 @@ router
     res.render('index', {
         isClients : true,
         infos,
+        clients
+    })
+})
+// retourne la liste des clients
+.get('/clients/liste', async (req, res) => {  
+    let infos = undefined
+    let clients = undefined
+
+    try {
+        clients = await Clients.findAll({
+            order : [['Nom', 'ASC'], ['Prenom', 'ASC']]
+        })
+        if(clients === null) {
+            throw 'Une erreur s\'est produite, impossible de charger les clients.'
+        }
+        else if(clients.length === 0) {
+            infos = clientInformationObject(undefined, 'Aucun client.')
+        }
+    }
+    catch(error) {
+        clients = undefined
+        infos = clientInformationObject(getErrorMessage(error), undefined)
+    }
+    
+    res.send({
+        infos, 
         clients
     })
 })

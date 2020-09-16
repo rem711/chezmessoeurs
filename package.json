@@ -45,7 +45,6 @@
     "@fullcalendar/daygrid": "^4.4.2",
     "@fullcalendar/timegrid": "^4.4.2",
     "env-cmd": "^8.0.2",
-    "eslint": "^6.8.0",
     "husky": "^4.2.5",
     "jest": "^25.4.0",
     "jest-circus": "^25.4.0",

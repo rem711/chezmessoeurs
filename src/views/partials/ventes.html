@@ -1,0 +1,89 @@
+<script defer src="/js/ventes.js"></script>
+
+<div class="content_inner">
+    <h1>Ventes</h1>
+<%# Affiche si une erreur est survenue %>      
+<% if (locals.infos && infos.error) { %>
+    <h3>
+        <%= infos.error %> 
+    </h3>
+<%# Affiche le contenu s'il n'y a pas de problème sur le serveur %> 
+<% } else { %>
+    <table>
+        <thead>
+            <th>Date</th>
+            <th>Client</th>
+            <th>Description</th>
+            <th>Nb Convives</th>
+            <th>Ref Devis</th>
+            <th>Prix TTC</th>
+            <th>Reste à Payer</th>
+        </thead>
+        <tbody>
+            <% if(locals.infos && infos.message) { %>
+                <tr><td colspan="7">
+                    <%= infos.message %>
+                </td></tr>         
+            <% } else { %>  
+                <% for(const vente of ventes) { %>
+                    <tr id="<%= `vente_${vente.Id_Vente}` %>">
+                        <td><%= moment(vente.Date_Evenement).format('DD/MM/YYYY HH:mm') %></td>
+                        <% let client = `${vente.Client.Prenom} ${vente.Client.Prenom}` %>
+                        <td><%= vente.Client.Societe ? `${client} (vente.Client.Societe)` : client %></td>
+                        <td><%= vente.Description %></td>
+                        <td><%= vente.Nb_Personnes %></td>
+                        <td><%= vente.Ref_Devis %></td>
+                        <td><%= vente.Prix_TTC %></td>
+                        <td><%= vente.Reste_A_Payer %></td>
+                    </tr>
+                <% } %>
+            <% } %>  
+        </tbody>
+    </table>
+<% } %>
+</div>
+
+<div class="modal" id="modalVente">
+    <div class="modal-content">
+        <span class="close closespan">&times;</span>
+        <h2>Vente</h2>
+        <form id="formVente">
+            <input id="Id_Vente" type="hidden" value="">
+            <div class="rowinput">
+                <label for="Id_Client">Client : </label>
+                <select id="Id_Client" name="Client" required>
+                    <option disabled value="" selected>Sélectionner un client</option>
+                </select>
+                <br>
+            </div>
+            <div class="rowinput">
+                <label for="Description">Description : </label>
+                <textarea id="Description" name="Description" rows="5" cols="100" required></textarea>
+                <br>
+            </div>
+            <div class="rowinput">
+                <label for="Nb_Personnes">Nb Convives : </label><input id="Nb_Personnes" name="Convives" type="number" min="6" placeholder="6" step="1" required><br>
+            </div>
+            <div class="rowinput">
+                <label for="Date_Evenement">Date Evénement : </label><input id="Date_Evenement" name="DateEvenement" type="text" class="datetimepicker" required><br>
+            </div>
+            <div class="rowinput">
+                <label for="Ref_Devis">Ref Devis : </label><input id="Ref_Devis" name="RefDevis" type="text" placeholder="DE_20200522_0001_MAGNIERE" required><br>
+            </div>
+            <div class="rowinput">
+                <label for="Prix_TTC">Prix TTC : </label><input id="Prix_TTC" name="PrixTTC" type="number" placeholder="172.70" min="1" step="0.01" required><br>
+            </div>
+            <p id="modalError" class="messageError"></p><br>
+            <p id="modalMessage" class="messageConf"></p><br>
+            <button id="btnUpdate">&check;</button>
+        </form>
+    </div>
+</div>
+
+<div class="btntopright">
+    <button id="btnAjouteVente">+</button>
+</div>
+<div class="btnbotright">
+    <button id="btnModifieVente">Modifier</button>     
+    <button id="btnSupprimeVente">Supprimer</button>     
+</div>

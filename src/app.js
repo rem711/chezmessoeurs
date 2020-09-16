@@ -22,6 +22,7 @@ global.db = db
 const authRouter = require('./routers/auth')
 const agendaRouter = require('./routers/agenda')
 const clientsRouter = require('./routers/clients').router
+const ventesRouter = require('./routers/ventes')
 const facturesRouter = require('./routers/factures').router
 const statistiquesRouter = require('./routers/statistiques')
 
@@ -76,6 +77,7 @@ app.use(express.static(publicDirectoryPath))
 app.use(authRouter)
 app.use(agendaRouter)
 app.use(clientsRouter)
+app.use(ventesRouter)
 app.use(facturesRouter)
 app.use(statistiquesRouter)
 
