@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     calendar = new FullCalendar.Calendar(calendarEl, {
         plugins : ['dayGrid', 'timeGrid'],
         height : 'auto',
-        timeZone : 'UTC',
+        // timeZone : 'UTC',
         locale : 'fr',
         buttonText: {
             today:    "Aujourd'hui",
@@ -80,20 +80,20 @@ document.addEventListener('DOMContentLoaded', () => {
             //     failure : handleError,
             //     color : 'purple'
             // },
-            // {
-            //     url : '/agenda/devis',
-            //     method : 'GET',
-            //     failure : handleError,
-            // }
+            {
+                url : '/agenda/ventes',
+                method : 'GET',
+                failure : handleError,
+            }
         ],
-        eventRender : function(info) {
-            const tooltip = new Tooltip(info.el, {
-                title: info.event.title,
-                placement: 'top',
-                trigger: 'hover',
-                container: 'body'
-            })
-        },
+        // eventRender : function(info) {
+        //     const tooltip = new Tooltip(info.el, {
+        //         title: info.event.title,
+        //         placement: 'top',
+        //         trigger: 'hover',
+        //         container: 'body'
+        //     })
+        // },
         loading : (isLoading) => {
             if(isLoading) {
                 spinner.show()

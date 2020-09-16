@@ -1,6 +1,6 @@
 const express = require('express')
 const router = new express.Router()
-const { Ventes } = global.db
+const { Ventes, Clients } = global.db
 const { Op } = require('sequelize')
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
@@ -18,30 +18,19 @@ const formatter = (liste) => {
 
     if(liste.length > 0) {
         for(const elt of liste) {
-            const { Date_Evenement, Client, Formule_Aperitif, Formule_Cocktail, Formule_Box, Formule_Brunch } = elt
+            const { Date_Evenement, Nb_Personnes, Client } = elt
 
-            // mise à 0 si pas de formule
-            const String_Formule_Aperitif = `Apéritif (${Formule_Aperitif === null ? 0 : Formule_Aperitif.Nb_Convives + ' / ' + Formule_Aperitif.Nb_Pieces_Salees})`
-            const String_Formule_Cocktail = `Cocktail (${Formule_Cocktail === null ? 0 : Formule_Cocktail.Nb_Convives + ' / ' + Formule_Cocktail.Nb_Pieces_Salees + ' / ' + Formule_Cocktail.Nb_Pieces_Sucrees})`
-            const String_Formule_Box = `Box (${Formule_Box === null ? 0 : Formule_Box.Nb_Convives})`
-            const String_Formule_Brunch = `Brunch (${Formule_Brunch === null ? 0 : Formule_Brunch.Nb_Convives + ' / ' + Formule_Brunch.Nb_Pieces_Salees + ' / ' + Formule_Brunch.Nb_Pieces_Sucrees})`
-            
-            let title = `${Client.Prenom} ${Client.Nom} : ${String_Formule_Aperitif} - ${String_Formule_Cocktail} - ${String_Formule_Box} - ${String_Formule_Brunch}`
-            let url = ''
+            let title = `${Client.Prenom} ${Client.Nom}`
+            if(Client.Societe) title += ` (${Client.Societe})`
+            title += ` - ${Nb_Personnes} convives`
 
-            if(elt instanceof Estimations) {
-                url = `/estimations`
-            }
-            else if(elt instanceof Devis) {
-                url = `/devis/${elt.Id_Devis}`
-                title = `[${elt.Statut}] ${title}`
-            }
+            // let url = ''
 
             const event = {
                 title,
                 start : Date_Evenement,
                 allDay : false,
-                url,
+                // url,
                 editable : false
             }
             formattedListe.push(event)
@@ -57,6 +46,37 @@ router
     res.render('index', {
         isAgenda : true
     })
+})
+.get('/agenda/ventes', async (req, res) => {
+    let start = moment(req.query.start)
+    let end = moment(req.query.end)
+
+    let returnedValue = undefined
+
+    try {
+        if(!(start.isValid() && end.isValid())) {
+            throw "La date de début ou de fin est incorrecte."
+        }
+
+        const ventes = await Ventes.findAll({
+            include : Clients,
+            where : {
+                Date_Evenement : {
+                    [Op.between] : [start, end]
+                }
+            }
+        })
+
+        if(ventes === null) throw "Une erreur est survenue."
+
+        returnedValue = formatter(ventes)
+    }
+    catch(error) {
+        returnedValue = clientInformationObject(getErrorMessage(error), undefined)
+        res.status(409)
+    }
+
+    res.send(returnedValue)
 })
 // renvoie une liste json au format event de fullcalendar des estimations comprises entre start et end (start <= envents < end)
 // .get('/agenda/estimations', async (req, res) => {
