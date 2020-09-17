@@ -82,7 +82,7 @@ function fillModal(infos = undefined, clients = undefined, vente = undefined) {
         document.getElementById('Nb_Personnes').value = vente.Nb_Personnes
         document.getElementById('Date_Evenement').value = moment(vente.Date_Evenement).format('DD/MM/YYYY HH:mm')
         document.getElementById('Ref_Devis').value = vente.Ref_Devis
-        document.getElementById('Prix_TTC').value = vente.Prix_TTC
+        document.getElementById('Prix_TTC').value = Number(vente.Prix_TTC).toFixed(2)
     }
 
     modalVente.style.display = 'block'

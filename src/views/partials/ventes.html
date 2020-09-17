@@ -33,8 +33,8 @@
                         <td><%= vente.Description %></td>
                         <td><%= vente.Nb_Personnes %></td>
                         <td><%= vente.Ref_Devis %></td>
-                        <td><%= vente.Prix_TTC %></td>
-                        <td><%= vente.Reste_A_Payer %></td>
+                        <td><%= Number(vente.Prix_TTC).toFixed(2) %></td>
+                        <td><%= Number(vente.Reste_A_Payer).toFixed(2) %></td>
                     </tr>
                 <% } %>
             <% } %>  

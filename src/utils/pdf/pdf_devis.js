@@ -137,7 +137,7 @@ const drawHeaderFirstPage = () => {
     .fontSize(pixelsToPoints(21))
     .font(fontContent)
     .moveDown()
-    .text(`${content}\n${moment.utc(devis.Date_Evenement).format('DD/MM/YYYY HH:mm')}\nDevis n° ${devis.Numero_Devis}`, { align : 'center' })
+    .text(`${content}\n${moment(devis.Date_Evenement).format('DD/MM/YYYY HH:mm')}\nDevis n° ${devis.Numero_Devis}`, { align : 'center' })
 }
 
 const drawTitleFirstPage = () => {
@@ -1078,7 +1078,7 @@ const drawLastPage = () => {
     yPos += paddingContent.bottom
 
     yPos += paddingContent.top
-    doc.text(`Evénement prévu le ${moment.utc(devis.Date_Evenement).format('DD/MM/YYYY HH:mm')}.`, xPos, yPos)
+    doc.text(`Evénement prévu le ${moment(devis.Date_Evenement).format('DD/MM/YYYY HH:mm')}.`, xPos, yPos)
     yPos += paddingContent.bottom
 
     yPos += paddingContent.top
@@ -1086,7 +1086,7 @@ const drawLastPage = () => {
     yPos += paddingContent.bottom
 
     yPos += paddingContent.top
-    content = `Valable à partir du ${moment.utc().format('DD/MM/YYYY')} et jusqu'à exécution du devis, sous condition de modification de la part du client.`
+    content = `Valable à partir du ${moment().format('DD/MM/YYYY')} et jusqu'à exécution du devis, sous condition de modification de la part du client.`
     doc.text(content, xPos, yPos)
     yPos += doc.heightOfString(content, { width : pageDrawingSpace.width - (paddingContent.left + paddingContent.right) })
 

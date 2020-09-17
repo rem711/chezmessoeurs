@@ -257,7 +257,7 @@ const drawRefFactureDate = () => {
     doc
     .text(`Référence facture : ${avoir.Facture.Numero_Facture}`, xFactureDate, doc.y)
     .text(`Référence avoir : ${avoir.Numero_Avoir}`, xFactureDate, doc.y)    
-    .text(`Date d'émission : ${moment.utc().format('DD/MM/YYYY')}`)
+    .text(`Date d'émission : ${moment().format('DD/MM/YYYY')}`)
 
     yPos = doc.y
 }
@@ -776,9 +776,9 @@ const drawReglement = (yTop) => {
 
     if(avoir.Facture.Client.Type === 'Professionnel') {
         doc.y += paddingContent.top
-        doc.text(`Date d'échéance : ${moment.utc(avoir.Facture.Date_Creation).add(1, 'months').add(2, 'days').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Date d'échéance : ${moment(avoir.Facture.Date_Creation).add(1, 'months').add(2, 'days').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
-        doc.text(`Date d'exécution de la prestation : ${moment.utc(avoir.Facture.Date_Evenement).format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Date d'exécution de la prestation : ${moment(avoir.Facture.Date_Evenement).format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
         doc.text(`Taux de pénalité à compter du : -`, pageLeft, doc.y, options)
         doc.y += paddingContent.top

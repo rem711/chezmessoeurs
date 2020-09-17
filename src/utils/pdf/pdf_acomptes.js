@@ -259,7 +259,7 @@ const drawRefFactureDate = () => {
     .text(`Référence devis : ${acompte.Facture.Devis.Numero_Devis}`, xFactureDate, doc.y)
     // .text(`Référence facture : ${acompte.Facture.Numero_Facture}`, xFactureDate, doc.y)
     .text(`Référence acompte : ${acompte.Numero_Acompte}`, xFactureDate, doc.y)
-    .text(`Date d'émission : ${moment.utc().format('DD/MM/YYYY')}`)
+    .text(`Date d'émission : ${moment().format('DD/MM/YYYY')}`)
 
     yPos = doc.y
 }
@@ -281,9 +281,9 @@ const drawReglement = (yTop) => {
     if(acompte.Facture.Client.Type === 'Professionnel') {
         doc.y += paddingContent.top
         // doc.text(`Date d'échéance : Payable à réception`, pageLeft, doc.y, options)
-        doc.text(`Date d'échéance : ${moment.utc(acompte.Facture.Date_Creation).add(1, 'months').add(2, 'days').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Date d'échéance : ${moment(acompte.Facture.Date_Creation).add(1, 'months').add(2, 'days').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
-        doc.text(`Date d'exécution de la prestation : ${moment.utc(acompte.Facture.Date_Evenement).format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Date d'exécution de la prestation : ${moment(acompte.Facture.Date_Evenement).format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
         doc.text(`Taux de pénalité à compter du : -`, pageLeft, doc.y, options)
         doc.y += paddingContent.top

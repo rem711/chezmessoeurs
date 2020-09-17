@@ -1,79 +1,50 @@
 const express = require('express')
 const router = new express.Router()
-const { Ventes } = global.db
+const { Factures, Clients, Ventes } = global.db
 const { Op } = require("sequelize")
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
 const createPDFFacture = require('../utils/pdf/pdf_factures')
 const moment = require('moment')
-const formatDateHeure = 'DD/MM/YYYY HH:mm'
+const frontFormatDate = 'DD/MM/YYYY'
+const serverFormatDate = 'YYYY-MM-DD'
+const ACOMPTE = 'acompte'
+const SOLDE = 'solde'
 
-const createFacture = async (devis) => {
-    let facture = undefined
-
-    if(devis !== undefined && devis !== null && devis instanceof Devis) {
-        const factureExistente = await Factures.findOne({
-            where : {
-                Id_Devis : devis.Id_Devis,
-                Statut : {
-                    [Op.notLike] : 'Annulée'
-                }
-            }
-        })
-
-        if(factureExistente !== null) {
-            throw `La facture ${factureExistente.Numero_Facture} correspond déjà au devis n°${devis.Id_Devis}`
-        }
-
-        let Numero_Facture = `FA_${moment.utc().format('YYYYMMDD')}_****_${devis.Client.Nom.toUpperCase()}`
-
-        facture = await Factures.create({
-            Numero_Facture,
-            Id_Client : devis.Id_Client,
-            Date_Evenement : devis.Date_Evenement,
-            Adresse_Livraison_Adresse : devis.Adresse_Livraison_Adresse,
-            Adresse_Livraison_Adresse_Complement_1 : devis.Adresse_Livraison_Adresse_Complement_1,
-            Adresse_Livraison_Adresse_Complement_2 : devis.Adresse_Livraison_Adresse_Complement_2,
-            Adresse_Livraison_CP : devis.Adresse_Livraison_CP,
-            Adresse_Livraison_Ville : devis.Adresse_Livraison_Ville,
-            Id_Devis : devis.Id_Devis,
-            Id_Formule_Aperitif : devis.Id_Formule_Aperitif,
-            Id_Formule_Cocktail : devis.Id_Formule_Cocktail,
-            Id_Formule_Box : devis.Id_Formule_Box,
-            Id_Formule_Brunch : devis.Id_Formule_Brunch,
-            Commentaire : devis.Commentaire,
-            Liste_Options : devis.Liste_Options,
-            Id_Remise : devis.Id_Remise,
-            Prix_HT : devis.Prix_HT,
-            Prix_TTC : devis.Prix_TTC,
-            Reste_A_Payer : devis.Prix_TTC
-        })
-
-        if(facture !== null) {
-            // màj Numero_Facture
-            const numero = await compteurs.get(compteurs.COMPTEUR_FACTURES_AVOIRS)
-            facture.Numero_Facture = facture.Numero_Facture.replace(/(\*){4}/g, formatNumeroFacture(numero))
-            facture.save()
-        }
-    }
-    else {
-        throw 'Une erreur est survenue lors de la création de la facture.'
-    }
-
-    return facture
-}
-
-const getRetardPaiementStatus = (Date_Creation) => {
-    const today = moment.utc()
-    const creationDate = moment.utc(Date_Creation)
-    const dueTo = creationDate.add(1, 'months').add(2, 'days')
+const getRetardPaiementStatus = (Date_Creation, Date_Paiement_Du) => {
+    const today = moment()
+    const creationDate = moment(Date_Creation)
+    const dueTo = moment(Date_Paiement_Du)
     const diff = today.diff(dueTo, 'days')
 
     if(diff <= 0) {
-        return 'Non'
+        return 'En attente'
     }
     
-    return `+${diff}j`
+    return `En retard de ${diff}j`
+}
+
+const checkFacture = async (factureSent) => {
+    if(!isSet(factureSent.Ref_Facture)) throw "Le numéro de référence de la facture doit être indiqué."
+    if(!isSet(factureSent.Type_Facture)) throw "Le type de facture doit être sélectionné."
+    if(![ACOMPTE, SOLDE].includes(factureSent.Type_Facture)) throw "Le type de facture est incorrect."
+    if(!isSet(factureSent.Id_Vente)) throw "La vente rattachée à la facture doit être sélectionnée."
+
+    const vente = await Ventes.findOne({
+        where : {
+            Id_Vente : factureSent.Id_Vente
+        }
+    })
+
+    if(vente === null) throw "La vente sélectionnée est introuvable."
+    if(!isSet(factureSent.Description)) throw "Le contenu descriptif de la facture doit être renseigné."
+    if(factureSent.Type_Facture === ACOMPTE && !isSet(factureSent.Pourcentage_Acompte)) throw "Le pourcentage d'acompte doit être indiqué."
+    if(factureSent.Type_Facture === SOLDE && !isSet(Prix_TTC)) throw "Le montant du solde doit être indiqué."    
+    if(factureSent.Type_Facture === SOLDE && factureSent.Prix_TTC > vente.Reste_A_Payer) throw "Le montant de la facture ne peut pas exéder le montant restant à payer sur cette vente."
+    if(!isSet(factureSent.Date_Paiement_Du)) throw "La date de paiement doit être indiquée."
+    if(!factureSent.Date_Paiement_Du.match(/^(?:(?:0[1-9])|(?:1[0-9])|(?:2[0-9])|(?:3[0-1]))\/(?:(?:0[1-9])|(?:1[0-2]))\/20\d{2}$/)) throw "Le format de la date est incorrect."
+
+    return vente
 }
 
 router
@@ -86,15 +57,11 @@ router
     try {
         // récupération des factures
         factures = await Factures.findAll({
-            order : [
-                ['Date_Creation', 'ASC']
-            ],
-            where : {
-                Statut : {
-                    [Op.notIn] : ['Archivée', 'Annulée'] 
-                }
+            include : {
+                all : true,
+                nested : true
             },
-            include : Clients
+            order : [['Created_At', 'ASC']]
         })
 
         // il y a un problème pour récupérer les factures
@@ -109,12 +76,12 @@ router
         const tabPromises = []
         for(const facture of factures) {
             const retard = getRetardPaiementStatus(facture.Date_Creation)
-            if(retard !== facture.Paiement_En_Retard) {
-                facture.Paiement_En_Retard = retard
-                tabPromises.push(facture.save())
-            }
+            // if(retard !== facture.Paiement_En_Retard) {
+            //     facture.Paiement_En_Retard = retard
+            //     tabPromises.push(facture.save())
+            // }
         }
-        await Promise.all(tabPromises)
+        // await Promise.all(tabPromises)
     }
     catch(error) {
         infos = clientInformationObject(getErrorMessage(error), undefined)
@@ -125,7 +92,8 @@ router
         infos,
         factures,
         moment,
-        formatDateHeure
+        frontFormatDate,
+        getRetardPaiementStatus
     })
 })
 // facture spécifique
@@ -134,22 +102,20 @@ router
     let infos = undefined
     let facture = undefined
 
-    try {        
-        if(!isNaN(postIdFacture) && postIdFacture > 0) {
-            facture = await Factures.findOne({
-                where : {
-                    Id_Facture : postIdFacture
-                },
-                include : Clients
-            })
+    try {      
+        if(isNaN(postIdFacture)) throw "L'identifiant est incorrect."
 
-            if(facture === null) {
-                throw "L'identifiant est incorrect ou la facture n'existe pas."
+        facture = await Factures.findOne({
+            include : {
+                all : true,
+                nested : true
+            },
+            where : {
+                Id_Facture : postIdFacture
             }
-        }
-        else {
-            throw "L'identifiant est incorrect ou la facture n'existe pas."
-        }
+        })
+        
+        if(facture === null) throw "Aucune facture correspondante."
     }
     catch(error) {
         facture = undefined
@@ -161,96 +127,148 @@ router
         facture
     })
 })
+// crée une facture
+.post('/factures', async (req, res) => {
+    const factureSent = req.body
+
+    let infos = undefined
+    let facture = undefined
+
+    try {
+        const vente = await checkFacture(factureSent)
+
+        let prix = 0
+        if(factureSent.Type_Facture === ACOMPTE) {
+            prix = Number(vente.Reste_A_Payer * (Number(factureSent.Pourcentage_Acompte) / 100)).toFixed(2)
+        }
+        else {
+            prix = Number(factureSent.Prix_TTC).toFixed(2)
+        }
+        factureSent.Prix_TTC = undefined
+
+        factureSent.Date_Paiement_Du = moment(factureSent.Date_Paiement_Du, frontFormatDate).format(serverFormatDate)
+
+        facture = await Factures.create({
+            ...factureSent,
+            Prix_TTC : prix
+        })
+
+        if(facture === null) throw "Une erreur est survenue lors de la création de la facture, veuillez réessayer plus tard."
+
+        vente.Reste_A_Payer = vente.Reste_A_Payer - facture.Prix_TTC
+        await vente.save()
+
+        // recharge la facture avec les éléments associés
+        facture = await Factures.findOne({
+            include : {
+                all : true,
+                nested : true
+            },
+            where : {
+                Id_Facture : facture.Id_Facture
+            }
+        })
+
+        if(facture === null) throw "Une erreur est survenue lors du chargement de la facture, veuillez réessayer plus tard."
+
+        infos = clientInformationObject(undefined, "La facture a bien été créée.")
+    }
+    catch(error) {  
+        facture = undefined
+        infos = clientInformationObject(getErrorMessage(error))
+    }
+
+    res.send({
+        infos,
+        facture
+    })
+})
 // modifie une facture
 .patch('/factures/:Id_Facture', async (req, res) => {
     const postIdFacture = Number(req.params.Id_Facture)
-    const body = req.body
+    const factureSent = req.body
+
     let infos = undefined
     let facture = undefined
 
     try {
-        if(!isNaN(postIdFacture) && postIdFacture > 0) {
-            facture = await Factures.findOne({
-                where : {
-                    Id_Facture : postIdFacture
-                }
-            })
-
-            if(facture === null) {
-                throw "L'identifiant est incorrect ou la facture n'existe pas."
+        if(isNaN(postIdFacture)) throw "L'identifiant est incorrect."
+        
+        facture = await Factures.findOne({
+            where : {
+                Id_Facture : postIdFacture
             }
+        })
 
-            if(!['En attente de paiement', 'Payée'].includes(body.Statut)) {
-                throw "Le statut de la facture est incorrect."
-            }
-
-            facture.Statut = body.Statut
-            if(body.Statut === 'Payée') {
-                facture.Reste_A_Payer = 0
-            }
-
-            if(facture.Statut !== 'Payée') {
-                body.Acompte = (body.Acompte === undefined || body.Acompte === 'undefined') ? 0 : Number(Number(body.Acompte).toFixed(2))
-                if(body.Acompte < 0) {
-                    throw "La valeur de l'acompte ne peut pas être négatif."
-                }
-                facture.Acompte = body.Acompte
-                facture.Reste_A_Payer = Number(Number(facture.Prix_TTC - facture.Acompte).toFixed(2))
-
-                if(facture.Reste_A_Payer === 0 && facture.Acompte === facture.Prix_TTC) {
-                    facture.Statut = 'Payée'
-                }
-
-                facture.Paiement_En_Retard = getRetardPaiementStatus(facture.Date_Creation)
-            }
-
-            facture.save()
-            infos = clientInformationObject(undefined, 'La facture a bien été modifiée.')
+        if(facture === null) {
+            throw "Aucune facture correspondante."
         }
-        else {
-            throw "L'identifiant est incorrect ou la facture n'existe pas."
-        }
-    }
-    catch(error) {
-        facture = undefined
-        infos = clientInformationObject(getErrorMessage(error), undefined)
-    }
 
-    res.send({
-        infos,
-        facture
-    })
-})
-// archive une facture
-.patch('/factures/archive/:Id_Facture', async (req, res) => {
-    const postIdFacture = Number(req.params.Id_Facture)
-    let infos = undefined
-    let facture = undefined
+        if(facture.IsPayed) throw "Vous ne pouvez pas modifier une facture déjà payée."
 
-    try {
-        if(!isNaN(postIdFacture && postIdFacture > 0)) {
-            facture = await Factures.findOne({
-                where : {
-                    Id_Facture : postIdFacture
-                }
-            })
+        const vente = await checkFacture(factureSent)       
+        
+        factureSent.Date_Paiement_Du = moment(factureSent.Date_Paiement_Du, frontFormatDate).format(serverFormatDate)
 
-            if(facture === null) {
-                throw "L'identifiant est incorrect ou la facture n'existe pas."
+        let prix = facture.Prix_TTC
+        if(factureSent.Type_Facture !== facture.Type_Facture || factureSent.Pourcentage_Acompte !== facture.Pourcentage_Acompte || factureSent.Prix_TTC !== facture.Prix_TTC) {
+            // si la facture est toujours pour la même vente
+            if(facture.Id_Vente === factureSent.Id_Vente) {
+                // on recrédite la vente
+                vente.Reste_A_Payer += facture.Prix_TTC
             }
+            else {
+                // on recrédite la vente précédente
+                const previousVente = await Ventes.findOne({
+                    where : {
+                        Id_Vente : facture.Id_Vente
+                    }
+                })
+
+                if(previousVente !== null) {
+                    previousVente.Reste_A_Payer = previousVente.Reste_A_Payer + facture.Prix_TTC
+                    vente.save()
+                }
+            }            
             
-            if(facture.Statut === 'Annulée') {
-                throw 'La facture ne peut pas être archivée.'
+            // calcul du nouveau prix        
+            if(factureSent.Type_Facture === ACOMPTE) {
+                prix = Number(vente.Reste_A_Payer * (Number(factureSent.Pourcentage_Acompte) / 100)).toFixed(2)
             }
-
-            facture.Statut = 'Archivée'
-            facture.save()
-
-            infos = clientInformationObject(undefined, 'La facture a bien été archivée.')
+            else {
+                prix = Number(factureSent.Prix_TTC).toFixed(2)
+            }
         }
-        else {
-            throw "L'identifiant est incorrect ou la facture n'existe pas."
-        }
+        factureSent.Prix_TTC = undefined
+
+        // affectation des nouvelles valeurs
+        facture.Ref_Facture = factureSent.Ref_Facture
+        facture.Type_Facture = factureSent.Type_Facture
+        facture.Id_Vente = factureSent.Id_Vente
+        facture.Description = factureSent.Description
+        facture.Pourcentage_Acompte = factureSent.Pourcentage_Acompte
+        facture.Prix_TTC = prix
+        facture.Date_Paiement_Du = factureSent.Date_Paiement_Du
+
+        await Promise.all([
+            facture.save(),
+            vente.save()
+        ])
+
+        // recharge la facture avec les éléments associés
+        facture = await Factures.findOne({
+            include : {
+                all : true,
+                nested : true
+            },
+            where : {
+                Id_Facture : facture.Id_Facture
+            }
+        })
+
+        if(facture === null) throw "Une erreur est survenue lors du chargement de la facture, veuillez réessayer plus tard."
+        
+        infos = clientInformationObject(undefined, 'La facture a bien été modifiée.')        
     }
     catch(error) {
         facture = undefined
@@ -262,39 +280,48 @@ router
         facture
     })
 })
-// vérifie si le Numero_Facture est correct
-.get('/factures/validate/:Id_Facture/:Numero_Facture', async (req, res) => {
-    let postIdFacture = Number(req.params.Id_Facture)
-    const postNumeroFacture = req.params.Numero_Facture
+// passe une facture en payée
+.patch('/factures/isPayed', async (req, res) => {
+    const postIdFacture = Number(req.params.Id_Facture)
+
     let infos = undefined
+    let facture = undefined
 
     try {
-        if(!isNaN(postIdFacture) && postIdFacture > 0) {
-            const facture = await Factures.findOne({
-                where : {
-                    Id_Facture : postIdFacture,
-                    Numero_Facture : postNumeroFacture
-                }
-            })
-
-            if(facture === null) {
-                throw "Le numéro de facture est incorrect."
+        if(isNaN(postIdFacture)) throw "L'identifiant est incorrect."
+        
+        facture = await Factures.findOne({
+            where : {
+                Id_Facture : postIdFacture
             }
+        })
 
-            infos = clientInformationObject(undefined, 'ok')
+        if(facture === null) {
+            throw "Aucune facture correspondante."
         }
-        else {
-            throw "L'identifiant est incorrect ou la facture n'existe pas."
-        }
+
+        if(facture.IsPayed) throw "La facture est déjà payée."
+
+        facture.IsPayed = true
+        await facture.save()
+
+        clientInformationObject(undefined, "La facture a bien été marquée comme payée.")
     }
     catch(error) {
+        facture = undefined
         infos = clientInformationObject(getErrorMessage(error), undefined)
     }
 
     res.send({
-        infos
+        infos,
+        facture
     })
 })
+
+
+
+
+
 // https://www.service-public.fr/professionnels-entreprises/vosdroits/F31808
 // export pdf facture
 .get(`/factures/pdf/${encodeURI('CHEZ MES SOEURS - Facture ')}:Numero_Facture.pdf`, async (req, res) => {
@@ -421,7 +448,7 @@ router
 
         // les vérification sont bonnes
         const numero = await compteurs.get(compteurs.COMPTEUR_ACOMPTES)
-        Numero_Acompte = `FAA_${moment.utc().format('YYYYMMDD')}_${formatNumeroFacture(numero)}_${facture.Client.Nom.toUpperCase()}`
+        Numero_Acompte = `FAA_${moment().format('YYYYMMDD')}_${formatNumeroFacture(numero)}_${facture.Client.Nom.toUpperCase()}`
 
         // mise des valeurs nécessaires en session
         req.session.Facture = facture
@@ -494,7 +521,7 @@ router
 
             // augmente le nombre de relances, ajoute la date de dernière relance
             facture.Nb_Relances = Number(facture.Nb_Relances) + 1
-            facture.Date_Derniere_Relance = moment.utc()
+            facture.Date_Derniere_Relance = moment()
             facture.Paiement_En_Retard = getRetardPaiementStatus(facture.Date_Creation)
 
             facture.save()
@@ -667,7 +694,4 @@ router
     })
 })
 
-module.exports = {
-    router,
-    createFacture
-}
+module.exports = router

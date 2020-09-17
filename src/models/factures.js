@@ -32,7 +32,8 @@ module.exports = (sequelize, DataTypes) => {
         },
 		Pourcentage_Acompte: {
 			field : 'Pourcentage_Acompte',
-			type : DataTypes.FLOAT
+			type : DataTypes.FLOAT,
+			allowNull: true,
 		},
 		Prix_TTC: {
 			field : 'Prix_TTC',
@@ -46,75 +47,11 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: false
 		},
-		Adresse_Livraison_Adresse: {
-			field : 'Adresse_Livraison_Adresse',
-			type: DataTypes.STRING(500),
-			allowNull: true,
-			defaultValue: '',
-			validate : {
-				len : {
-					args : [0, 500],
-					msg : 'L\'adresse de livraison est limité à 500 caractères.'
-				}
-			}
-		},
-		Adresse_Livraison_Adresse_Complement_1: {
-			field : 'Adresse_Livraison_Adresse_Complement_1',
-			type: DataTypes.STRING(500),
-			allowNull: true,
-			defaultValue: '',
-			validate : {
-				len : {
-					args : [0, 500],
-					msg : 'Le complément 1 d\'adresse de livraison est limité à 500 caractères.'
-				}
-			}
-		},
-		Adresse_Livraison_Adresse_Complement_2: {
-			field : 'Adresse_Livraison_Adresse_Complement_2',
-			type: DataTypes.STRING(500),
-			allowNull: true,
-			defaultValue: '',
-			validate : {
-				len : {
-					args : [0, 500],
-					msg : 'Le complément 2 d\'adresse de livraison est limité à 500 caractères.'
-				}
-			}
-		},
-		Adresse_Livraison_CP: {
-			field : 'Adresse_Livraison_CP',
-			type: DataTypes.STRING(5),
-			allowNull: true,
-			defaultValue: '00000',
-			validate : {
-				isNumeric : {
-					msg : 'Le code postal doit être composé de 5 chiffres.'
-				},
-				len : {
-					args : [5, 5],
-					msg : 'Le code postal doit être composé de 5 chiffres.'
-				}
-			}
-		},
-		Adresse_Livraison_Ville: {
-			field : 'Adresse_Livraison_Ville',
-			type: DataTypes.STRING(500),
-			allowNull: true,
-			defaultValue: '',
-			validate : {
-				len : {
-					args : [0, 500],
-					msg : 'La ville de l\'adresse de livraison est limité à 500 caractères.'
-				}
-			}
-		},
-		Date_Creation: {
-			field : 'Date_Creation',
-			type: DataTypes.DATE,
-			allowNull: false,
-			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
-		},
+		Date_Paiement_Du: {
+			field : 'Date_Paiement_Du',
+			type : DataTypes.DATE,
+			allowNull : false
+		}
     }, {
 		tableName : 'factures'
 	})

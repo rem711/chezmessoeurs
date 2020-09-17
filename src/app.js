@@ -23,7 +23,7 @@ const authRouter = require('./routers/auth')
 const agendaRouter = require('./routers/agenda')
 const clientsRouter = require('./routers/clients').router
 const ventesRouter = require('./routers/ventes')
-const facturesRouter = require('./routers/factures').router
+const facturesRouter = require('./routers/factures')
 const statistiquesRouter = require('./routers/statistiques')
 
 const app = express()

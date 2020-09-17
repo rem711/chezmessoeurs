@@ -264,7 +264,7 @@ const drawRefFactureDate = () => {
 
     // const stringFacture = `Référence facture : ${facture.Numero_Facture}`
     // const stringDevis = `Référence devis : ${facture.Devis.Numero_Devis}`
-    // const stringDate = `Date de facture : ${moment.utc(facture.Date_Creation).format('DD/MM/YYYY')}`
+    // const stringDate = `Date de facture : ${moment(facture.Date_Creation).format('DD/MM/YYYY')}`
     // let heightFirstCol = 0
     // width = (largeurDispo / 2) - (paddingContent.left + paddingContent.right) - paddingContent.right
     // let options = { align : 'left', width }
@@ -329,7 +329,7 @@ const drawRefFactureDate = () => {
     doc
     .text(`Référence devis : ${facture.Devis.Numero_Devis}`, xFactureDate, doc.y)
     .text(`Référence facture : ${facture.Numero_Facture}`, xFactureDate, doc.y)
-    .text(`Date d'émission : ${moment.utc().format('DD/MM/YYYY')}`)
+    .text(`Date d'émission : ${moment().format('DD/MM/YYYY')}`)
 
     yPos = doc.y
 }
@@ -868,9 +868,9 @@ const drawReglement = (yTop) => {
 
     if(facture.Client.Type === 'Professionnel') {
         doc.y += paddingContent.top
-        doc.text(`Date d'échéance : ${moment.utc(facture.Date_Creation).add(1, 'months').add(2, 'days').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Date d'échéance : ${moment(facture.Date_Creation).add(1, 'months').add(2, 'days').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
-        doc.text(`Date d'exécution de la prestation : ${moment.utc(facture.Date_Evenement).format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Date d'exécution de la prestation : ${moment(facture.Date_Evenement).format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
         doc.text(`Taux de pénalité à compter du : -`, pageLeft, doc.y, options)
         doc.y += paddingContent.top

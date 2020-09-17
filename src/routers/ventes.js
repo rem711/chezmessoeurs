@@ -58,6 +58,34 @@ router
         moment
     })
 })
+// 
+.get('/ventes/liste', async (req, res) => {
+    let infos = undefined
+    let ventes = undefined
+
+    try {
+        ventes = await Ventes.findAll({
+            include : Clients,
+            order : [['Date_Evenement', 'ASC']]
+        })
+
+        if(ventes === null) {
+            throw "une erreur s'est produite, impossible de charger les ventes."
+        }
+        if(ventes.length === 0) {
+            infos = clientInformationObject(undefined, "Aucune vente.")
+        }
+    }
+    catch(error) {
+        ventes = undefined
+        infos = clientInformationObject(getErrorMessage(error), undefined)
+    }
+
+    res.send({
+        infos,
+        ventes
+    })
+})
 // récupère une vente
 .get('/ventes/:Id_Vente', async (req, res) => {
     const Id_Vente = Number(req.params.Id_Vente)
@@ -69,6 +97,7 @@ router
         if(isNaN(Id_Vente)) throw "L'identifiant de la vente est incorrect."
 
         vente = await Ventes.findOne({
+            include : Clients,
             where : {
                 Id_Vente
             }

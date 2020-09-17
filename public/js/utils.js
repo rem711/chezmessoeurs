@@ -64,3 +64,11 @@ const initDateTimePickers = () => {
         step : 15
     })
 }
+
+const initDatePickers = () => {
+    jQuery.datetimepicker.setLocale('fr');
+    $('.datepicker').datetimepicker({
+        format:'d/m/Y',
+        timepicker : false
+    })
+}
