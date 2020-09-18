@@ -234,7 +234,7 @@ router
                     console.log(`previous vente rap : ${previousVente.Reste_A_Payer}`)
                     previousVente.Reste_A_Payer = previousVente.Reste_A_Payer + facture.Prix_TTC
                     console.log(`previous vente rap recrédité : ${previousVente.Reste_A_Payer}`)
-                    vente.save()
+                    previousVente.save()
                 }
             }            
             
