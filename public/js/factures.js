@@ -1,5 +1,6 @@
 // varaiable permettant de savoir si un update a eu lieu
 let isUpdated = false
+let venteChanged = false
 
 // récupère le modal
 const modalFacture = document.getElementById('modalFacture')
@@ -81,6 +82,8 @@ function fillModal(infos = undefined, ventes = undefined, facture = undefined) {
 	document.getElementById('modalError').style.display = 'none'
 	document.getElementById('modalMessage').innerHTML = ''
     document.getElementById('modalMessage').style.display = 'none'
+
+    document.getElementById('div_btnActionsUpdate').style.display = 'none'
     
     if(infos) {
         if(infos.error) {
@@ -114,6 +117,7 @@ function fillModal(infos = undefined, ventes = undefined, facture = undefined) {
     }
 
     if(facture) {
+        document.getElementById('Id_Facture').value = facture.Id_Facture
         document.getElementById('Ref_Facture').value = facture.Ref_Facture
         document.getElementById('Description').value = facture.Description
 
@@ -127,6 +131,8 @@ function fillModal(infos = undefined, ventes = undefined, facture = undefined) {
 
         document.getElementById('Date_Paiement_Du').value = moment(facture.Date_Paiement_Du).format('DD/MM/YYYY')
         document.getElementById('Prix_TTC').value = facture.Prix_TTC
+
+        document.getElementById('div_btnActionsUpdate').style.display = 'flex'
     }
 
     modalFacture.style.display = 'block'
@@ -150,14 +156,14 @@ function fillInfosVente(infos, vente) {
     }
 
     if(vente) {        
-        document.getElementById('clientNom').innerText = vente.Client.Nom
+        document.getElementById('clientNom').innerText = `${vente.Client.Prenom} ${vente.Client.Nom}`
         document.getElementById('clientSociete').innerText = vente.Client.Societe ? vente.Client.Societe : '-'
         document.getElementById('venteRefDevis').innerText = vente.Ref_Devis
         document.getElementById('venteDateEvenement').innerText = moment(vente.Date_Evenement).format('DD/MM/YYYY HH:mm')
         document.getElementById('venteNbPersonnes').innerText = vente.Nb_Personnes
         document.getElementById('venteDescription').innerText = vente.Description
-        document.getElementById('ventePrixTTC').innerText = `${vente.Prix_TTC} €`
-        document.getElementById('venteResteAPayer').innerText = `${vente.Reste_A_Payer} €`
+        document.getElementById('ventePrixTTC').innerText = `${Number(vente.Prix_TTC).toFixed(2)} €`
+        document.getElementById('venteResteAPayer').innerText = `${Number(vente.Reste_A_Payer).toFixed(2)} €`
     }
 }
 
@@ -280,7 +286,7 @@ async function remove() {
             const Id_Facture = trSelected.getAttribute('id').split('_')[1]
 
             try {
-                const url = `/ventes/${Id_Facture}`
+                const url = `/factures/${Id_Facture}`
                 const options = {
                     method : 'DELETE'
                 }
@@ -347,6 +353,8 @@ function closeModal() {
         document.getElementById('Date_Paiement_Du').value = ''
         document.getElementById('Prix_TTC').value = ''
     }
+
+    venteChanged = false
 }
 
 async function changeSelectedVente() {
@@ -356,7 +364,8 @@ async function changeSelectedVente() {
         const Id_Vente = selectedOption.value.split('_')[1]
         const { infos, vente } = await getVente(Id_Vente)
         fillInfosVente(infos, vente)
-        calculePrix()
+        // calculePrix()
+        venteChanged = true
     }
 }
 
@@ -375,6 +384,8 @@ function changeTypeFacture({ target }) {
         Pourcentage_Acompte.disabled = true
         solde.disabled = false
     }
+
+    calculePrix()
 }
 
 function calculePrix() {
@@ -393,13 +404,10 @@ function calculePrix() {
             newPrix = Number((Number(document.getElementById('Pourcentage_Acompte').value / 100) * venteResteAPayer)).toFixed(2)
         }
 
-        console.log(venteResteAPayer)
-
-        venteResteAPayer += Number(oldPrix)
+        if(!venteChanged) venteResteAPayer += Number(oldPrix)
         venteResteAPayer -= Number(newPrix)
         
         Prix_TTC.value = newPrix
-        console.log(venteResteAPayer)
         document.getElementById('venteResteAPayer').innerText = `${Number(venteResteAPayer).toFixed(2)} €`
     }
 }

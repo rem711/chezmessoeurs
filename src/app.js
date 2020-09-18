@@ -13,6 +13,10 @@ const error404Middleware = require('./middlewares/erreurs/404-handler')
 const logger = require('./utils/logger')
 const morgan = require('morgan')
 
+console.log = (msg) => logger.log({ level : 'info', message : msg})
+console.error = (msg) => logger.log({ level : 'error', message : msg})
+
+
 // chargement base de données
 const db = require('./models')
 // la base de données est disponible globalement l'instancier qu'une fois et utiliser son pool

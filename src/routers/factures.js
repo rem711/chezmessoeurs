@@ -39,7 +39,7 @@ const checkFacture = async (factureSent) => {
     if(vente === null) throw "La vente sélectionnée est introuvable."
     if(!isSet(factureSent.Description)) throw "Le contenu descriptif de la facture doit être renseigné."
     if(factureSent.Type_Facture === ACOMPTE && !isSet(factureSent.Pourcentage_Acompte)) throw "Le pourcentage d'acompte doit être indiqué."
-    if(factureSent.Type_Facture === SOLDE && !isSet(Prix_TTC)) throw "Le montant du solde doit être indiqué."    
+    if(factureSent.Type_Facture === SOLDE && !isSet(factureSent.Prix_TTC)) throw "Le montant du solde doit être indiqué."    
     if(factureSent.Type_Facture === SOLDE && factureSent.Prix_TTC > vente.Reste_A_Payer) throw "Le montant de la facture ne peut pas exéder le montant restant à payer sur cette vente."
     if(!isSet(factureSent.Date_Paiement_Du)) throw "La date de paiement doit être indiquée."
     if(!factureSent.Date_Paiement_Du.match(/^(?:(?:0[1-9])|(?:1[0-9])|(?:2[0-9])|(?:3[0-1]))\/(?:(?:0[1-9])|(?:1[0-2]))\/20\d{2}$/)) throw "Le format de la date est incorrect."
@@ -208,14 +208,19 @@ router
 
         const vente = await checkFacture(factureSent)       
         
+        factureSent.Id_Vente = Number(factureSent.Id_Vente)
+        if(factureSent.Pourcentage_Acompte !== null) factureSent.Pourcentage_Acompte = Number(factureSent.Pourcentage_Acompte)
+        factureSent.Prix_TTC = Number(factureSent.Prix_TTC)
         factureSent.Date_Paiement_Du = moment(factureSent.Date_Paiement_Du, frontFormatDate).format(serverFormatDate)
 
         let prix = facture.Prix_TTC
-        if(factureSent.Type_Facture !== facture.Type_Facture || factureSent.Pourcentage_Acompte !== facture.Pourcentage_Acompte || factureSent.Prix_TTC !== facture.Prix_TTC) {
+        if(factureSent.Type_Facture !== facture.Type_Facture || factureSent.Pourcentage_Acompte !== facture.Pourcentage_Acompte || factureSent.Prix_TTC !== facture.Prix_TTC || facture.Id_Vente !== factureSent.Id_Vente) {
             // si la facture est toujours pour la même vente
             if(facture.Id_Vente === factureSent.Id_Vente) {
                 // on recrédite la vente
-                vente.Reste_A_Payer += facture.Prix_TTC
+                console.log(`vente départ : ${vente.Reste_A_Payer}`)
+                vente.Reste_A_Payer = vente.Reste_A_Payer + facture.Prix_TTC
+                console.log(`vente recréditée : ${vente.Reste_A_Payer}`)
             }
             else {
                 // on recrédite la vente précédente
@@ -226,7 +231,9 @@ router
                 })
 
                 if(previousVente !== null) {
+                    console.log(`previous vente rap : ${previousVente.Reste_A_Payer}`)
                     previousVente.Reste_A_Payer = previousVente.Reste_A_Payer + facture.Prix_TTC
+                    console.log(`previous vente rap recrédité : ${previousVente.Reste_A_Payer}`)
                     vente.save()
                 }
             }            
@@ -238,6 +245,9 @@ router
             else {
                 prix = Number(factureSent.Prix_TTC).toFixed(2)
             }
+
+            vente.Reste_A_Payer = vente.Reste_A_Payer - prix
+            console.log(`vente recalculée : ${vente.Reste_A_Payer}`)
         }
         factureSent.Prix_TTC = undefined
 
@@ -315,6 +325,13 @@ router
     res.send({
         infos,
         facture
+    })
+})
+.delete('/factures/:Id_Facture', async (req, res) => {
+    // recréditer le prix sur la vente
+    // si payée facture avoir
+    res.send({
+        infos : clientInformationObject(undefined, 'ok')
     })
 })
 

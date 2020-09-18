@@ -12,7 +12,11 @@ module.exports = (sequelize, DataTypes) => {
 			field : 'Ref_Facture',
 			type: DataTypes.STRING(100),
 			allowNull: false,
-			unique : true
+			unique : {
+				args : true,
+				msg : "Le numéro de référence facture doit être unique.",
+				fields : ['Ref_Facture']
+			}
 		},		
 		Type_Facture: {
 			field : 'Type_Facture',
