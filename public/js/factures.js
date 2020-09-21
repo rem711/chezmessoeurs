@@ -109,6 +109,7 @@ function fillModal(infos = undefined, ventes = undefined, facture = undefined) {
             option.innerText = affichageVente
 
             if(facture && facture.Id_Vente === vente.Id_Vente) option.selected = true
+            if(facture) option.disabled = true
 
             selectVentes.appendChild(option)
         }
@@ -121,13 +122,19 @@ function fillModal(infos = undefined, ventes = undefined, facture = undefined) {
         document.getElementById('Ref_Facture').value = facture.Ref_Facture
         document.getElementById('Description').value = facture.Description
 
-        document.querySelector(`input[name=Type_Facture][value=${facture.Type_Facture}]`).click()
+        // document.querySelector(`input[name=Type_Facture][value=${facture.Type_Facture}]`).click()
         if(facture.Type_Facture === 'acompte') {
+            document.getElementById('radioAcompte').checked = true
             document.getElementById('Pourcentage_Acompte').value = facture.Pourcentage_Acompte
         }
         else {
+            document.getElementById('radioSolde').checked = true
             document.getElementById('solde').value = facture.Prix_TTC
         }
+        document.getElementById('radioAcompte').disabled = true
+        document.getElementById('radioSolde').disabled = true
+        document.getElementById('Pourcentage_Acompte').disabled = true
+        document.getElementById('solde').disabled = true
 
         document.getElementById('Date_Paiement_Du').value = moment(facture.Date_Paiement_Du).format('DD/MM/YYYY')
         document.getElementById('Prix_TTC').value = facture.Prix_TTC
@@ -334,14 +341,14 @@ function closeModal() {
         }
 
         // retrait des infos vente
-        document.getElementById('clientNom').value = ''
-        document.getElementById('clientSociete').value = ''
-        document.getElementById('venteRefDevis').value = ''
-        document.getElementById('venteDateEvenement').value = ''
-        document.getElementById('venteNbPersonnes').value = ''
-        document.getElementById('venteDescription').value = ''
-        document.getElementById('ventePrixTTC').value = ''
-        document.getElementById('venteResteAPayer').value = ''
+        document.getElementById('clientNom').innerText = ''
+        document.getElementById('clientSociete').innerText = ''
+        document.getElementById('venteRefDevis').innerText = ''
+        document.getElementById('venteDateEvenement').innerText = ''
+        document.getElementById('venteNbPersonnes').innerText = ''
+        document.getElementById('venteDescription').innerText = ''
+        document.getElementById('ventePrixTTC').innerText = ''
+        document.getElementById('venteResteAPayer').innerText = ''
 
         // retrait des infos facture
         document.getElementById('Id_Facture').value = ''
@@ -352,6 +359,11 @@ function closeModal() {
         document.getElementById('solde').value = ''
         document.getElementById('Date_Paiement_Du').value = ''
         document.getElementById('Prix_TTC').value = ''
+
+        // remise de l'édition possible pour les boutons radio s'ils ont été désactivés
+        document.getElementById('radioAcompte').disabled = false
+        document.getElementById('radioSolde').disabled = false
+        document.getElementById('Pourcentage_Acompte').disabled = false
     }
 
     venteChanged = false

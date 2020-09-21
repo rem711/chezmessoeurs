@@ -208,56 +208,56 @@ router
 
         const vente = await checkFacture(factureSent)       
         
-        factureSent.Id_Vente = Number(factureSent.Id_Vente)
-        if(factureSent.Pourcentage_Acompte !== null) factureSent.Pourcentage_Acompte = Number(factureSent.Pourcentage_Acompte)
-        factureSent.Prix_TTC = Number(factureSent.Prix_TTC)
+        // factureSent.Id_Vente = Number(factureSent.Id_Vente)
+        // if(factureSent.Pourcentage_Acompte !== null) factureSent.Pourcentage_Acompte = Number(factureSent.Pourcentage_Acompte)
+        // factureSent.Prix_TTC = Number(factureSent.Prix_TTC)
         factureSent.Date_Paiement_Du = moment(factureSent.Date_Paiement_Du, frontFormatDate).format(serverFormatDate)
 
-        let prix = facture.Prix_TTC
-        if(factureSent.Type_Facture !== facture.Type_Facture || factureSent.Pourcentage_Acompte !== facture.Pourcentage_Acompte || factureSent.Prix_TTC !== facture.Prix_TTC || facture.Id_Vente !== factureSent.Id_Vente) {
-            // si la facture est toujours pour la même vente
-            if(facture.Id_Vente === factureSent.Id_Vente) {
-                // on recrédite la vente
-                console.log(`vente départ : ${vente.Reste_A_Payer}`)
-                vente.Reste_A_Payer = vente.Reste_A_Payer + facture.Prix_TTC
-                console.log(`vente recréditée : ${vente.Reste_A_Payer}`)
-            }
-            else {
-                // on recrédite la vente précédente
-                const previousVente = await Ventes.findOne({
-                    where : {
-                        Id_Vente : facture.Id_Vente
-                    }
-                })
+        // let prix = facture.Prix_TTC
+        // if(factureSent.Type_Facture !== facture.Type_Facture || factureSent.Pourcentage_Acompte !== facture.Pourcentage_Acompte || factureSent.Prix_TTC !== facture.Prix_TTC || facture.Id_Vente !== factureSent.Id_Vente) {
+        //     // si la facture est toujours pour la même vente
+        //     if(facture.Id_Vente === factureSent.Id_Vente) {
+        //         // on recrédite la vente
+        //         console.log(`vente départ : ${vente.Reste_A_Payer}`)
+        //         vente.Reste_A_Payer = vente.Reste_A_Payer + facture.Prix_TTC
+        //         console.log(`vente recréditée : ${vente.Reste_A_Payer}`)
+        //     }
+        //     else {
+        //         // on recrédite la vente précédente
+        //         const previousVente = await Ventes.findOne({
+        //             where : {
+        //                 Id_Vente : facture.Id_Vente
+        //             }
+        //         })
 
-                if(previousVente !== null) {
-                    console.log(`previous vente rap : ${previousVente.Reste_A_Payer}`)
-                    previousVente.Reste_A_Payer = previousVente.Reste_A_Payer + facture.Prix_TTC
-                    console.log(`previous vente rap recrédité : ${previousVente.Reste_A_Payer}`)
-                    previousVente.save()
-                }
-            }            
+        //         if(previousVente !== null) {
+        //             console.log(`previous vente rap : ${previousVente.Reste_A_Payer}`)
+        //             previousVente.Reste_A_Payer = previousVente.Reste_A_Payer + facture.Prix_TTC
+        //             console.log(`previous vente rap recrédité : ${previousVente.Reste_A_Payer}`)
+        //             previousVente.save()
+        //         }
+        //     }            
             
-            // calcul du nouveau prix        
-            if(factureSent.Type_Facture === ACOMPTE) {
-                prix = Number(vente.Reste_A_Payer * (Number(factureSent.Pourcentage_Acompte) / 100)).toFixed(2)
-            }
-            else {
-                prix = Number(factureSent.Prix_TTC).toFixed(2)
-            }
+        //     // calcul du nouveau prix        
+        //     if(factureSent.Type_Facture === ACOMPTE) {
+        //         prix = Number(vente.Reste_A_Payer * (Number(factureSent.Pourcentage_Acompte) / 100)).toFixed(2)
+        //     }
+        //     else {
+        //         prix = Number(factureSent.Prix_TTC).toFixed(2)
+        //     }
 
-            vente.Reste_A_Payer = vente.Reste_A_Payer - prix
-            console.log(`vente recalculée : ${vente.Reste_A_Payer}`)
-        }
-        factureSent.Prix_TTC = undefined
+        //     vente.Reste_A_Payer = vente.Reste_A_Payer - prix
+        //     console.log(`vente recalculée : ${vente.Reste_A_Payer}`)
+        // }
+        // factureSent.Prix_TTC = undefined
 
         // affectation des nouvelles valeurs
         facture.Ref_Facture = factureSent.Ref_Facture
-        facture.Type_Facture = factureSent.Type_Facture
-        facture.Id_Vente = factureSent.Id_Vente
+        // facture.Type_Facture = factureSent.Type_Facture
+        // facture.Id_Vente = factureSent.Id_Vente
         facture.Description = factureSent.Description
-        facture.Pourcentage_Acompte = factureSent.Pourcentage_Acompte
-        facture.Prix_TTC = prix
+        // facture.Pourcentage_Acompte = factureSent.Pourcentage_Acompte
+        // facture.Prix_TTC = prix
         facture.Date_Paiement_Du = factureSent.Date_Paiement_Du
 
         await Promise.all([
