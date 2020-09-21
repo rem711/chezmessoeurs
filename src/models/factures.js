@@ -51,6 +51,12 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: false
 		},
+		IsCanceled: {
+			field : 'IsCanceled',
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
 		Date_Paiement_Du: {
 			field : 'Date_Paiement_Du',
 			type : DataTypes.DATE,

@@ -5,11 +5,14 @@ const { Op } = require("sequelize")
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 const isSet = require('../utils/isSet')
 const createPDFFacture = require('../utils/pdf/pdf_factures')
+const createPDFAcompte = require('../utils/pdf/pdf_acomptes')
+const createPDFAvoir = require('../utils/pdf/pdf_avoirs')
 const moment = require('moment')
 const frontFormatDate = 'DD/MM/YYYY'
 const serverFormatDate = 'YYYY-MM-DD'
 const ACOMPTE = 'acompte'
 const SOLDE = 'solde'
+const TVA = 10
 
 const getRetardPaiementStatus = (Date_Creation, Date_Paiement_Du) => {
     const today = moment()
@@ -205,6 +208,7 @@ router
         }
 
         if(facture.IsPayed) throw "Vous ne pouvez pas modifier une facture déjà payée."
+        if(facture.IsCanceled) throw "Vous ne pouvez pas modifier une facture qui est annulée."
 
         const vente = await checkFacture(factureSent)       
         
@@ -291,7 +295,7 @@ router
     })
 })
 // passe une facture en payée
-.patch('/factures/isPayed', async (req, res) => {
+.patch('/factures/isPayed/:Id_Facture', async (req, res) => {
     const postIdFacture = Number(req.params.Id_Facture)
 
     let infos = undefined
@@ -310,6 +314,7 @@ router
             throw "Aucune facture correspondante."
         }
 
+        if(facture.IsCanceled) throw "La facture est annulée et ne peut donc pas être marquée comme payée."
         if(facture.IsPayed) throw "La facture est déjà payée."
 
         facture.IsPayed = true
@@ -327,27 +332,59 @@ router
         facture
     })
 })
-.delete('/factures/:Id_Facture', async (req, res) => {
-    // recréditer le prix sur la vente
-    // si payée facture avoir
+// annulation facture
+// Une facture remise à un client ne peut pas être supprimée. Il faut procéder à un avoir qui va comptablement annuler la facture. Vous devrez impérativement remettre cet avoir au client en cas d’annulation de la facture.
+// cf : https://www.clicfacture.com/numerotation-de-vos-factures/
+.patch('/factures/cancel/:Id_Facture', async (req, res) => {
+    const Id_Facture = Number(req.params.Id_Facture)
+
+    let infos = undefined
+    let facture = undefined
+
+    try {
+        if(isNaN(Id_Facture)) throw "L'identifiant est incorrect."
+
+        facture = await Factures.findOne({
+            include : {
+                all : true,
+                nested : true
+            },
+            where : {
+                Id_Facture
+            }
+        })
+
+        if(facture === null) throw "Aucune facture correspondante."
+
+        facture.Vente.Reste_A_Payer += facture.Prix_TTC
+        facture.IsCanceled = true
+
+        await Promise.all([
+            facture.Vente.save(),
+            facture.save()
+        ])
+
+        infos = clientInformationObject(undefined, `La facture ${facture.Ref_Facture} a bien été annulée. Un avoir a été créé.`)
+    }
+    catch(error) {
+        facture = undefined
+        infos = clientInformationObject(error)
+    }
+
     res.send({
-        infos : clientInformationObject(undefined, 'ok')
+        infos, 
+        facture
     })
 })
-
-
-
-
-
 // https://www.service-public.fr/professionnels-entreprises/vosdroits/F31808
-// export pdf facture
-.get(`/factures/pdf/${encodeURI('CHEZ MES SOEURS - Facture ')}:Numero_Facture.pdf`, async (req, res) => {
-    const postNumeroFacture = req.params.Numero_Facture
+// export pdf facture et facture d'acompte
+.get(`/factures/pdf/${encodeURI('CHEZ MES SOEURS - Facture ')}:Ref_Facture.pdf`, async (req, res) => {
+    const postRefFacture = req.params.Ref_Facture
 
     try {
         const facture = await Factures.findOne({
             where : {
-                Numero_Facture : postNumeroFacture
+                Ref_Facture : postRefFacture
             },
             include : {
                 all : true,
@@ -359,158 +396,113 @@ router
             throw "La facture n'existe pas."
         }
 
-        const toPDF = {}
-        toPDF.Id_Facture = facture.Id_Facture
-        toPDF.Numero_Facture = facture.Numero_Facture
-        toPDF.Date_Creation = facture.Date_Creation
-        toPDF.Devis = JSON.parse(JSON.stringify(facture.Devis))
-        toPDF.Date_Evenement = facture.Date_Evenement
-        toPDF.Adresse_Livraison_Adresse = facture.Adresse_Livraison_Adresse
-        toPDF.Adresse_Livraison_Adresse_Complement_1 = facture.Adresse_Livraison_Adresse_Complement_1
-        toPDF.Adresse_Livraison_Adresse_Complement_2 = facture.Adresse_Livraison_Adresse_Complement_2
-        toPDF.Adresse_Livraison_CP = facture.Adresse_Livraison_CP
-        toPDF.Adresse_Livraison_Ville = facture.Adresse_Livraison_Ville
-        toPDF.Client = JSON.parse(JSON.stringify(facture.Client))
-        // la méthode {...} est utilisée pour si la formule est null avoir un objet et pouvoir définir isAperitif etc.
-        toPDF.Formule_Aperitif = {...JSON.parse(JSON.stringify(facture.Formule_Aperitif))} 
-        toPDF.Formule_Aperitif.isAperitif = false
-        toPDF.Formule_Cocktail = {...JSON.parse(JSON.stringify(facture.Formule_Cocktail))}
-        toPDF.Formule_Cocktail.isCocktail = false
-        toPDF.Formule_Box = {...JSON.parse(JSON.stringify(facture.Formule_Box))}
-        toPDF.Formule_Box.isBox = false
-        toPDF.Formule_Brunch = {...JSON.parse(JSON.stringify(facture.Formule_Brunch))}
-        toPDF.Formule_Brunch.isBrunch = false
-        toPDF.Commentaire = facture.Commentaire
-        toPDF.Liste_Options = []
-        toPDF.Remise = facture.Remise
-        toPDF.Acompte = facture.Acompte
-        toPDF.Reste_A_Payer = facture.Reste_A_Payer
-        toPDF.Prix_HT = facture.Prix_HT
-        toPDF.Prix_TTC = facture.Prix_TTC
-
-        if(facture.Id_Formule_Aperitif !== null) toPDF.Formule_Aperitif.isAperitif = true
-        if(facture.Id_Formule_Cocktail !== null) toPDF.Formule_Cocktail.isCocktail = true
-        if(facture.Id_Formule_Box !== null) toPDF.Formule_Box.isBox = true
-        if(facture.Id_Formule_Brunch !== null) toPDF.Formule_Brunch.isBrunch = true
-
-        // récupérer liste options avec nom et prix
-        if(facture.Liste_Options !== null && facture.Liste_Options !== '') {
-            const tabOptions = facture.Liste_Options.split(';')
-            for(let id of tabOptions) {
-                if(id === '') continue
-                const option = await Prix_Unitaire.findOne({
-                    where : {
-                        Id_Prix_Unitaire : id
-                    }
-                })
-                if(option !== null) toPDF.Liste_Options.push({ Nom : option.Nom_Type_Prestation, Montant : option.Montant })
-            }
-        }
-
-        createPDFFacture(res, toPDF)
-
-        if(facture.Statut === 'En attente') {
-            facture.Statut = 'En attente de paiement'
-            facture.Client.Dernier_Statut = 'Facture envoyée'
-            await facture.save()
-            await facture.Client.save()
-        }
-    }
-    catch(error) {
-        const infos = clientInformationObject(getErrorMessage(error), undefined)
-        res.send(infos.error)
-    }
-})
-// route tampon pour la création d'un acompte. Récupère les valeurs nécessaires et les passe à la route de génération du pdf (avec l'url formatée)
-.get('/factures/acomptes/generate/:Id_Facture/:Value/:IsPourcent',  async (req, res) => {
-    const postIdFacture = Number(req.params.Id_Facture)
-    const value = Number(req.params.Value)
-    const isPourcent = Number(req.params.IsPourcent)
-    let Numero_Acompte = undefined
-
-    try {
-        if(isNaN(postIdFacture) || postIdFacture < 1) {
-            throw "L'identifiant de la facture est incorrect."
-        }
-        if(isNaN(value) || value === 0) {
-            throw "La valeur de l'acompte est incorrecte."
-        }
-        if(isPourcent !== 0 && isPourcent !== 1) {
-            throw "La valeur du pourcentage est incorrecte."
-        }
-        if(isPourcent && value > 100) {
-            throw "Le pourcentage ne peut pas excéder 100%."
-        }
-
-        const facture = await Factures.findOne({
+        // récupération des différentes factures pour cette vente créées avant cette facture
+        const previousFactures = await Factures.findAll({
             where : {
-                Id_Facture : postIdFacture
-            },
-            include : {
-                all : true,
-                nested : true
+                Id_Vente : facture.Id_Vente,
+                Created_At : {
+                    [Op.lt] : facture.Created_At
+                }
             }
         })
 
-        if(facture === null) {
-            throw "L'identifiant est incorrect ou la facture n'existe pas."
-        }
-        if(facture.Statut === 'Archivée' || facture.Statut === 'Annulée') {
-            throw "Cette facture n'es plus accessible."
-        }
+        const lastFacture = await Factures.findOne({
+            where : {
+                Id_Vente : facture.Id_Vente
+            },
+            order : [['Created_At', 'DESC']]
+        })
 
-        if(!isPourcent && value > facture.Reste_A_Payer) {
-            throw "Le montant est supérieur à la somme restant à payer."
-        }
-
-        // les vérification sont bonnes
-        const numero = await compteurs.get(compteurs.COMPTEUR_ACOMPTES)
-        Numero_Acompte = `FAA_${moment().format('YYYYMMDD')}_${formatNumeroFacture(numero)}_${facture.Client.Nom.toUpperCase()}`
-
-        // mise des valeurs nécessaires en session
-        req.session.Facture = facture
-        req.session.AcompteValue = Number(Number(value).toFixed(2))
-        req.session.IsPourcent = isPourcent
-    }
-    catch(error) {
-        const infos = clientInformationObject(getErrorMessage(error), undefined)
-
-        return res.send(infos.error)
-    }    
-
-    return res.redirect(`/factures/acomptes/pdf/${encodeURI('CHEZ MES SOEURS - Facture d\'Acompte ')}${Numero_Acompte}.pdf`)
-})
-// export pdf facture d'acompte
-.get(`/factures/acomptes/pdf/${encodeURI('CHEZ MES SOEURS - Facture d\'Acompte ')}:Numero_Acompte.pdf`, async (req, res) => {
-    const Numero_Acompte = req.params.Numero_Acompte
-    const facture = req.session.Facture
-    const value = req.session.AcompteValue
-    const isPourcent = req.session.IsPourcent
-
-    req.session.Facture = undefined
-    req.session.AcompteValue = undefined
-    req.session.IsPourcent = undefined
-
-    try {
-        if(!isSet(Numero_Acompte) || !isSet(facture) || !isSet(value) || !isSet(isPourcent)) {
-            throw "Vous n'avez pas accès à cette ressource."
+        let acompteVerse = 0
+        if(previousFactures !== null && previousFactures.length > 0) {
+            // somme des factures précédentes pour connaître le montant de l'acompte déjà versé
+            acompteVerse = previousFactures.reduce((accumulator, currentValue) => accumulator + currentValue.Prix_TTC, 0)
         }
 
-        const acompte = {
-            Numero_Acompte,
-            Facture : facture,
-            Valeur : value,
-            IsPourcent : isPourcent,
-            Montant : isPourcent ? Number(Number((value / 100) * facture.Reste_A_Payer).toFixed(2)) : value
+        const toPDF = {}
+        toPDF.Id_Facture = facture.Id_Facture
+        toPDF.Ref_Facture = facture.Ref_Facture
+        toPDF.Client = JSON.parse(JSON.stringify(facture.Vente.Client))
+        toPDF.Vente = JSON.parse(JSON.stringify(facture.Vente))
+        toPDF.Date_Evenement = moment(facture.Vente.Date_Evenement).format('DD/MM/YYYY')
+        toPDF.Date_Paiement_Du = facture.Date_Paiement_Du 
+        toPDF.Description = facture.Description    
+
+        if(facture.Type_Facture === ACOMPTE) {
+            toPDF.Pourcentage_Acompte = Number(facture.Pourcentage_Acompte).toFixed(2)
         }
 
-        createPDFAcompte(res, acompte)
+        toPDF.Reste_A_Payer = Number(facture.Vente.Reste_A_Payer).toFixed(2)
+        toPDF.Prix_HT = Number(facture.Prix_TTC - (facture.Prix_TTC * (TVA / 100))).toFixed(2)
+        toPDF.Prix_TTC = Number(facture.Prix_TTC).toFixed(2)
+        toPDF.acompteVerse = Number(acompteVerse).toFixed(2)
+        toPDF.Date_Paiement_Du = moment(facture.Date_Paiement_Du).format('DD/MM/YYYY')
+
+        // on regarde si c'est une facture d'acompte ou la facture du solde de la vente
+        // facture
+        // soit le montant de la facture correspondant au prix total de la vente
+        // soit le montant de la facture et des acomptes versés précédemment correspondent au prix total de la facture
+        // soit le reste à payer de la vente est nul et la facture correspond à la dernière émise pour le solde
+        if(facture.Prix_TTC === facture.Vente.Prix_TTC || (acompteVerse + facture.Prix_TTC) === facture.Vente.Prix_TTC || (facture.Vente.Reste_A_Payer === 0 && lastFacture.Id_Facture === facture.Id_Facture)) {
+            createPDFFacture(res, toPDF)
+        }
+        // acompte
+        else {
+            createPDFAcompte(res, toPDF)
+        }
     }
     catch(error) {
         const infos = clientInformationObject(getErrorMessage(error), undefined)
         res.send(infos.error)
     }
 })
+// pdf facture d'avoir en cas d'annulation
+.get(`/factures/pdf/:Id_Facture/${encodeURI('CHEZ MES SOEURS - Facture d\'Avoir ')}:Ref_Avoir.pdf`, async (req, res) => {
+    const Id_Facture = Number(req.params.Id_Facture)
+    const Ref_Avoir = req.params.Ref_Avoir
+
+    try {
+        if(isNaN(Id_Facture)) throw "L'identifiant est incorrect."
+
+        const facture = await Factures.findOne({
+            include : {
+                all : true,
+                nested : true
+            },
+            where : {
+                Id_Facture
+            }
+        })
+
+        if(facture === null) throw "Aucune facture correspondante."
+
+        const toPDF = {}
+        toPDF.Id_Facture = facture.Id_Facture
+        toPDF.Ref_Facture = facture.Ref_Facture
+        toPDF.Ref_Avoir = Ref_Avoir
+        toPDF.Client = JSON.parse(JSON.stringify(facture.Vente.Client))
+        toPDF.Vente = JSON.parse(JSON.stringify(facture.Vente))
+        toPDF.Description = facture.Description    
+
+        if(facture.Type_Facture === ACOMPTE) {
+            toPDF.Pourcentage_Acompte = Number(facture.Pourcentage_Acompte).toFixed(2)
+        }
+        
+        toPDF.Prix_HT = Number(facture.Prix_TTC - (facture.Prix_TTC * (TVA / 100))).toFixed(2)
+        toPDF.Prix_TTC = Number(facture.Prix_TTC).toFixed(2)
+
+        createPDFAvoir(res, toPDF)
+    }
+    catch(error) {
+        const infos = clientInformationObject(getErrorMessage(error), undefined)
+        res.send(infos.error)
+    }
+})
+
+
+
+
+
 // envoie relance
 .post('/factures/:Id_Facture', async (req, res) => {
     const postIdFacture = Number(req.params.Id_Facture)
@@ -586,16 +578,16 @@ router
         return res.send(infos.error)
     }
 
-    return res.redirect(`/factures/relance/pdf/${encodeURI('CHEZ MES SOEURS - Relance Facture ')}${facture.Numero_Facture}.pdf`)
+    return res.redirect(`/factures/relance/pdf/${encodeURI('CHEZ MES SOEURS - Relance Facture ')}${facture.Ref_Facture}.pdf`)
 })
 // réécriture de l'url pour générer le pdf de relance de facture
-.get(`/factures/relance/pdf/${encodeURI('CHEZ MES SOEURS - Relance Facture ')}:Numero_Facture.pdf`, async (req, res) => {
-    const postNumeroFacture = req.params.Numero_Facture
+.get(`/factures/relance/pdf/${encodeURI('CHEZ MES SOEURS - Relance Facture ')}:Ref_Facture.pdf`, async (req, res) => {
+    const postNumeroFacture = req.params.Ref_Facture
 
     try {
         const facture = await Factures.findOne({
             where : {
-                Numero_Facture : postNumeroFacture
+                Ref_Facture : postNumeroFacture
             },
             include : {
                 all : true,
@@ -609,7 +601,7 @@ router
 
         const toPDF = {}
         toPDF.Id_Facture = facture.Id_Facture
-        toPDF.Numero_Facture = facture.Numero_Facture
+        toPDF.Ref_Facture = facture.Ref_Facture
         toPDF.Date_Creation = facture.Date_Creation
         toPDF.Devis = JSON.parse(JSON.stringify(facture.Devis))
         toPDF.Date_Evenement = facture.Date_Evenement
@@ -665,50 +657,6 @@ router
         const infos = clientInformationObject(getErrorMessage(error), undefined)
         res.send(infos.error)
     }
-})
-// Une facture remise à un client ne peut pas être supprimée. Il faut procéder à un avoir qui va comptablement annuler la facture. Vous devrez impérativement remettre cet avoir au client en cas d’annulation de la facture.
-// cf : https://www.clicfacture.com/numerotation-de-vos-factures/
-.patch('/factures/cancel/:Id_Facture', async (req, res) => {
-    const postIdFacture = Number(req.params.Id_Facture)
-    let infos = undefined
-    let facture = undefined
-
-    try {
-        if(!isNaN(postIdFacture) && postIdFacture > 0) {
-            facture = await Factures.findOne({
-                where : {
-                    Id_Facture : postIdFacture
-                },
-                include : Clients
-            })
-
-            if(facture === null) {
-                throw "L'identifiant est incorrect ou la facture n'existe pas."
-            }
-
-            const avoir = await createAvoir(facture)
-
-            facture.Statut = 'Annulée'
-            await facture.save()
-
-            facture.Client.Dernier_Statut = 'Facture annulée'
-            await facture.Client.save()
-
-            infos = clientInformationObject(undefined, `La facture ${facture.Numero_Facture} a été annulée. Un avoir a été créé.`) 
-        }
-        else {
-            throw "L'identifiant est incorrect ou la facture n'existe pas."
-        }
-    }
-    catch(error) {
-        facture = undefined
-        infos = clientInformationObject(getErrorMessage(error), undefined)
-    }
-
-    res.send({
-        infos,
-        facture
-    })
 })
 
 module.exports = router

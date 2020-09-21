@@ -9,7 +9,7 @@ const btnAjouteFacture = document.getElementById('btnAjouteFacture')
 // bouton d'ouverture du modal pour modifier une facture
 const btnModifieFacture = document.getElementById('btnModifieFacture')
 // 
-const btnSupprimeFacture = document.getElementById('btnSupprimeFacture') 
+const btnAnnuleFacture = document.getElementById('btnAnnuleFacture') 
 // récupère les éléments qui ferment la modal
 const modalListCloseElmts = document.getElementsByClassName("close")
 // récupère le formulaire de facture
@@ -216,7 +216,7 @@ async function openModal(event) {
     }
 }
 
-async function createOrUpdate() {
+async function createOrUpdate(event) {
     event.preventDefault()
 
 	if(formFacture.checkValidity()) {
@@ -244,7 +244,7 @@ async function createOrUpdate() {
 				body : JSON.stringify(params)
 			}
         }
-        // modification d'une vente
+        // modification d'une facture
         else {
             const Id_Facture = document.getElementById('Id_Facture').value
 
@@ -284,28 +284,90 @@ async function createOrUpdate() {
 	}
 }
 
+async function clickIsPayed() {
+    document.getElementById('modalError').innerHTML = ''
+	document.getElementById('modalError').style.display = 'none'
+	document.getElementById('modalMessage').innerHTML = ''
+    document.getElementById('modalMessage').style.display = 'none'
+
+    try {
+        const Id_Facture = document.getElementById('Id_Facture').value
+
+        const url = `/factures/isPayed/${Id_Facture}`
+        const options = {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method : 'PATCH'
+        }
+
+        const response = await fetch(url, options)
+        if(response.ok) {
+            const { infos, facture } = await response.json()
+
+            if(infos) {
+                if(infos.error) throw infos.error
+                if(infos.message) {
+                    isUpdated = true
+                    document.getElementById('modalMessage').innerHTML = infos.message
+                    document.getElementById('modalMessage').style.display = 'block'
+                }
+            }
+        }
+        else if (response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            throw "Une erreur est survenue, veuillez réesayer plus tard."
+        }
+    }
+    catch(e) {
+        document.getElementById('modalError').innerHTML = e
+        document.getElementById('modalError').style.display = 'block'
+    }
+}
+
+function factureToPDF() {
+    const Ref_Facture = document.getElementById('Ref_Facture').value
+
+    if(Ref_Facture){
+        const url = `/factures/pdf/${encodeURI('CHEZ MES SOEURS - Facture ')}${Ref_Facture}.pdf`
+        window.open(url, '_blank')
+    }
+}
+
 async function remove() {
     const trSelected = document.getElementsByClassName('selected')[0]
 
     // on vérifie qu'une vente est sélectionnée
     if(trSelected && trSelected.getAttribute('id') !== null) {
-        if(confirm("Êtes-vous bien sûr de vouloir supprimer cette facture?")) {
+        if(confirm("Êtes-vous bien sûr de vouloir annuler cette facture?")) {
             const Id_Facture = trSelected.getAttribute('id').split('_')[1]
 
             try {
-                const url = `/factures/${Id_Facture}`
+                const url = `/factures/cancel/${Id_Facture}`
                 const options = {
-                    method : 'DELETE'
+                    method : 'PATCH'
                 }
 
                 const response = await fetch(url, options)
                 if(response.ok) {
-                    const { infos } = await response.json()
+                    const { infos, facture } = await response.json()
 
                     if(infos.error) throw infos.error
-                    if(infos.message) alert(infos.message)
+                    if(infos.message) {
+                        let Ref_Avoir = null
 
-                    location.reload()
+                        while(Ref_Avoir === null) {
+                            Ref_Avoir = window.prompt(`${infos.message}\n\nVeuillez saisir la référence de l'avoir : `, `AV_${moment().format('YYYYMMDD')}_0001_${facture.Vente.Client.Nom.toUpperCase()}`)
+                        }
+                        window.open(`/factures/pdf/${Id_Facture}/${encodeURI('CHEZ MES SOEURS - Facture d\'Avoir ')}${Ref_Avoir}.pdf`)
+                    }
+
+                    setTimeout(() => {
+                        location.reload()
+                    }, 5000)
                 }
                 else if (response.status === 401) {
                     alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
@@ -432,8 +494,8 @@ btnModifieFacture.onclick = openModal
 document.getElementById('Id_Vente').onchange = changeSelectedVente
 // action lors du clic sur le bouton de validation d'une facture
 formFacture.addEventListener('submit', createOrUpdate)
-// action lors du clic sur le bouton supprimer
-btnSupprimeFacture.onclick = remove
+// action lors du clic sur le bouton Annuler
+btnAnnuleFacture.onclick = remove
 // action lors d'un choix de type de facture
 document.getElementsByName('Type_Facture').forEach(elt => {
 	elt.onchange = changeTypeFacture
@@ -441,6 +503,10 @@ document.getElementsByName('Type_Facture').forEach(elt => {
 // action lorsqu'un pourcentage d'acompte ou un montant est appliqué
 document.getElementById('Pourcentage_Acompte').onblur = calculePrix
 document.getElementById('solde').onblur = calculePrix
+// action lors du clic sur le bouton de paiement factue
+document.getElementById('btnIsPayed').onclick = clickIsPayed
+// action lors du clic sur le bouton d'export
+document.getElementById('btnExport').onclick = factureToPDF
 
 // affectation du click sur les éléments pour fermer la modal
 for (let i = 0; i < modalListCloseElmts.length; i++) {

@@ -44,7 +44,7 @@
                             <td><%= facture.Description %></td>
                             <td><%= facture.Type_Facture.toUpperCase() %></td>
                             <td><%= `${Number(facture.Prix_TTC).toFixed(2)} €` %></td>
-                            <td><%= facture.IsPayed ? 'Payée' : getRetardPaiementStatus(facture.Created_At, facture.Date_Paiement_Du) %></td>
+                            <td><%= facture.IsCanceled ? 'Annulée' : (facture.IsPayed ? 'Payée' : getRetardPaiementStatus(facture.Created_At, facture.Date_Paiement_Du)) %></td>
                         </tr>
                     <% } %>      
                 <% } %>                     
@@ -127,5 +127,5 @@
 </div>
 <div class="btnbotright">
     <button id="btnModifieFacture">Modifier</button> 
-    <button id="btnSupprimeFacture">Supprimer</button>
+    <button id="btnAnnuleFacture">Annuler</button>
 </div>
