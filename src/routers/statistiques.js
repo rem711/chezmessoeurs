@@ -161,7 +161,7 @@ router
             data = {
                 labels : data.map(elt => months[elt.mois]),
                 datasets : [{
-                    label : `Ventes / Mois en ${moment().format('YYYY')}`,
+                    label : `Prestations / Mois en ${moment().format('YYYY')}`,
                     data : data.map(elt => elt.nb_ventes)
                 }]
             }

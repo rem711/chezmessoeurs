@@ -313,7 +313,23 @@ function createChart_nbVentes(infos, data) {
         const chart = new Chart(ctx, {
             type : 'bar',
             data,
-            options: {}
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero : true,
+                            stepSize : 1
+                        }
+                    }]
+                },
+                tooltips : {
+                    callbacks : {
+                        label : function(tooltipItem, data) {
+                            return `${tooltipItem.value} prestation${tooltipItem.value > 1 ? 's' : ''}`
+                        }
+                    }
+                }
+            }
         })
     }
 }
@@ -335,7 +351,25 @@ function createChart_CAVentes(infos, data) {
         const chart = new Chart(ctx, {
             type : 'line',
             data,
-            options: {}
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return value + ' €';
+                            }
+                        }
+                    }]
+                },
+                tooltips : {
+                    intersect : false,
+                    callbacks : {
+                        label : function(tooltipItem, data) {
+                            return `${tooltipItem.value} €`
+                        }
+                    }
+                }
+            }
         })
     }
 }
