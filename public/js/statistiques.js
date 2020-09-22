@@ -79,7 +79,7 @@ async function getFacturesRetard() {
 
             if(infos && infos.message) {               
                 const td = document.createElement('td')
-                td.setAttribute('colspan', 5)
+                td.setAttribute('colspan', 6)
                 td.innerText = infos.message
 
                 const tr = document.createElement('tr')
