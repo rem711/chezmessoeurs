@@ -164,6 +164,13 @@ tr:focus-within{
     padding: 5px 0;
 }
 
+.rowinput_ctn{
+        display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    padding: 5px 0;
+}
+
 .rowinput label{
     padding-right: 15px;
     min-width :150px;

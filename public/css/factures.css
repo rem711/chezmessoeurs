@@ -8,10 +8,12 @@
 }
 
 .montantfacture {
-    border: 1px solid black;
+border: 1px solid black;
     padding: 15px;
-    margin: 50px 300px 50px 300px;
+
+    width: 40%;
     background: rgba(107, 97, 97, 0.1);
+margin: 25px auto;
 }
 
 #div_InfosVente .rowinput label{
