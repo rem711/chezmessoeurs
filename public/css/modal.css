@@ -18,7 +18,6 @@
 .modal-content {
     background-color: #fefefe;
     margin: auto;
-    padding: 10px 35px 75px 35px;
     border: 1px solid #888;
     width: 75%;
     position: relative;
@@ -27,6 +26,14 @@
     overflow-x: hidden;
     overflow-y: scroll;
 }
+
+
+.modal_inner{
+    padding: 10px 35px 75px 35px;
+    height: 100%;
+    position: relative;
+}
+
   
   /* The Close Button */
   .closespan,
