@@ -150,7 +150,7 @@ router
 
     try {
         const currentYear = moment().format('YYYY')
-        data = await sequelize.query(`SELECT MONTHNAME(Date_Evenement) AS mois, count(*) AS nb_ventes FROM Ventes WHERE YEAR(Date_Evenement)='${currentYear}' GROUP BY mois ORDER BY Date_Evenement ASC`, { type: QueryTypes.SELECT })
+        data = await sequelize.query(`SELECT MONTHNAME(Date_Evenement) AS mois, count(*) AS nb_ventes FROM ventes WHERE YEAR(Date_Evenement)='${currentYear}' GROUP BY mois ORDER BY Date_Evenement ASC`, { type: QueryTypes.SELECT })
 
         if(data === null) throw "Une erreur s'est produite lors de la récupération du nombre de ventes par mois."
         if(data.length === 0) {
@@ -183,7 +183,7 @@ router
 
     try {
         const currentYear = moment().format('YYYY')
-        data = await sequelize.query(`SELECT MONTHNAME(Date_Evenement) AS mois, SUM(Prix_TTC) AS CA FROM Ventes WHERE YEAR(Date_Evenement)='${currentYear}' GROUP BY mois ORDER BY Date_Evenement ASC`, { type: QueryTypes.SELECT })
+        data = await sequelize.query(`SELECT MONTHNAME(Date_Evenement) AS mois, SUM(Prix_TTC) AS CA FROM ventes WHERE YEAR(Date_Evenement)='${currentYear}' GROUP BY mois ORDER BY Date_Evenement ASC`, { type: QueryTypes.SELECT })
 
         if(data === null) throw "Une erreur s'est produite lors de la récupération du nombre de ventes par mois."
         if(data.length === 0) {
