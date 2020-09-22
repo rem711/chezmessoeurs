@@ -76,14 +76,14 @@ router
             infos = clientInformationObject(undefined, 'Aucune facture')
         }
 
-        const tabPromises = []
-        for(const facture of factures) {
-            const retard = getRetardPaiementStatus(facture.Date_Creation)
+        // const tabPromises = []
+        // for(const facture of factures) {
+        //     const retard = getRetardPaiementStatus(facture.Date_Creation)
             // if(retard !== facture.Paiement_En_Retard) {
             //     facture.Paiement_En_Retard = retard
             //     tabPromises.push(facture.save())
             // }
-        }
+        // }
         // await Promise.all(tabPromises)
     }
     catch(error) {
@@ -356,7 +356,7 @@ router
 
         if(facture === null) throw "Aucune facture correspondante."
 
-        facture.Vente.Reste_A_Payer += facture.Prix_TTC
+        if(!facture.IsCanceled) facture.Vente.Reste_A_Payer += facture.Prix_TTC
         facture.IsCanceled = true
 
         await Promise.all([
@@ -659,4 +659,7 @@ router
     }
 })
 
-module.exports = router
+module.exports = {
+    router,
+    getRetardPaiementStatus
+}

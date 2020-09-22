@@ -374,7 +374,14 @@ input:focus {
     margin: 0;
 }
 
+.error_message{
+    color: crimson;
+margin: 15px 15px 0 15px;
+font-weight: 600;
+}
 
-
-
-
+.info_message{
+    color: green;
+margin: 15px 15px 0 15px;
+font-weight: 600;
+}
