@@ -208,7 +208,9 @@ async function getStats() {
     try {
         const results = await Promise.all([
             getStatsNbVentes(),
-            getStatsCAVentes()
+            getStatsCAVentes(),
+            getStatsMoyennesVentes(),
+            getStatsMoyennesAnneesVentes()
         ])
 
         const infos_nbVentes = results[0].infos
@@ -219,8 +221,18 @@ async function getStats() {
         const data_CAVentes = results[1].data
         if(infos_CAVentes && infos_CAVentes.error) throw infos_CAVentes.error
 
+        const infos_MoyennesVentes = results[2].infos
+        const data_MoyennesVentes = results[2].data
+        if(infos_MoyennesVentes && infos_MoyennesVentes.error) throw infos_MoyennesVentes.error
+
+        const infos_MoyennesAnneesVentes = results[3].infos
+        const data_MoyennesAnneesVentes = results[3].data
+        if(infos_MoyennesAnneesVentes && infos_MoyennesAnneesVentes.error) throw infos_MoyennesAnneesVentes.error
+
         createChart_nbVentes(infos_nbVentes, data_nbVentes)
         createChart_CAVentes(infos_CAVentes, data_CAVentes)
+        createChart_MoyennesVentes(infos_MoyennesVentes, data_MoyennesVentes)
+        createChart_MoyennesAnneesVentes(infos_MoyennesAnneesVentes, data_MoyennesAnneesVentes)
     }
     catch(e) {
         infos_stats.innerText = e
@@ -296,6 +308,74 @@ async function getStatsCAVentes() {
     }
 }
 
+async function getStatsMoyennesVentes() {
+    let infos = undefined
+    let data = undefined
+
+    try {
+        const response = await fetch('/statistiques/ventes/moyennes')
+        if(response.ok) {
+            elt = await response.json()
+            infos = elt.infos
+            data = elt.data
+
+            if(infos && infos.error) throw infos.error
+        }
+        else if (response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            throw "Une erreur est survenue, veuillez réesayer plus tard."
+        }
+    }
+    catch(e) {
+        data = undefined,
+        infos = {
+            error : e
+        }
+    }
+
+    return {
+        infos,
+        data
+    }
+}
+
+async function getStatsMoyennesAnneesVentes() {
+    let infos = undefined
+    let data = undefined
+
+    try {
+        const response = await fetch('/statistiques/ventes/moyennes_annees')
+        if(response.ok) {
+            elt = await response.json()
+            infos = elt.infos
+            data = elt.data
+
+            if(infos && infos.error) throw infos.error
+        }
+        else if (response.status === 401) {
+            alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+            location.reload()
+        }
+        else {
+            throw "Une erreur est survenue, veuillez réesayer plus tard."
+        }
+    }
+    catch(e) {
+        data = undefined,
+        infos = {
+            error : e
+        }
+    }
+
+    return {
+        infos,
+        data
+    }
+}
+
 function createChart_nbVentes(infos, data) {
     const canvas = document.getElementById('graphe_nbVentes')
 
@@ -306,8 +386,8 @@ function createChart_nbVentes(infos, data) {
         canvas.parentNode.insertBefore(p, canvas)
     }
     else {
-        data.datasets[0].backgroundColor = '#e06128'
-        data.datasets[0].borderColor = '#e06128'
+        data.datasets[1].backgroundColor = '#e06128'
+        data.datasets[1].borderColor = '#e06128'
 
         const ctx = canvas.getContext('2d')
         const chart = new Chart(ctx, {
@@ -344,8 +424,9 @@ function createChart_CAVentes(infos, data) {
         canvas.parentNode.insertBefore(p, canvas)
     }
     else {
-        data.datasets[0].backgroundColor = '#e06128'
-        data.datasets[0].borderColor = '#e06128'
+        data.datasets[0].backgroundColor = 'rgba(255,255,255,0)'
+        data.datasets[1].backgroundColor = 'rgba(255,255,255,0)'
+        data.datasets[1].borderColor = '#e06128'
 
         const ctx = canvas.getContext('2d')
         const chart = new Chart(ctx, {
@@ -363,6 +444,87 @@ function createChart_CAVentes(infos, data) {
                 },
                 tooltips : {
                     intersect : false,
+                    callbacks : {
+                        label : function(tooltipItem, data) {
+                            return `${tooltipItem.value} €`
+                        }
+                    }
+                }
+            }
+        })
+    }
+}
+
+function createChart_MoyennesVentes(infos, data) {
+    const canvas = document.getElementById('graphe_moyennes')
+
+    if(infos && infos.message) {
+        const p = document.createElement('p')
+        p.innerText = infos.message
+
+        canvas.parentNode.insertBefore(p, canvas)
+    }
+    else {
+        data.datasets[0].backgroundColor = 'rgba(255,255,255,0)'
+        data.datasets[1].backgroundColor = 'rgba(255,255,255,0)'
+        data.datasets[1].borderColor = '#e06128'
+
+        const ctx = canvas.getContext('2d')
+        const chart = new Chart(ctx, {
+            type : 'line',
+            data,
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return value + ' €';
+                            }
+                        }
+                    }]
+                },
+                tooltips : {
+                    intersect : false,
+                    callbacks : {
+                        label : function(tooltipItem, data) {
+                            return `${tooltipItem.value} €`
+                        }
+                    }
+                }
+            }
+        })
+    }
+}
+
+function createChart_MoyennesAnneesVentes(infos, data) {
+    const canvas = document.getElementById('graphe_moyennesAnnees')
+
+    if(infos && infos.message) {
+        const p = document.createElement('p')
+        p.innerText = infos.message
+
+        canvas.parentNode.insertBefore(p, canvas)
+    }
+    else {
+        data.datasets[0].backgroundColor = '#e06128'
+        data.datasets[0].borderColor = '#e06128'
+
+        const ctx = canvas.getContext('2d')
+        const chart = new Chart(ctx, {
+            type : 'bar',
+            data,
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return value + ' €';
+                            }
+                        }
+                    }]
+                },
+                tooltips : {
+                    intersect : true,
                     callbacks : {
                         label : function(tooltipItem, data) {
                             return `${tooltipItem.value} €`
