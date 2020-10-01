@@ -22,7 +22,7 @@ const fillModal = (infos = undefined, client = undefined) => {
 	document.getElementById('modalMessage').innerHTML = ''
 	document.getElementById('modalMessage').style.display = 'none'
 
-	if (infos) {
+	if(infos) {
 		if (infos.error) {
 			document.getElementById('modalError').innerHTML = infos.error
 			document.getElementById('modalError').style.display = 'block'
@@ -32,8 +32,7 @@ const fillModal = (infos = undefined, client = undefined) => {
 			document.getElementById('modalMessage').style.display = 'block'
 		}
 	}
-
-	document.getElementById('Particulier').click()
+	
 	if(client) {
 		// remplissage des données du client
 		document.getElementById('Id_Client').value = client.Id_Client
@@ -46,13 +45,16 @@ const fillModal = (infos = undefined, client = undefined) => {
 		document.getElementById('Adresse_Facturation_Ville').value = client.Adresse_Facturation_Ville
 		document.getElementById('Telephone').value = client.Telephone
 		document.getElementById('Email').value = client.Email
-		document.getElementById(client.Type).checked = true
-		showEltProfessionnel({
-			target: document.getElementById(client.Type)
-		})
+		// document.getElementById(client.Type).checked = true
+		// showEltProfessionnel({
+		// 	target: document.getElementById(client.Type)
+		// })
+		document.getElementById(client.Type).click()
 		document.getElementById('Societe').value = client.Societe
 		document.getElementById('Numero_TVA').value = client.Numero_TVA
 	}
+
+	if(!client && !infos) document.getElementById('Particulier').click()
 	
 	modalUpdate.style.display = 'block'
 }
@@ -128,6 +130,11 @@ const createOrUpdate = async (event) => {
 			if (item.checked) Type = item.value
 		})
 
+		if(Type === 'Professionnel' && document.getElementById('Societe').value === '') {
+			fillModal({ error : "Le nom de société doit être renseigné." })
+			return
+		}
+
 		const params = {
 			Nom: document.getElementById('Nom').value,
 			Prenom: document.getElementById('Prenom').value,
@@ -140,7 +147,7 @@ const createOrUpdate = async (event) => {
 			Email: document.getElementById('Email').value,
 			Type,
 			Societe: (Type === 'Professionnel') ? document.getElementById('Societe').value : null ,
-			Numero_TVA: (Type === 'Professionnel') ? document.getElementById('Numero_TVA').value : null
+			Numero_TVA: (Type === 'Professionnel' && !!document.getElementById('Numero_TVA').value) ? document.getElementById('Numero_TVA').value : null
 		}
 
 		// création du client

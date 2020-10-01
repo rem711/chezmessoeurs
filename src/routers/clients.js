@@ -106,10 +106,10 @@ const updateClient = async (Id_Client, postClient) => {
         if(postClient.Societe === undefined || postClient.Societe === 'undefined' || postClient.Societe === '') {
             throw "Le nom de la société doit être défini."
         }
-        if(postClient.Numero_TVA === undefined || postClient.Numero_TVA === 'undefined' || postClient.Numero_TVA === '') {
-            throw "Le numéro de TVA doit être défini."
-        }
-        else {
+        // if(postClient.Numero_TVA === undefined || postClient.Numero_TVA === 'undefined' || postClient.Numero_TVA === '') {
+        //     throw "Le numéro de TVA doit être défini."
+        // }
+        if(postClient.Numero_TVA !== undefined && postClient.Numero_TVA !== 'undefined' && postClient.Numero_TVA === '' && postClient.Numero_TVA !== null) {
             postClient.Numero_TVA = postClient.Numero_TVA.toUpperCase()
             if(postClient.Numero_TVA.match(/^FR[0-9]{2}[0-9]{9}$/ig) === null) {
                 throw "Le format du numéro de TVA est incorrect."
