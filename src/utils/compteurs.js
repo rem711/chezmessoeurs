@@ -11,7 +11,7 @@ const isNewYear = (lastUpdate) => {
     const currentYear = moment().format('YYYY')
     const usedYear = moment(lastUpdate).format('YYYY')
 
-    return currentYear !== usedYear
+    return currentYear > usedYear
 }
 
 const init = async() => {
