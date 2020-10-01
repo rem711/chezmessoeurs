@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
 		},		
 		Type_Facture: {
 			field : 'Type_Facture',
-			type: DataTypes.ENUM('acompte', 'solde'),
+			type: DataTypes.ENUM('acompte', 'solde', 'avoir'),
 			allowNull: false
 		},				
 		Id_Vente: {
@@ -57,6 +57,12 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			defaultValue: false
 		},
+		IdFactureAnnulee: {
+			field : 'IdFactureAnnulee',
+			type : DataTypes.INTEGER,
+			allowNull : true,
+			defaultValue : null
+		},
 		Date_Paiement_Du: {
 			field : 'Date_Paiement_Du',
 			type : DataTypes.DATE,
@@ -67,6 +73,7 @@ module.exports = (sequelize, DataTypes) => {
 	})
     Factures.associate = models => {
 		Factures.belongsTo(models.Ventes, { foreignKey : 'Id_Vente' })
+		Factures.belongsTo(Factures, { foreignKey : 'IdFactureAnnulee', as : 'FactureAnnulee' })
     }
 
     return Factures

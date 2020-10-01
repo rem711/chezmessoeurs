@@ -82,8 +82,6 @@ function fillModal(infos = undefined, ventes = undefined, facture = undefined) {
 	document.getElementById('modalError').style.display = 'none'
 	document.getElementById('modalMessage').innerHTML = ''
     document.getElementById('modalMessage').style.display = 'none'
-
-    document.getElementById('div_btnActionsUpdate').style.display = 'none'
     
     if(infos) {
         if(infos.error) {
@@ -117,6 +115,11 @@ function fillModal(infos = undefined, ventes = undefined, facture = undefined) {
         selectVentes.onchange()
     }
 
+    if(!infos && !facture) {
+        document.getElementById('div_refFacture').style.display = 'none'
+        document.getElementById('div_btnActionsUpdate').style.display = 'none'
+    }
+
     if(facture) {
         document.getElementById('Id_Facture').value = facture.Id_Facture
         document.getElementById('Ref_Facture').value = facture.Ref_Facture
@@ -139,6 +142,7 @@ function fillModal(infos = undefined, ventes = undefined, facture = undefined) {
         document.getElementById('Date_Paiement_Du').value = moment(facture.Date_Paiement_Du).format('DD/MM/YYYY')
         document.getElementById('Prix_TTC').value = facture.Prix_TTC
 
+        document.getElementById('div_refFacture').style.display = 'flex'
         document.getElementById('div_btnActionsUpdate').style.display = 'flex'
     }
 
@@ -225,7 +229,6 @@ async function createOrUpdate(event) {
 
         const params = {
             Id_Vente : document.querySelector('#Id_Vente option:checked').value.split('_')[1],
-            Ref_Facture : document.getElementById('Ref_Facture').value,
             Description : document.getElementById('Description').value,
             Type_Facture : document.querySelector(`input[name=Type_Facture]:checked`).value,
             Pourcentage_Acompte : document.getElementById('Pourcentage_Acompte').value !== '' ? document.getElementById('Pourcentage_Acompte').value : null,
@@ -353,21 +356,27 @@ async function remove() {
 
                 const response = await fetch(url, options)
                 if(response.ok) {
-                    const { infos, facture } = await response.json()
+                    const { infos, facture, avoir } = await response.json()
 
                     if(infos.error) throw infos.error
                     if(infos.message) {
-                        let Ref_Avoir = null
-
-                        while(Ref_Avoir === null) {
-                            Ref_Avoir = window.prompt(`${infos.message}\n\nVeuillez saisir la référence de l'avoir : `, `AV_${moment().format('YYYYMMDD')}_0001_${facture.Vente.Client.Nom.toUpperCase()}`)
+                        if(avoir) {
+                            infos.message += ' Un avoir a été créé.'
                         }
-                        window.open(`/factures/pdf/${Id_Facture}/${encodeURI('CHEZ MES SOEURS - Facture d\'Avoir ')}${Ref_Avoir}.pdf`)
+
+                        window.alert(infos.message)
+
+                        if(avoir) {
+                            window.open(`/factures/pdf/${avoir.Id_Facture}/${encodeURI('CHEZ MES SOEURS - Facture d\'Avoir ')}${avoir.Ref_Facture}.pdf`)
+                        }
                     }
+
+                    let timeoutValue = 200
+                    if(avoir) timeoutValue = 5000
 
                     setTimeout(() => {
                         location.reload()
-                    }, 5000)
+                    }, timeoutValue)
                 }
                 else if (response.status === 401) {
                     alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
