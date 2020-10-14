@@ -1,52 +1,76 @@
 const { Compteurs, Sequelize, sequelize } = global.db
+const moment = require('moment')
 
+const COMPTEUR_FACTURES_GENERALES = 'COMPTEUR_FACTURES_GENERALES'
 const COMPTEUR_FACTURES_AVOIRS = 'COMPTEUR_FACTURES_AVOIRS'
-const COMPTEUR_ACOMPTES = 'COMPTEUR_ACOMPTES'
 
+let compteurFacturesGenerales = undefined
 let compteurFacturesAvoirs = undefined
-let compteurAcomptes = undefined
+
+const isNewYear = (lastUpdate) => {
+    const currentYear = moment().format('YYYY')
+    const usedYear = moment(lastUpdate).format('YYYY')
+
+    return currentYear > usedYear
+}
 
 const init = async() => {
+    compteurFacturesGenerales = await Compteurs.findOne({
+        where : {
+            Nom_Compteur : COMPTEUR_FACTURES_GENERALES
+        }
+    })
+
     compteurFacturesAvoirs = await Compteurs.findOne({
         where : {
             Nom_Compteur : COMPTEUR_FACTURES_AVOIRS
         }
     })
+}
 
-    compteurAcomptes = await Compteurs.findOne({
-        where : {
-            Nom_Compteur : COMPTEUR_ACOMPTES
-        }
-    })
+const reset = async () => {
+    if(isNewYear(compteurFacturesGenerales.Updated_At)) {
+        compteurFacturesGenerales.Valeur_Compteur = 0
+    }
+    if(isNewYear(compteurFacturesAvoirs.Updated_At)) {
+        compteurFacturesAvoirs.Valeur_Compteur = 0
+    }
+
+    await Promise.all([
+        compteurFacturesGenerales.save(),
+        compteurFacturesAvoirs.save()
+    ])
 }
 
 const get = async (typeCompteur) => {
-    if(compteurFacturesAvoirs === undefined || compteurAcomptes === undefined) {
+    if(compteurFacturesGenerales === undefined || compteurFacturesAvoirs === undefined) {
         await init()
     }
 
-    if(typeCompteur !== COMPTEUR_FACTURES_AVOIRS && typeCompteur !== COMPTEUR_ACOMPTES) {
+    if(typeCompteur !== COMPTEUR_FACTURES_GENERALES && typeCompteur !== COMPTEUR_FACTURES_AVOIRS) {
         throw `Impossible de récupérer le compteur ${typeCompteur}.`
     }
 
+    await reset()
+
     let valeur = 0
 
-    if(typeCompteur === COMPTEUR_FACTURES_AVOIRS) {
+    if(typeCompteur === COMPTEUR_FACTURES_GENERALES) {
+        await sequelize.transaction({ 
+            type : Sequelize.Transaction.TYPES.EXCLUSIVE 
+        }, async (transaction) => {
+            await compteurFacturesGenerales.increment('Valeur_Compteur')
+            await compteurFacturesGenerales.reload()
+            valeur = compteurFacturesGenerales.Valeur_Compteur
+        })        
+    }
+    else if(typeCompteur === COMPTEUR_FACTURES_AVOIRS) {
         await sequelize.transaction({ 
             type : Sequelize.Transaction.TYPES.EXCLUSIVE 
         }, async (transaction) => {
             await compteurFacturesAvoirs.increment('Valeur_Compteur')
             await compteurFacturesAvoirs.reload()
             valeur = compteurFacturesAvoirs.Valeur_Compteur
-        })        
-    }
-    else if(typeCompteur === COMPTEUR_ACOMPTES) {
-        await sequelize.transaction({ 
-            type : Sequelize.Transaction.TYPES.EXCLUSIVE 
-        }, async (transaction) => {
-            await compteurAcomptes.increment('Valeur_Compteur')
-            await compteurAcomptes.reload()
-            valeur = compteurAcomptes.Valeur_Compteur
         })
     }
 
@@ -54,7 +78,7 @@ const get = async (typeCompteur) => {
 }
 
 module.exports = {
+    COMPTEUR_FACTURES_GENERALES,
     COMPTEUR_FACTURES_AVOIRS,
-    COMPTEUR_ACOMPTES,
     get
 }

@@ -1,106 +1,133 @@
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script defer src="/js/factures.js"></script>
-<script defer src="/js/modals/factures.js"></script>
 
         
-        <div class="content_inner">
-            <h1>Factures</h1>
-            <%# Affiche si une erreur est survenue %>      
-            <% if (locals.infos && infos.error) { %>
-                <h3>
-                    <%= infos.error %> 
-                </h3>
-            <%# Affiche le contenu s'il n'y a pas de problème sur le serveur %> 
-            <% } else { %>
-                <table>
-                    <thead>
-                        <th>N°</th>
-                        <th>Date d'édition</th>
-                        <th>Client</th>
-                        <th>Téléphone</th>
-                        <th>Email</th>
-                        <th>Acompte</th>
-                        <th>Reste à payer</th>
-                        <th>Statut</th>
-                        <th>Paiement(s) en retard</th>
-                        <th>Relance(s)</th>
+<div class="content_inner">
+    <h1>Factures</h1>
+    <%# Affiche si une erreur est survenue %>      
+    <% if (locals.infos && infos.error) { %>
+        <h3>
+            <%= infos.error %> 
+        </h3>
+    <%# Affiche le contenu s'il n'y a pas de problème sur le serveur %> 
+    <% } else { %>
+        <table>
+            <thead>
+                <th>Ref</th>
+                <th>Date d'édition</th>
+                <th>Client</th>
+                <th>Société</th>
+                <th>Tel</th>
+                <th>Mail</th>
+                <th>Vente</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Montant</th>
+                <th>Statut</th>
+            </thead>
+            <tbody>
+                <% if (locals.infos && infos.message) { %>
+                    <tr>
+                        <td colspan="11">
+                            <%= infos.message %>
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% for(let facture of factures) { %> 
+                        <tr id="facture_<%= facture.Id_Facture %>">
+                            <td><%= facture.Ref_Facture %></td>
+                            <td><%= moment(facture.Created_At).format(frontFormatDate) %></td>
+                            <td><%= `${facture.Vente.Client.Prenom} ${facture.Vente.Client.Nom}` %></td>
+                            <td><%= facture.Vente.Client.Societe ? facture.Vente.Client.Societe : '-' %></td>
+                            <td><%= facture.Vente.Client.Telephone %></td>
+                            <td><%= facture.Vente.Client.Email %></td>
+                            <td><%- `Description : ${facture.Vente.Description} <br>Date de l'événement : ${moment(facture.Vente.Date_Evenement).format(frontFormatDate)} <br>Restant / total : ${Number(facture.Vente.Reste_A_Payer).toFixed(2)}€ / ${Number(facture.Vente.Prix_TTC).toFixed(2)}€` %></td>
+                            <td><%= facture.Description %></td>
+                            <td><%= facture.Type_Facture.toUpperCase() %></td>
+                            <td><%= `${Number(facture.Prix_TTC).toFixed(2)} €` %></td>
+                            <td><%= facture.IsCanceled ? 'Annulée' : (facture.IsPayed ? 'Payée' : getRetardPaiementStatus(facture.Created_At, facture.Date_Paiement_Du)) %></td>
+                        </tr>
+                    <% } %>      
+                <% } %>                     
+            </tbody>
+        </table>
+    <% } %> 
+</div>
 
-                    </thead>
-                    <tbody>
-                        <% if (locals.infos && infos.message) { %>
-                            <tr>
-                                <td colspan="10">
-                                    <%= infos.message %>
-                                </td>
-                            </tr>
-                        <% } else { %>
-                            <% if (locals.factures) { %>
-                                <% for(let facture of factures) { %> 
-                                    <% let stringRelance = facture.Nb_Relances.toString() %>
-                                    <% if(facture.Date_Derniere_Relance !== null) stringRelance += ` - ${moment.utc(facture.Date_Derniere_Relance).format('DD/MM/YYYY')}` %> 
-                                    <tr id="facture_<%= facture.Id_Facture %>">
-                                        <td><%= facture.Numero_Facture %></td>
-                                        <td><%= moment.utc(facture.Date_Creation).format(formatDateHeure) %></td>
-                                        <td><%= facture.Client.Prenom + ' ' + facture.Client.Nom %></td>
-                                        <td><%= facture.Client.Telephone %></td>
-                                        <td><%= facture.Client.Email %></td>
-                                        <td><%= Number(facture.Acompte).toFixed(2) %>€</td>
-                                        <td><%= Number(facture.Reste_A_Payer).toFixed(2) %>€</td>
-                                        <td><%= facture.Statut %></td>
-                                        <td><%= facture.Paiement_En_Retard %></td>
-                                        <td><%= stringRelance %></td>
-                                    </tr>
-                                <% } %>                             
-                            <% } %>
-                        <% } %>                     
-                    </tbody>
-                </table>
-            <% } %> 
-        </div>
-
-        <div class="modal" id="modalUpdate">
-            <div class="modal-content">
-                <input type="hidden" id="Id_Facture">
-                <h2>Facture n°<span id="Numero_Facture"></span></h2>
-                <div class="rowinput">
-                    <label>Date d'édition :</label>
-                    <p id="Date_Creation"></p>
+<div class="modal" id="modalFacture">
+    <div class="modal-content">
+        <div class="modal_inner">
+        <span class="close closespan">&times;</span>
+        <h2>Facture</h2>        
+        <form id="formFacture">
+            <input type="hidden" id="Id_Facture" value="">   
+            <div class="rowinput_ctn">
+                <label for="Id_Vente">Vente : </label>
+                <select id="Id_Vente" name="Vente" required>
+                    <option disabled value="" selected>Sélectionner une vente</option>
+                </select>
+                <div id="div_InfosVente">
+                    <h4>Infos vente : </h4>
+                    <div class="rowinput">
+                        <label for="clientNom">Client : </label><p id="clientNom"></p>
+                        <label for="clientSociete">Société : </label><p id="clientSociete"></p>
+                    </div>
+                    <div class="rowinput">
+                        <label for="venteRefDevis">Ref Devis : </label><p id="venteRefDevis"></p>
+                    </div>
+                    <div class="rowinput">
+                        <label for="venteDateEvenement">Date Evénement : </label><p id="venteDateEvenement"></p>
+                        <label for="venteNbPersonnes">Nb Convives : </label><p id="venteNbPersonnes"></p>
+                    </div>
+                    <div class="rowinput">
+                        <label for="venteDescription">Description : </label><p id="venteDescription"></p>
+                    </div>
+                    <div class="rowinput">
+                        <label for="ventePrixTTC">Prix TTC : </label><p id="ventePrixTTC"></p>
+                        <label for="venteResteAPayer">Reste A Payer : </label><p id="venteResteAPayer"></p>
+                    </div>
                 </div>
-                <div class="rowinput" id="divSociete">
-                    <label>Société :</label>
-                    <p id="Societe"></p>
-                </div>
-                <div class="rowinput">
-                    <label>Client :</label>
-                    <p id="Client"></p>
-                </div>
-                <div class="rowinput">
-                    <label>Email :</label>
-                    <p id="Email"></p>
-                </div>
-                <div class="rowinput">
-                    <label>Téléphone :</label>
-                    <p id="Telephone"></p>
-                </div>
-                <h4>Statut</h4>
-                <div class="row" id="Statut">
-                    <button id="btnAttente" data-statut="En attente de paiement">En attente de paiement</button>
-                    <button id="btnPayee" data-statut="Payée">Payée</button>
-                    <button type="button" disabled>Acompte : <input id="Acompte" type="number" min="0" step=".01"></button>
-                </div>
-                <h4>Actions</h4>
-                <div class="row">
-                    <button id="btnArchive">Archiver</button>
-                    <button id="btnExport">Exporter</button>
-                    <button id="btnRelance">Envoyer une relance</button>
-                </div>
-                <p id="modalError" class="messageError"></p><br>
-                <p id="modalMessage" class="messageConf"></p><br>
-                <button id="btnUpdate">&check;</button>
+                <br>
             </div>
+            <h4>Infos facture : </h4>
+            <div class="rowinput" id="div_refFacture">
+                <label for="Ref_Facture">Ref Facture : </label><input id="Ref_Facture" name="RefFacture" type="text" disabled><br>
+            </div>
+            <div class="rowinput">
+                <label for="Description">Description : </label>
+                <textarea id="Description" name="Description" rows="5" cols="100" required></textarea>
+                <br>
+            </div>
+            <div class="rowinput">
+                <label for="Type_Facture">Type Facture : </label>
+                <input id="radioAcompte" name="Type_Facture" type="radio" value="acompte" required><label for="radioAcompte">Acompte</label>
+                <input id="Pourcentage_Acompte" name="PourcentageAcompte" type="number" min="1" max="100" step="0.01" disabled><label for="PourcentageAcompte"> %</label>
+                <br>
+                <input id="radioSolde" name="Type_Facture" type="radio" value="solde" checked required><label for="radioSolde">Solde</label>
+                <input id="solde" name="solde" type="number" min="1" step="0.01"><label for="solde"> € TTC</label>
+                <br>
+            </div>
+            <div class="rowinput">
+                <label for="Date_Paiement_Du">Date limite de paiement : </label><input id="Date_Paiement_Du" name="DatePaiementDu" type="text" class="datepicker" required><br>
+            </div>
+            <div class="rowinput montantfacture">
+                <label for="Prix_TTC">Prix TTC : </label><input id="Prix_TTC" name="PrixTTC" type="text" disabled required><label for="Prix_TTC"> €</label><br>
+            </div>
+            <div class="row" id="div_btnActionsUpdate" style="display: none;">
+                <button id="btnExport" type="button">Exporter Facture</button>
+                <button id="btnIsPayed" type="button">Noter Payée</button>
+            </div>
+            <p id="modalError" class="messageError"></p><br>
+            <p id="modalMessage" class="messageConf"></p><br>
+            <button id="btnUpdate" type="submit">&check;</button>
+        </form>
+    </div>
         </div>
+</div>
 
-        <div class="btnbotright">
-            <button id="btnOpenModalUpdate">Modifier</button> 
-            <button id="btnDelete">Supprimer</button>
-        </div>
+<div class="btntopright">
+    <button id="btnAjouteFacture">+</button>
+</div>
+<div class="btnbotright">
+    <button id="btnModifieFacture">Modifier</button> 
+    <button id="btnAnnuleFacture">Annuler</button>
+</div>

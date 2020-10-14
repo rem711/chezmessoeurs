@@ -43,8 +43,8 @@ module.exports = (sequelize, DataTypes) => {
 			defaultValue : null,
 			validate : {
 				len : {
-					args : [1, 500],
-					msg : 'Le nom de la société ne peut pas contenir plus de 500 cractères.'
+					args : [3, 500],
+					msg : 'Le nom de la société doit être compris entre 3 et 500 cractères.'
 				}
 			}
 		},
@@ -174,32 +174,11 @@ module.exports = (sequelize, DataTypes) => {
 				}
 			}
 		},
-		Nombre_Prestations: {
-			field : 'Nombre_Prestations',
-			type: DataTypes.INTEGER(4).UNSIGNED,
-			allowNull: false,
-			defaultValue: 0
-		},
-		Dernier_Statut: {
-			field : 'Dernier_Statut',
-			type: DataTypes.STRING(50),
-			allowNull: true,
-			defaultValue : null
-		},
-		Paiement_En_Retard: {
-			field : 'Paiement_En_Retard',
-			type: DataTypes.INTEGER(4).UNSIGNED,
-			allowNull: false,
-			defaultValue: 0
-		}
   }, {
 	  tableName : 'clients'
   });
   Clients.associate = function(models) {
 	// associations can be defined here
-	// Clients.hasMany(models.Estimations)
-	// Clients.hasMany(models.Devis)
-	// Clients.hasMany(models.Factures)
   };
   return Clients;
 };

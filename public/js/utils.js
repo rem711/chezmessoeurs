@@ -56,3 +56,19 @@ const toggleSelectedLi = (liClicked) => {
         selectedLi.setAttribute('class', selectedLi.getAttribute('class').replace(/selected/g, ''))
     }
 }
+
+const initDateTimePickers = () => {
+    jQuery.datetimepicker.setLocale('fr');
+    $('.datetimepicker').datetimepicker({
+        format:'d/m/Y H:i',
+        step : 15
+    })
+}
+
+const initDatePickers = () => {
+    jQuery.datetimepicker.setLocale('fr');
+    $('.datepicker').datetimepicker({
+        format:'d/m/Y',
+        timepicker : false
+    })
+}

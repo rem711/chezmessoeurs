@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.INTEGER(11),
             allowNull : false,
             defaultValue : 0
-		},
+		}
     }, {
 		tableName : 'compteurs'
 	})

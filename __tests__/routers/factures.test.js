@@ -429,7 +429,7 @@ describe("Router Factures", () => {
 
                 expect(infos.message).toBe('La relance a bien été envoyée.')
                 expect(facture.Nb_Relances).toBe(1)
-                expect(moment.utc(facture.Date_Derniere_Relance).format('DD/MM/YYYY')).toBe(moment.utc().format('DD/MM/YYYY'))
+                expect(moment(facture.Date_Derniere_Relance).format('DD/MM/YYYY')).toBe(moment().format('DD/MM/YYYY'))
             })
         })
 

@@ -10,6 +10,31 @@
 		padding: 5px 0;
 
 }
+    
+    /***************************** MODAL  ****************************/
+
+    .rowinput_ctn{
+        flex-direction: column;
+    }
+    
+    .montantfacture {
+        width: 100%;
+}
+    
+    
+    
+    		/***************************** STATS  ****************************/
+    
+    .stats_ctn{
+        flex-direction: column;
+    }
+    
+    .stats {
+min-height: 25vh;
+    width: 100%;
+        
+    }
+
 		/***************************** AGENDA  ****************************/
 
 	

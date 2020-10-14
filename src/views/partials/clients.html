@@ -1,5 +1,4 @@
 <script defer src="/js/clients.js"></script>
-<script defer src="/js/modals/clients.js"></script>
 
 
     <div class="content_inner">
@@ -18,20 +17,16 @@
                     <th>Téléphone</th>
                     <th>Email</th>
                     <th>Type</th>
-                    <th>Nb Prestations</th>
-                    <th>Dernier Statut</th>
-                    <th>Paiement(s) en retard</th>
-
                 </thead>
                 <tbody>
                 <% if(locals.infos && infos.message) { %>
-                    <tr><td colspan="8">
+                    <tr><td colspan="5">
                         <%= infos.message %>
                     </td></tr>         
                 <% } else { %>                    
                     <% if(locals.clients) { %>
                         <% clients.forEach(client => { %>
-                            <% const { Id_Client, Nom, Prenom, Adresse_Facturation_Adresse, Adresse_Facturation_CP, Adresse_Facturation_Ville, Telephone, Email, Type, Nombre_Prestations, Dernier_Statut, Paiement_En_Retard } = client %>
+                            <% const { Id_Client, Nom, Prenom, Adresse_Facturation_Adresse, Adresse_Facturation_CP, Adresse_Facturation_Ville, Telephone, Email, Type } = client %>
                             <% const id = 'client_' + Id_Client %>
                             <tr id="<%= id %>">
                                 <td><%= Prenom + ' ' + Nom %></td>
@@ -39,10 +34,7 @@
                                 <td><%= Adresse_Facturation %></td>
                                 <td><%= Telephone %></td>
                                 <td><%= Email %></td>
-                                <td><%= Type %></td>
-                                <td><%= Nombre_Prestations %></td>
-                                <td><%= Dernier_Statut %></td>
-                                <td><%= Paiement_En_Retard %></td>    
+                                <td><%= Type %></td> 
                             </tr>
                         <% }) %>
                     <% } %>
@@ -57,6 +49,7 @@
             <span class="close closespan">&times;</span>
             <h2>Client</h2>
             <form id="formUpdate" action="/clients/" method="PATCH">
+                <input id="Id_Client" type="hidden" value="">
                 <div class="rowinput">
                     <label for="Nom">Nom : </label><input id="Nom" name="Nom" type="text" placeholder="Nom" required><br>
                 </div>
@@ -97,7 +90,9 @@
             </form>
         </div>
     </div>
-    
+    <div class="btntopright">
+        <button id="btnAjouteClient">+</button>
+    </div>
     <div class="btnbotright">
         <button id="btnOpenModalUpdate">Modifier</button>     
     </div>

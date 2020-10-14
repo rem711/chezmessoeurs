@@ -164,6 +164,13 @@ tr:focus-within{
     padding: 5px 0;
 }
 
+.rowinput_ctn{
+        display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    padding: 5px 0;
+}
+
 .rowinput label{
     padding-right: 15px;
     min-width :150px;
@@ -346,11 +353,42 @@ input:focus {
 }
 
 
+/******************************* datetimepicker ***********************/
 
+.xdsoft_datetimepicker .xdsoft_calendar td.xdsoft_default, .xdsoft_datetimepicker .xdsoft_calendar td.xdsoft_current, .xdsoft_datetimepicker .xdsoft_timepicker .xdsoft_time_box>div>div.xdsoft_current {
+    background: #f3705a !important;
+    box-shadow: #f3705a 0 1px 3px 0 inset !important;
+    color: #fff;
+    font-weight: 700;
+}
 
+.xdsoft_datetimepicker .xdsoft_calendar td:hover, .xdsoft_datetimepicker .xdsoft_timepicker .xdsoft_time_box>div>div:hover {
+    color: #000000 !important;
+    background: #e6e6e6 !important;
+    box-shadow: none !important;
+}
 
+.xdsoft_datetimepicker .xdsoft_calendar th {
+    font-size: 12px;
+    text-align: center;
+    background-color: #f3705a;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 700;
+} 
+.xdsoft_datetimepicker td {
+    padding: 0 !important;
+    margin: 0;
+}
 
+.error_message{
+    color: crimson;
+margin: 15px 15px 0 15px;
+font-weight: 600;
+}
 
-
-
-
+.info_message{
+    color: green;
+margin: 15px 15px 0 15px;
+font-weight: 600;
+}

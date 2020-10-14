@@ -2,3 +2,20 @@
     background: #e06128 !important;
     color: white !important;
 }
+
+#div_InfosVente {
+    padding-left: 25px;
+}
+
+.montantfacture {
+border: 1px solid black;
+    padding: 15px;
+
+    width: 40%;
+    background: rgba(107, 97, 97, 0.1);
+margin: 25px auto;
+}
+
+#div_InfosVente .rowinput label{
+    padding-left: 25px;
+}

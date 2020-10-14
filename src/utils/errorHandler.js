@@ -48,6 +48,14 @@ const getErrorMessage = (error) => {
         else if(error.name === 'SequelizeDatabaseError') {
             message = error.parent.sqlMessage
         }
+        else if(error.name === 'SequelizeUniqueConstraintError') {
+            if(error.errors[0].instance.Ref_Facture !== undefined) {
+                message = "Le numéro de référence facture doit être unique."
+            }
+            else {
+                message = "Il y a une erreur d'unicité."
+            }
+        }
         else if(error.name === 'SequelizeConnectionRefusedError') {
             message = "La connexion à la base de données est interrompue, veuillez réessayer plus tard. Si l'erreur persiste, veuillez en informer votre Webmaster."
         }

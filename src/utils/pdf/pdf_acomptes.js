@@ -68,7 +68,7 @@ module.exports = (res, acompte) => {
                 right : 50
             },
             info : { 
-                Title : `CHEZ MES SOEURS - Facture d'Acompte ${acompte.Numero_Acompte}`,
+                Title : `CHEZ MES SOEURS - Facture d'Acompte ${acompte.Ref_Facture}`,
                 Author : 'CHEZ MES SOEURS'
             } 
         })
@@ -116,7 +116,7 @@ const drawGeneralHeader = () => {
     const options = { align : 'center'}
     let width = doc.widthOfString(content1, options)
     let height = doc.heightOfString(content1, { ...options, width })
-    const content2 = acompte.Numero_Acompte
+    const content2 = acompte.Ref_Facture
     width = doc.widthOfString(content2, options)
     height += doc.heightOfString(content2, { ...options, width })
 
@@ -207,19 +207,19 @@ const drawIdentification = () => {
     }
     
 
-    const isProfessionnel = acompte.Facture.Client.Type === 'Professionnel'
+    const isProfessionnel = !!acompte.Client.Societe
     if(isProfessionnel) {
-        doc.text(acompte.Facture.Client.Societe, xIdentificationClient, doc.y, options)
+        doc.text(acompte.Client.Societe, xIdentificationClient, doc.y, options)
     }
-    doc.text(`${acompte.Facture.Client.Prenom} ${acompte.Facture.Client.Nom}`, xIdentificationClient, doc.y, options)
-    doc.text(acompte.Facture.Client.Adresse_Facturation_Adresse, xIdentificationClient, doc.y, options)
-    if(acompte.Facture.Client.Adresse_Facturation_Adresse_Complement_1 !== '' && acompte.Facture.Client.Adresse_Facturation_Adresse_Complement_2 !== '') {
-        doc.text(acompte.Facture.Client.Adresse_Facturation_Adresse_Complement_1, xIdentificationClient, doc.y, options)
-        doc.text(acompte.Facture.Client.Adresse_Facturation_Adresse_Complement_2, xIdentificationClient, doc.y, options)
+    doc.text(`${acompte.Client.Prenom} ${acompte.Client.Nom}`, xIdentificationClient, doc.y, options)
+    doc.text(acompte.Client.Adresse_Facturation_Adresse, xIdentificationClient, doc.y, options)
+    if(acompte.Client.Adresse_Facturation_Adresse_Complement_1 !== '' && acompte.Client.Adresse_Facturation_Adresse_Complement_2 !== '') {
+        doc.text(acompte.Client.Adresse_Facturation_Adresse_Complement_1, xIdentificationClient, doc.y, options)
+        doc.text(acompte.Client.Adresse_Facturation_Adresse_Complement_2, xIdentificationClient, doc.y, options)
     }
-    doc.text(`${acompte.Facture.Client.Adresse_Facturation_CP} ${acompte.Facture.Client.Adresse_Facturation_Ville.toUpperCase()}`, xIdentificationClient, doc.y, options)
+    doc.text(`${acompte.Client.Adresse_Facturation_CP} ${acompte.Client.Adresse_Facturation_Ville.toUpperCase()}`, xIdentificationClient, doc.y, options)
     if(isProfessionnel) {
-        doc.text(`Numéro TVA : ${acompte.Facture.Client.Numero_TVA}`, xIdentificationClient, doc.y, options)
+        doc.text(`Numéro TVA : ${acompte.Client.Numero_TVA}`, xIdentificationClient, doc.y, options)
     }
 
     hauteurMaxIdentification = hauteurMaxIdentification > doc.y ? hauteurMaxIdentification : doc.y
@@ -256,10 +256,10 @@ const drawRefFactureDate = () => {
 
     const xFactureDate = doc.page.margins.left + paddingPageContent.left + paddingContent.left
     doc
-    .text(`Référence devis : ${acompte.Facture.Devis.Numero_Devis}`, xFactureDate, doc.y)
-    // .text(`Référence facture : ${acompte.Facture.Numero_Facture}`, xFactureDate, doc.y)
-    .text(`Référence acompte : ${acompte.Numero_Acompte}`, xFactureDate, doc.y)
-    .text(`Date d'émission : ${moment.utc().format('DD/MM/YYYY')}`)
+    .text(`Référence devis : ${acompte.Vente.Ref_Devis}`, xFactureDate, doc.y)
+    // .text(`Référence facture : ${acompte.Numero_Facture}`, xFactureDate, doc.y)
+    .text(`Référence acompte : ${acompte.Ref_Facture}`, xFactureDate, doc.y)
+    .text(`Date d'émission : ${moment().format('DD/MM/YYYY')}`)
 
     yPos = doc.y
 }
@@ -278,12 +278,12 @@ const drawReglement = (yTop) => {
     doc.font(fontContent).fontSize(fontSizeContent)
     doc.text('Mode de règlement : virement bancaire*', pageLeft, doc.y, options)
 
-    if(acompte.Facture.Client.Type === 'Professionnel') {
+    if(acompte.Client.Type === 'Professionnel') {
         doc.y += paddingContent.top
         // doc.text(`Date d'échéance : Payable à réception`, pageLeft, doc.y, options)
-        doc.text(`Date d'échéance : ${moment.utc(acompte.Facture.Date_Creation).add(1, 'months').add(2, 'days').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Date d'échéance : ${acompte.Date_Paiement_Du}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
-        doc.text(`Date d'exécution de la prestation : ${moment.utc(acompte.Facture.Date_Evenement).format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Date d'exécution de la prestation : ${acompte.Date_Evenement}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
         doc.text(`Taux de pénalité à compter du : -`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
@@ -354,18 +354,18 @@ const drawLastPage = () => {
     doc.fontSize(fontSizeContent).font(fontContent).fillColor('black', 1)
 
     let stringMontant = ''
-    if(acompte.IsPourcent) {
-        stringMontant += `${acompte.Valeur} % sur les ${acompte.Facture.Reste_A_Payer} € restant à votre charge, soit la somme de ${acompte.Montant} €.`
+    if(acompte.Pourcentage_Acompte) {
+        stringMontant += `${acompte.Pourcentage_Acompte}% sur les ${acompte.Vente.Reste_A_Payer} € restant à votre charge, soit la somme de ${acompte.Prix_TTC} €.`
     }
     else {
-        stringMontant += `${acompte.Valeur} € sur les ${acompte.Facture.Reste_A_Payer} € restant à votre charge.`
+        stringMontant += `${acompte.Prix_TTC} € sur les ${acompte.Vente.Reste_A_Payer} € restant à votre charge.`
     }
 
     doc
     .moveDown(4)
     .text('Madame, Monsieur,', (xPos + (paddingContent.left * 2)), doc.y, { width, align : 'left' })
     .moveDown(1)
-    .text(`Par la présente il vous est demandé un acompte sur le devis ${acompte.Facture.Devis.Numero_Devis} de ${stringMontant}`, xPos, doc.y, { width, align : 'left' })
+    .text(`Par la présente il vous est demandé un acompte sur le devis ${acompte.Vente.Ref_Devis} de ${stringMontant}`, xPos, doc.y, { width, align : 'left' })
     .text('Vous trouverez les modalités ci-dessous et nous restons à votre disposition.', xPos, doc.y, { width, align : 'left' })
     .moveDown(2)
     .text("L'équipe Chez Mes Soeurs", xPos, doc.y, { width, align : 'right' })

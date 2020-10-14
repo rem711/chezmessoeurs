@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 const PDFDocument = require('pdfkit')
 const moment = require('moment')
+const TVA = 10
 
 const pixelsToPoints = (px) => {
     return Math.round(px * 0.75)
@@ -69,7 +70,7 @@ module.exports = (res, facture, isRelance = false) => {
                 right : 50
             },
             info : { 
-                Title : `CHEZ MES SOEURS - Facture ${facture.Numero_Facture}`,
+                Title : `CHEZ MES SOEURS - Facture ${facture.Ref_Facture}`,
                 Author : 'CHEZ MES SOEURS'
             } 
         })
@@ -114,7 +115,7 @@ const drawGeneralHeader = () => {
     doc.fillColor('black', 1).fontSize(pixelsToPoints(21)).font(fontContent)
 
     const content1 = relance ? `Relance ${facture.Nb_Relances}\n` : ''
-    const content2 = `Facture n° ${facture.Numero_Facture}`
+    const content2 = `Facture n° ${facture.Ref_Facture}`
     const options = { align : 'center'}
     let width = doc.widthOfString(content1, options)
     let height = doc.heightOfString(content1, { ...options, width })
@@ -209,7 +210,7 @@ const drawIdentification = () => {
     }
     
 
-    const isProfessionnel = facture.Client.Type === 'Professionnel'
+    const isProfessionnel = !!facture.Client.Societe
     if(isProfessionnel) {
         doc.text(facture.Client.Societe, xIdentificationClient, doc.y, options)
     }
@@ -262,9 +263,9 @@ const drawRefFactureDate = () => {
     //     y : doc.y
     // }
 
-    // const stringFacture = `Référence facture : ${facture.Numero_Facture}`
-    // const stringDevis = `Référence devis : ${facture.Devis.Numero_Devis}`
-    // const stringDate = `Date de facture : ${moment.utc(facture.Date_Creation).format('DD/MM/YYYY')}`
+    // const stringFacture = `Référence facture : ${facture.Ref_Facture}`
+    // const stringDevis = `Référence devis : ${facture.Vente.Ref_Devis}`
+    // const stringDate = `Date de facture : ${moment(facture.Date_Creation).format('DD/MM/YYYY')}`
     // let heightFirstCol = 0
     // width = (largeurDispo / 2) - (paddingContent.left + paddingContent.right) - paddingContent.right
     // let options = { align : 'left', width }
@@ -327,9 +328,9 @@ const drawRefFactureDate = () => {
 
     const xFactureDate = doc.page.margins.left + paddingPageContent.left + paddingContent.left
     doc
-    .text(`Référence devis : ${facture.Devis.Numero_Devis}`, xFactureDate, doc.y)
-    .text(`Référence facture : ${facture.Numero_Facture}`, xFactureDate, doc.y)
-    .text(`Date d'émission : ${moment.utc().format('DD/MM/YYYY')}`)
+    .text(`Référence devis : ${facture.Vente.Ref_Devis}`, xFactureDate, doc.y)
+    .text(`Référence facture : ${facture.Ref_Facture}`, xFactureDate, doc.y)
+    .text(`Date d'émission : ${moment().format('DD/MM/YYYY')}`)
 
     yPos = doc.y
 }
@@ -451,7 +452,7 @@ const drawTablesRecap = () => {
         yPos += paddingContent.top
 
         // col1
-        maxHeightRow = tabRecapWriteFirstCol('Désignation\n(/pers = par personne)', maxHeightRow, sizeCol1, pageLeft, 'center')
+        maxHeightRow = tabRecapWriteFirstCol('Désignation', maxHeightRow, sizeCol1, pageLeft, 'center')
 
         // col2
         maxHeightRow = tabRecapWriteSecondCol('Prix / Personne HT', maxHeightRow, sizeCol2, sizeCol1, 'center')
@@ -482,216 +483,37 @@ const drawTablesRecap = () => {
 
     // **** contenu du tableau
     doc.font(fontContent).fontSize(fontSizeContent)
-    if(facture.Formule_Aperitif.isAperitif) { 
-        const { Formule_Aperitif } = facture
+    // test d'espace
+    doc.fillColor('white', 0)
+    maxHeightRow = 0
+    content = facture.Description
+    maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
+    maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(facture.Prix_HT / facture.Vente.Nb_Personnes).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
+    maxHeightRow = tabRecapWriteThirdCol(`${facture.Prix_HT}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
 
-        // test d'espace
-        doc.fillColor('white', 0)
-        maxHeightRow = 0
-        content = `Formule Apéritif pour ${Formule_Aperitif.Nb_Convives} (${Formule_Aperitif.Nb_Pieces_Salees} pièces /pers)`
-        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Aperitif.Prix_HT / Formule_Aperitif.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Aperitif.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-        // pas assez d'espace
-        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
-            contoursTableau()
-            nextPage()
-            enteteTableau()
-        }
-
-        // on ajoute la padding top
-        yPos += paddingContent.top
-
-        // écriture
-        doc.fillColor('black', 1)
-        maxHeightRow = 0
-        content = `Formule Apéritif pour ${Formule_Aperitif.Nb_Convives} (${Formule_Aperitif.Nb_Pieces_Salees} pièces /pers)`
-        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Aperitif.Prix_HT / Formule_Aperitif.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Aperitif.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-        // on ajoute le padding bottom
-        yPos += maxHeightRow
-        // on ajoute la ligne du dessous de la row
-        tabPositions.push({x : pageLeft, y : yPos}) 
-        tabPositions.push({x : pageRight, y : yPos})   
-    }
-    if(facture.Formule_Cocktail.isCocktail) {  
-        const { Formule_Cocktail } = facture
-
-        // test d'espace
-        doc.fillColor('white', 0)
-        maxHeightRow = 0
-        content = `Formule Cocktail pour ${Formule_Cocktail.Nb_Convives} (${Formule_Cocktail.Nb_Pieces_Salees} pièces salées /pers, ${Formule_Cocktail.Nb_Pieces_Sucrees} pièces sucrée(s) /pers)`
-        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Cocktail.Prix_HT / Formule_Cocktail.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Cocktail.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-        // pas assez d'espace
-        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
-            contoursTableau()
-            nextPage()
-            enteteTableau()
-        }
-
-        // on ajoute la padding top
-        yPos += paddingContent.top
-
-        // écriture
-        doc.fillColor('black', 1)
-        maxHeightRow = 0
-        content = `Formule Cocktail pour ${Formule_Cocktail.Nb_Convives} (${Formule_Cocktail.Nb_Pieces_Salees} pièces salées /pers, ${Formule_Cocktail.Nb_Pieces_Sucrees} pièces sucrée(s) /pers)`
-        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Cocktail.Prix_HT / Formule_Cocktail.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Cocktail.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-        // on ajoute le padding bottom
-        yPos += maxHeightRow
-        // on ajoute la ligne du dessous de la row
-        tabPositions.push({x : pageLeft, y : yPos}) 
-        tabPositions.push({x : pageRight, y : yPos}) 
-    }
-    if(facture.Formule_Box.isBox) { 
-        const { Formule_Box } = facture
-
-        // test d'espace
-        doc.fillColor('white', 0)
-        maxHeightRow = 0
-        maxHeightRow = tabRecapWriteFirstCol(`Formule Box Déjeuner pour ${Formule_Box.Nb_Convives}`, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Box.Prix_HT / Formule_Box.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Box.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-        // pas assez d'espace
-        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
-            contoursTableau()
-            nextPage()
-            enteteTableau()
-        }
-
-        // on ajoute la padding top
-        yPos += paddingContent.top
-
-        // écriture
-        doc.fillColor('black', 1)
-        maxHeightRow = 0
-        maxHeightRow = tabRecapWriteFirstCol(`Formule Box Déjeuner pour ${Formule_Box.Nb_Convives}`, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Box.Prix_HT / Formule_Box.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Box.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-        // on ajoute le padding bottom
-        yPos += maxHeightRow
-        // on ajoute la ligne du dessous de la row
-        tabPositions.push({x : pageLeft, y : yPos}) 
-        tabPositions.push({x : pageRight, y : yPos}) 
-    }
-    if(facture.Formule_Brunch.isBrunch) { 
-        const { Formule_Brunch } = facture
-
-        // test d'espace
-        doc.fillColor('white', 0)
-        maxHeightRow = 0
-        content = `Formule Brunch Privé pour ${Formule_Brunch.Nb_Convives} (${Formule_Brunch.Nb_Pieces_Salees} pièces salées /pers, ${Formule_Brunch.Nb_Pieces_Sucrees} pièces sucrée(s) /pers)`
-        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Brunch.Prix_HT / Formule_Brunch.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Brunch.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-        // pas assez d'espace
-        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
-            contoursTableau()
-            nextPage()
-            enteteTableau()
-        }
-
-        // on ajoute la padding top
-        yPos += paddingContent.top
-        
-        // écriture
-        doc.fillColor('black', 1)
-        maxHeightRow = 0
-        content = `Formule Brunch Privé pour ${Formule_Brunch.Nb_Convives} (${Formule_Brunch.Nb_Pieces_Salees} pièces salées /pers, ${Formule_Brunch.Nb_Pieces_Sucrees} pièces sucrée(s) /pers)`
-        maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(Formule_Brunch.Prix_HT / Formule_Brunch.Nb_Convives).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(Formule_Brunch.Prix_HT).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-        // on ajoute le padding bottom
-        yPos += maxHeightRow
-        // on ajoute la ligne du dessous de la row
-        tabPositions.push({x : pageLeft, y : yPos}) 
-        tabPositions.push({x : pageRight, y : yPos}) 
+    // pas assez d'espace
+    if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
+        contoursTableau()
+        nextPage()
+        enteteTableau()
     }
 
-    // options
-    // let i = 0
-    // for (let n = 0; n < 11; n++) {
-    for(let i = 0; i < facture.Liste_Options.length; i++) {
-        // test d'espace
-        doc.fillColor('white', 0)
-        maxHeightRow = 0
-        maxHeightRow = tabRecapWriteFirstCol(facture.Liste_Options[i].Nom, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol('-', maxHeightRow, sizeCol2, sizeCol1, 'center')
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(facture.Liste_Options[i].Montant).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-        
-        // pas assez d'espace
-        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
-            contoursTableau()
-            nextPage()
-            enteteTableau()
-        }
+    // on ajoute la padding top
+    yPos += paddingContent.top
 
-        yPos += paddingContent.top
+    // écriture
+    doc.fillColor('black', 1)
+    maxHeightRow = 0
+    content = facture.Description
+    maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
+    maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(facture.Prix_HT / facture.Vente.Nb_Personnes).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
+    maxHeightRow = tabRecapWriteThirdCol(`${facture.Prix_HT}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
 
-        // écriture
-        doc.fillColor('black', 1)
-        maxHeightRow = 0
-        maxHeightRow = tabRecapWriteFirstCol(facture.Liste_Options[i].Nom, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol('-', maxHeightRow, sizeCol2, sizeCol1, 'center')
-        maxHeightRow = tabRecapWriteThirdCol(`${Number.parseFloat(facture.Liste_Options[i].Montant).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-        // on ajoute le padding bottom
-        yPos += maxHeightRow
-
-        // on ajoute la ligne du dessous de la row
-        tabPositions.push({x : pageLeft, y : yPos}) 
-        tabPositions.push({x : pageRight, y : yPos})   
-    }
-    // remise
-    if(facture.Remise !== null) {
-        // test d'espace
-        doc.fillColor('white', 0)
-        maxHeightRow = 0
-        maxHeightRow = tabRecapWriteFirstCol(facture.Remise.Nom, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol('-', maxHeightRow, sizeCol2, sizeCol1, 'center')
-        let prixRemise = facture.Remise.Valeur
-        if(facture.Remise.IsPourcent) {
-            prixRemise = facture.Prix_HT * (facture.Remise.Valeur / 100)
-        }
-        maxHeightRow = tabRecapWriteThirdCol(`${Number(prixRemise).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-        // pas assez d'espace
-        if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
-            contoursTableau()
-            nextPage()
-            enteteTableau()
-        }
-
-        // on ajoute la padding top
-        yPos += paddingContent.top
-
-        // écriture
-        doc.fillColor('black', 1)
-        maxHeightRow = 0
-        maxHeightRow = tabRecapWriteFirstCol(facture.Remise.Nom, maxHeightRow, sizeCol1, pageLeft, 'left')
-        maxHeightRow = tabRecapWriteSecondCol('-', maxHeightRow, sizeCol2, sizeCol1, 'center')
-        maxHeightRow = tabRecapWriteThirdCol(`${Number(prixRemise).toFixed(2)}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
-
-        // on ajoute le padding bottom
-        yPos += maxHeightRow
-
-        // on ajoute la ligne du dessous de la row
-        tabPositions.push({x : pageLeft, y : yPos}) 
-        tabPositions.push({x : pageRight, y : yPos}) 
-    }
+    // on ajoute le padding bottom
+    yPos += maxHeightRow
+    // on ajoute la ligne du dessous de la row
+    tabPositions.push({x : pageLeft, y : yPos}) 
+    tabPositions.push({x : pageRight, y : yPos})  
 
     contoursTableau()
     
@@ -719,7 +541,7 @@ const drawTablesRecap = () => {
         currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
         maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
         options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
-        content = `${Number.parseFloat(facture.Prix_HT).toFixed(2)}€`
+        content = `${facture.Prix_HT}€`
         doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
         currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
         maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
@@ -730,13 +552,13 @@ const drawTablesRecap = () => {
         tabPositions.push({x : aPayerLeft, y : yPos})
         tabPositions.push({x : aPayerRight, y : yPos})
         options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
-        content = 'TVA (10%)'
+        content = `TVA (${TVA}%)`
         yPos += paddingContent.top
         doc.text(content, xPos, yPos, options)
         currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
         maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
         options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
-        content = `${Number.parseFloat(facture.Prix_HT * 0.1).toFixed(2)}€`
+        content = `${Number.parseFloat(facture.Prix_HT * (TVA / 100)).toFixed(2)}€`
         doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
         currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
         maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
@@ -753,24 +575,62 @@ const drawTablesRecap = () => {
         currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
         maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
         options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
-        content = `${Number.parseFloat(facture.Prix_TTC).toFixed(2)}€`
+        content = `${facture.Prix_TTC}€`
         doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
         currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
         maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
         yPos += maxHeightRow
 
         // acompte
+        if(Number(facture.acompteVerse) > 0) {
+            maxHeightRow = 0
+            tabPositions.push({x : aPayerLeft, y : yPos})
+            tabPositions.push({x : aPayerRight, y : yPos})
+            options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
+            content = 'ACOMPTE VERSE'
+            yPos += paddingContent.top
+            doc.text(content, xPos, yPos, options)
+            currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+            maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+            options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
+            content = `${facture.acompteVerse}€`
+            doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
+            currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+            maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+            yPos += maxHeightRow
+        }
+
+        // à venir (reste à payer)
+        if(Number(facture.Reste_A_Payer) > 0) {
+            maxHeightRow = 0
+            tabPositions.push({x : aPayerLeft, y : yPos})
+            tabPositions.push({x : aPayerRight, y : yPos})
+            options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
+            content = 'A VENIR'
+            yPos += paddingContent.top
+            doc.text(content, xPos, yPos, options)
+            currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+            maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+            options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
+            content = `${facture.Reste_A_Payer}€`
+            doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
+            currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+            maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+            yPos += maxHeightRow
+        }
+
+        // TOTAL
         maxHeightRow = 0
         tabPositions.push({x : aPayerLeft, y : yPos})
         tabPositions.push({x : aPayerRight, y : yPos})
         options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
-        content = 'ACOMPTE VERSE'
+        content = 'TOTAL'
         yPos += paddingContent.top
         doc.text(content, xPos, yPos, options)
         currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
         maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
         options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
-        content = `${Number.parseFloat(facture.Acompte).toFixed(2)}€`
+        content = `${Number(facture.Vente.Prix_TTC).toFixed(2)}€`
         doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
         currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
         maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
@@ -787,11 +647,13 @@ const drawTablesRecap = () => {
         currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
         maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
         options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
-        content = `${Number.parseFloat(facture.Reste_A_Payer).toFixed(2)}€`
+        content = `${facture.Prix_TTC}€`
         doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
         currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
         maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
         yPos += maxHeightRow
+
+        
 
         tabPositions.push({x : aPayerLeft, y : yPos})
         tabPositions.push({x : aPayerRight, y : yPos})
@@ -866,11 +728,11 @@ const drawReglement = (yTop) => {
     doc.font(fontContent).fontSize(fontSizeContent)
     doc.text('Mode de règlement : virement bancaire*', pageLeft, doc.y, options)
 
-    if(facture.Client.Type === 'Professionnel') {
+    if(facture.Client.Societe) {
         doc.y += paddingContent.top
-        doc.text(`Date d'échéance : ${moment.utc(facture.Date_Creation).add(1, 'months').add(2, 'days').format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Date d'échéance : ${facture.Date_Paiement_Du}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
-        doc.text(`Date d'exécution de la prestation : ${moment.utc(facture.Date_Evenement).format('DD/MM/YYYY')}`, pageLeft, doc.y, options)
+        doc.text(`Date d'exécution de la prestation : ${facture.Date_Evenement}`, pageLeft, doc.y, options)
         doc.y += paddingContent.top
         doc.text(`Taux de pénalité à compter du : -`, pageLeft, doc.y, options)
         doc.y += paddingContent.top

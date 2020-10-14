@@ -106,10 +106,10 @@ const updateClient = async (Id_Client, postClient) => {
         if(postClient.Societe === undefined || postClient.Societe === 'undefined' || postClient.Societe === '') {
             throw "Le nom de la société doit être défini."
         }
-        if(postClient.Numero_TVA === undefined || postClient.Numero_TVA === 'undefined' || postClient.Numero_TVA === '') {
-            throw "Le numéro de TVA doit être défini."
-        }
-        else {
+        // if(postClient.Numero_TVA === undefined || postClient.Numero_TVA === 'undefined' || postClient.Numero_TVA === '') {
+        //     throw "Le numéro de TVA doit être défini."
+        // }
+        if(postClient.Numero_TVA !== undefined && postClient.Numero_TVA !== 'undefined' && postClient.Numero_TVA === '' && postClient.Numero_TVA !== null) {
             postClient.Numero_TVA = postClient.Numero_TVA.toUpperCase()
             if(postClient.Numero_TVA.match(/^FR[0-9]{2}[0-9]{9}$/ig) === null) {
                 throw "Le format du numéro de TVA est incorrect."
@@ -160,12 +160,50 @@ router
 // création d'un client
 .post('/clients', async (req, res) => {
     // récupération des données client
-    const postClient = req.query   
+    const postClient = req.body   
     let infos = undefined 
     let client = undefined
 
     try {
-        client = await createOrLoadClient(postClient)
+        // vérification des données
+        if(postClient.Nom === undefined || postClient.Nom === 'undefined' || postClient.Nom === '') {
+            throw "Le nom doit être défini."
+        }
+        if(postClient.Prenom === undefined || postClient.Prenom === 'undefined' || postClient.Prenom === '') {
+            throw "Le prénom doit être défini."
+        }
+        if(postClient.Email === undefined || postClient.Email === 'undefined' || postClient.Email === '') {
+            throw "L'adresse e-mail doit être définie."
+        }
+        else if(postClient.Email.match(/^.+@.+\.[a-z][a-z]+$/ig) === null) {
+            throw "L'adresse e-mail est incorrecte."
+        }
+        if(postClient.Telephone === undefined || postClient.Telephone === 'undefined' || postClient.Telephone === '') {
+            throw "Le numéro de téléphone doit être défini."
+        }
+        else {
+            postClient.Telephone = postClient.Telephone.replace(/ /g, '').replace(/-/g, '').replace(/_/g, '').replace(/\./g, '')
+            if(postClient.Telephone.match(/^[0-9]{10}$/g) === null) {
+                throw "Le numéro de téléphone est incorrect."
+            }
+        }
+
+        const temp_client = await Clients.findOne({
+            where : {
+                Nom : postClient.Nom,
+                Prenom : postClient.Prenom,
+                Telephone : postClient.Telephone,
+                Email : postClient.Email,
+                Adresse_Facturation_CP : postClient.Adresse_Facturation_CP,
+                Adresse_Facturation_Ville : postClient.Adresse_Facturation_Ville
+            }
+        })
+
+        if(temp_client) throw "Le client existe déjà."
+
+        client = await Clients.create(postClient)
+
+        infos = clientInformationObject(undefined, "Le client a bien été ajouté.")
     }
     catch(error) {
         client = undefined
@@ -185,12 +223,14 @@ router
     let clients = undefined
 
     try {
-        clients = await Clients.findAll()
+        clients = await Clients.findAll({
+            order : [['Nom', 'ASC'], ['Prenom', 'ASC']]
+        })
         if(clients === null) {
             throw 'Une erreur s\'est produite, impossible de charger les clients.'
         }
         else if(clients.length === 0) {
-            infos = clientInformationObject(undefined, 'Aucun client')
+            infos = clientInformationObject(undefined, 'Aucun client.')
         }
     }
     catch(error) {
@@ -201,6 +241,32 @@ router
     res.render('index', {
         isClients : true,
         infos,
+        clients
+    })
+})
+// retourne la liste des clients
+.get('/clients/liste', async (req, res) => {  
+    let infos = undefined
+    let clients = undefined
+
+    try {
+        clients = await Clients.findAll({
+            order : [['Nom', 'ASC'], ['Prenom', 'ASC']]
+        })
+        if(clients === null) {
+            throw 'Une erreur s\'est produite, impossible de charger les clients.'
+        }
+        else if(clients.length === 0) {
+            infos = clientInformationObject(undefined, 'Aucun client.')
+        }
+    }
+    catch(error) {
+        clients = undefined
+        infos = clientInformationObject(getErrorMessage(error), undefined)
+    }
+    
+    res.send({
+        infos, 
         clients
     })
 })
@@ -248,7 +314,7 @@ router
     // récupération de l'Id_Client
     const getId_Client = req.params.Id_Client
     // récupération des données client
-    const postClient = req.query
+    const postClient = req.body
 
     // init valeurs retour
     let infos = undefined

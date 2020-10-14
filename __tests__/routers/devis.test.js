@@ -90,7 +90,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-04-20 08:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-04-20 08:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(null)
                     expect(typeof devis.Id_Formule_Aperitif).toBe("number")
@@ -114,7 +114,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-04-20 08:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-04-20 08:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(null)
                     expect(devis.Id_Formule_Aperitif).toBe(null)
@@ -138,7 +138,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-04-20 08:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-04-20 08:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(null)
                     expect(devis.Id_Formule_Aperitif).toBe(null)
@@ -163,7 +163,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-04-20 08:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-04-20 08:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Livraison Brunch Client Test')
                     expect(devis.Id_Estimation).toBe(null)
                     expect(devis.Id_Formule_Aperitif).toBe(null)
@@ -190,7 +190,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-04-20 08:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-04-20 08:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Livraison Brunch Client Test')
                     expect(devis.Id_Estimation).toBe(null)
                     expect(devis.Id_Formule_Aperitif).toBe(null)
@@ -225,7 +225,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(3)
                     expect(devis.Id_Formule_Aperitif).toBe(3)
@@ -266,7 +266,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(4)
                     expect(devis.Id_Formule_Aperitif).toBe(null)
@@ -299,7 +299,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(5)
                     expect(devis.Id_Formule_Aperitif).toBe(null)
@@ -332,7 +332,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(6)
                     expect(devis.Id_Formule_Aperitif).toBe(null)
@@ -365,7 +365,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(7)
                     expect(devis.Id_Formule_Aperitif).toBe(null)
@@ -398,7 +398,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(8)
                     expect(devis.Id_Formule_Aperitif).toBe(null)
@@ -431,7 +431,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(9)
                     expect(devis.Id_Formule_Aperitif).toBe(null)
@@ -464,7 +464,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(10)
                     expect(devis.Id_Formule_Aperitif).toBe(null)
@@ -497,7 +497,7 @@ describe("Router devis", () => {
                     devisCreated.push(devis.Id_Devis)
 
                     expect(devis.Id_Client).toBe(5)
-                    expect(moment.utc(devis.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00:00').toString())
+                    expect(moment(devis.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00:00').toString())
                     expect(devis.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devis.Id_Estimation).toBe(11)
                     expect(devis.Id_Formule_Aperitif).toBe(3)
@@ -811,7 +811,7 @@ describe("Router devis", () => {
 
                     expect(infos.message).toBe('Le devis a bien été créé.')
                     expect(devisSent.Id_Client).toBe(5)
-                    expect(moment.utc(devisSent.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00').toString())
+                    expect(moment(devisSent.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00').toString())
                     expect(devisSent.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devisSent.Id_Estimation).toBe(null)
                     expect(typeof devisSent.Id_Formule_Aperitif).toBe("number")
@@ -837,7 +837,7 @@ describe("Router devis", () => {
 
                     expect(infos.message).toBe('Le devis a bien été créé.')
                     expect(devisSent.Id_Client).toBe(5)
-                    expect(moment.utc(devisSent.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00').toString())
+                    expect(moment(devisSent.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00').toString())
                     expect(devisSent.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devisSent.Id_Estimation).toBe(null)
                     expect(typeof devisSent.Id_Formule_Aperitif).toBe("number")
@@ -867,7 +867,7 @@ describe("Router devis", () => {
 
                     expect(infos.message).toBe('Le devis a bien été créé.')
                     expect(devisSent.Id_Client).toBe(5)
-                    expect(moment.utc(devisSent.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00').toString())
+                    expect(moment(devisSent.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00').toString())
                     expect(devisSent.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devisSent.Id_Estimation).toBe(null)
                     expect(typeof devisSent.Id_Formule_Aperitif).toBe("number")
@@ -896,7 +896,7 @@ describe("Router devis", () => {
 
                     expect(infos.message).toBe('Le devis a bien été créé.')
                     expect(devisSent.Id_Client).toBe(5)
-                    expect(moment.utc(devisSent.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00').toString())
+                    expect(moment(devisSent.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00').toString())
                     expect(devisSent.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devisSent.Id_Estimation).toBe(null)
                     expect(typeof devisSent.Id_Formule_Aperitif).toBe("number")
@@ -953,7 +953,7 @@ describe("Router devis", () => {
 
                     expect(infos.message).toBe('Le devis a bien été modifié.')
                     expect(devisSent.Id_Client).toBe(5)
-                    expect(moment.utc(devisSent.Date_Evenement).toString()).toBe(moment.utc('2020-08-27 19:00').toString())
+                    expect(moment(devisSent.Date_Evenement).toString()).toBe(moment('2020-08-27 19:00').toString())
                     expect(devisSent.Adresse_Livraison).toBe('adresse Facturation Client Test')
                     expect(devisSent.Id_Estimation).toBe(null)
                     expect(typeof devisSent.Id_Formule_Aperitif).toBe("number")

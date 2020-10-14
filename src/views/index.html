@@ -7,7 +7,8 @@
     <!--  CSS -->
     <link rel="stylesheet" href="/css/loadingSpinner.css">
     <link rel="stylesheet" href="/css/modal.css">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/main.css">    
+    <link rel="stylesheet" href="/assets/datetimepicker/jquery.datetimepicker.min.css">
 
     <% if(locals.isAgenda) { %> 
         <link rel="stylesheet" href="/assets/@fullcalendar/core/main.min.css">
@@ -15,33 +16,18 @@
         <link rel="stylesheet" href="/assets/@fullcalendar/timegrid/main.min.css">
         <link rel="stylesheet" href="/css/agenda.css">
     <% } %>
-    <% if(locals.isEstimations) { %> 
-        <link rel="stylesheet" type="text/css" href="/css/estimations.css">
-    <% } %>
-    <% if(locals.isDevis) { %> 
-        <link rel="stylesheet" type="text/css" href="/css/devis.css">
-    <% } %>
-    <% if(locals.isDevisItem) { %> 
-        <link rel="stylesheet" type="text/css" href="/css/devisitem.css">
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <% if(locals.isVentes) { %> 
+        <link rel="stylesheet" href="/css/ventes.css">
     <% } %>
     <% if(locals.isFactures) { %> 
         <link rel="stylesheet" href="/css/factures.css">
     <% } %>
     <% if(locals.isClients) { %> 
         <link rel="stylesheet" href="/css/clients.css">
-    <% } %>        
-    <% if(locals.isCarte) { %> 
-        <link rel="stylesheet" href="/css/carte.css">
-    <% } %>
-    <% if(locals.isPrix) { %> 
-        <link rel="stylesheet" href="/css/prix.css">
-    <% } %>
+    <% } %> 
     <% if(locals.isStatistiques) { %> 
-        
-    <% } %>
-    <% if(locals.isArchives) { %> 
-        
+        <link rel="stylesheet" href="/css/statistiques.css">
+
     <% } %>
 
     <link rel="stylesheet" href="/css/responsivephone.css">
@@ -49,6 +35,11 @@
     <link href="https://fonts.googleapis.com/css?family=Alegreya+Sans&display=swap" rel="stylesheet">
 
     <!--  JS -->
+    <script defer type="text/javascript" src="/assets/jquery/jquery-3.4.1.min.js"></script>
+    <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30=" crossorigin="anonymous"></script> -->
+    <script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+    <script defer type="text/javascript" src="/assets/datetimepicker/jquery.datetimepicker.full.min.js"></script>
+    <!-- <script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script> -->
     <script src="/js/spinner.js"></script>
     <script defer src="/js/utils.js"></script>
 </head>
@@ -60,13 +51,10 @@
             <ul class="menuleft">
                 <li>
                     <a href="/agenda">Agenda</a>
-                </li>
+                </li>        
                 <li>
-                    <a href="/estimations">Estimations</a>
-                </li>
-                <li>
-                    <a href="/devis">Devis</a>
-                </li>            
+                    <a href="/ventes">Ventes</a>
+                </li>  
                 <li>
                     <a href="/factures">Factures</a>
                 </li>
@@ -74,16 +62,7 @@
                     <a href="/clients">Clients</a>
                 </li>
                 <li>
-                    <a href="/carte">Carte</a>
-                </li>
-                <li>
-                    <a href="/prix&options">Prix & Options</a>
-                </li>
-                <li>
                     <a href="/statistiques">Statistiques</a>
-                </li>
-                <li>
-                    <a href="/archives">Archives</a>
                 </li>
                 <li>
                     <a href="/authentification/logout">Déconnexion</a>
@@ -96,32 +75,17 @@
             <% if(locals.isAgenda) { %> 
                 <%- include('partials/agenda.html') %> 
             <% } %>
-            <% if(locals.isEstimations) { %> 
-                <%- include('partials/estimations.html') %>
-            <% } %>
-            <% if(locals.isDevis) { %> 
-                <%- include('partials/devis.html') %>
-            <% } %>
-            <% if(locals.isDevisItem) { %> 
-                <%- include('partials/devisitem.html') %>
+            <% if(locals.isVentes) { %> 
+                <%- include('partials/ventes.html') %> 
             <% } %>
             <% if(locals.isFactures) { %> 
                 <%- include('partials/factures.html') %>
             <% } %>
             <% if(locals.isClients) { %> 
                 <%- include('partials/clients.html') %>
-            <% } %>        
-            <% if(locals.isCarte) { %> 
-                <%- include('partials/carte.html') %>
-            <% } %>
-            <% if(locals.isPrix) { %> 
-                <%- include('partials/prix.html') %>
-            <% } %>
+            <% } %>  
             <% if(locals.isStatistiques) { %> 
                 <%- include('partials/statistiques.html') %>
-            <% } %>
-            <% if(locals.isArchives) { %> 
-                <%- include('partials/archives.html') %>
             <% } %>
 
             <div id="spinner" class="overlay content_inner">

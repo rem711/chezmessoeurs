@@ -13,6 +13,10 @@ const error404Middleware = require('./middlewares/erreurs/404-handler')
 const logger = require('./utils/logger')
 const morgan = require('morgan')
 
+console.log = (msg) => logger.log({ level : 'info', message : msg})
+console.error = (msg) => logger.log({ level : 'error', message : msg})
+
+
 // chargement base de données
 const db = require('./models')
 // la base de données est disponible globalement l'instancier qu'une fois et utiliser son pool
@@ -21,14 +25,9 @@ global.db = db
 // chargement des routers
 const authRouter = require('./routers/auth')
 const agendaRouter = require('./routers/agenda')
-const archivesRouter = require('./routers/archives')
-const carteRouter = require('./routers/carte')
-const prixRouter = require('./routers/prix')
 const clientsRouter = require('./routers/clients').router
-const devisRouter = require('./routers/devis').router
-const estimationsRouter = require('./routers/estimations')
+const ventesRouter = require('./routers/ventes')
 const facturesRouter = require('./routers/factures').router
-const avoirsRouter = require('./routers/avoirs').router
 const statistiquesRouter = require('./routers/statistiques')
 
 const app = express()
@@ -81,14 +80,9 @@ app.use(express.static(publicDirectoryPath))
 // setup des routers
 app.use(authRouter)
 app.use(agendaRouter)
-app.use(archivesRouter)
-app.use(carteRouter)
-app.use(prixRouter)
 app.use(clientsRouter)
-app.use(devisRouter)
+app.use(ventesRouter)
 app.use(facturesRouter)
-app.use(avoirsRouter)
-app.use(estimationsRouter)
 app.use(statistiquesRouter)
 
 app

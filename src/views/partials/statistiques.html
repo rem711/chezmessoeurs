@@ -1,5 +1,71 @@
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script defer src="/js/statistiques.js"></script>
 
-        <div class="content_inner">
+<div class="content_inner">
 
-<h1>Statistiques</h1>
+    <h1>Statistiques</h1>
+    <div class="stats_ctn">
+
+        <div class="stats CAmois">
+            <h2>L'année en chiffres</h2>
+            <p id="infos_stats" style="display: none;" class="error_message"></p>
+            <div class="graph_ctn">
+                <canvas id="graphe_nbVentes"></canvas>
+                <canvas id="graphe_CA"></canvas>
+                <canvas id="graphe_moyennes"></canvas>
+                <canvas id="graphe_moyennesAnnees"></canvas>
+            </div>
+        </div>
+
+        <div class="stats prochains">
+            <h2>Prochains services traiteur</h2>
+            <p id="infos_ventesProchaines" style="display: none;" class="error_message"></p>
+            <table class="tab_stats_prochains">
+                <thead>
+                    <th>Date</th>
+                    <th>Client</th>
+                    <th>Description</th>
+                    <th>Nb Convives</th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="stats impayes">
+            <h2>Factures en attente de règlement</h2>
+            <p id="infos_facturesAttente" style="display: none;" class="error_message"></p>
+            <table class="tab_stats_impayes">
+                <thead>
+                    <th>Date Prestation</th>
+                    <th>Date Limite Paiement</th>
+                    <th>Client</th>
+                    <th>Ref Facture</th>
+                    <th>Montant</th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+
+        <div class="stats enretard">
+            <h2>Règlements en retard</h2>
+            <p id="infos_facturesRetard" style="display: none;" class="error_message"></p>
+            <table class="tab_stats_enretard">
+                <thead>
+                    <th>Date Prestation</th>
+                    <th>Date Limite Paiement</th>
+                    <th>Retard</th>
+                    <th>Client</th>
+                    <th>Ref Facture</th>
+                    <th>Montant</th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
 </div>
