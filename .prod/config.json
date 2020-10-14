@@ -1,0 +1,65 @@
+{
+    "development": {
+        "username": "root",
+        "password": "",
+        "database": "chezmessoeurs_bdd_dev",
+        "host": "127.0.0.1",
+        "port": 3306,
+        "dialect": "mysql",
+        "timezone": "+02:00",
+        "define" : {
+        "timestamps" : true,
+        "underscored" : true,
+        "freezeTableName" : true
+        },
+        "pool" : {
+            "max" : 5,
+            "min" : 0,
+            "idle" : 10000 
+        },
+        "typeValidation" : true,
+        "logging" : true
+    },
+    "test": {
+        "username": "root",
+        "password": "",
+        "database": "chezmessoeurs_bdd_test",
+        "host": "127.0.0.1",
+        "port": 3306,
+        "dialect": "mysql",
+        "timezone": "+02:00",
+        "define" : {
+        "timestamps" : true,
+        "underscored" : true,
+        "freezeTableName" : true
+        },
+        "pool" : {
+            "max" : 5,
+            "min" : 0,
+            "idle" : 10000 
+        },
+        "typeValidation" : true,
+        "logging" : false
+    },
+    "production": {
+        "username": "bumdufdcrm",
+        "password": "MYSQLcrm2020",
+        "database": "bumdufdcrm",
+        "host": "bumdufdcrm.mysql.db",
+        "port": 3306,
+        "dialect": "mysql",
+        "timezone": "+02:00",
+        "define" : {
+        "timestamps" : true,
+        "underscored" : true,
+        "freezeTableName" : true
+        },
+        "pool" : {
+            "max" : 5,
+            "min" : 0,
+            "idle" : 10000 
+        },
+        "typeValidation" : true,
+        "logging" : true
+    }
+}
