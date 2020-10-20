@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : bumdufdcrm.mysql.db
--- Généré le :  mer. 14 oct. 2020 à 13:42
+-- Généré le :  mar. 20 oct. 2020 à 11:33
 -- Version du serveur :  5.6.49-log
 -- Version de PHP :  7.0.33
 
@@ -133,7 +133,7 @@ CREATE TABLE `ventes` (
   `Date_Evenement` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Prix_TTC` float NOT NULL DEFAULT '0',
   `Nb_Personnes` int(11) NOT NULL DEFAULT '0',
-  `Ref_Devis` varchar(100) NOT NULL,
+  `Ref_Devis` varchar(100) NOT NULL DEFAULT '',
   `Reste_A_Payer` float NOT NULL DEFAULT '0',
   `Created_At` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `Updated_At` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -184,7 +184,6 @@ ALTER TABLE `utilisateurs`
 --
 ALTER TABLE `ventes`
   ADD PRIMARY KEY (`Id_Vente`),
-  ADD UNIQUE KEY `Ref_Devis` (`Ref_Devis`),
   ADD KEY `Id_Client` (`Id_Client`);
 
 --
@@ -207,7 +206,7 @@ ALTER TABLE `factures`
 -- AUTO_INCREMENT pour la table `ventes`
 --
 ALTER TABLE `ventes`
-  MODIFY `Id_Vente` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Id_Vente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Contraintes pour les tables déchargées
