@@ -783,7 +783,7 @@ const drawRIB = () => {
     const maxRibWidth = pageWidth - paddingTitles.left + paddingTitles.right
     if(ribWidth > maxRibWidth) ribWidth = maxRibWidth
     const ribLeft = (pageWidth - (paddingTitles.left + paddingTitles.right) - ribWidth) / 2
-    doc.image(__dirname + '/../../../public/img/exemplerib.jpg', pageLeft + paddingTitles.left + ribLeft, ribTop, { height : ribHeight, width : ribWidth, align : 'center' })
+    doc.image(__dirname + '/../../../public/img/rib-cms.png', pageLeft + paddingTitles.left + ribLeft, ribTop, { height : ribHeight, width : ribWidth, align : 'center' })
 }
 
 const drawLastPage = () => {
