@@ -23,8 +23,8 @@ async function checkVente(vente) {
     if(!isSet(vente.Prix_TTC)) throw "Le prix doit être renseigné."
     if(!(vente.Prix_TTC > 0)) throw "Le prix doit être positif."
     if(!isSet(vente.Nb_Personnes)) throw "Le nombre de convives doit être renseigné."
-    if(vente.Nb_Personnes < 6) throw "Le nombre de convives est de minimum 6."
-    if(!isSet(vente.Ref_Devis)) throw "La référence du devis doit être renseignée."
+    if(vente.Nb_Personnes < 1) throw "Le nombre de convives est de minimum 1."
+    // if(!isSet(vente.Ref_Devis)) throw "La référence du devis doit être renseignée."
 }
 
 router

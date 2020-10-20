@@ -39,8 +39,8 @@ module.exports = (sequelize, DataTypes) => {
         Ref_Devis: {
 			field : 'Ref_Devis',
 			type: DataTypes.STRING(100),
-			allowNull: false,
-			unique : true
+            allowNull: false,
+            defaultValue : ''
 		},
         Reste_A_Payer: {
 			field : 'Reste_A_Payer',

@@ -130,7 +130,7 @@ async function openModal(event) {
     }
 }
 
-async function createOrUpdate() {
+async function createOrUpdate(event) {
     event.preventDefault()
 
 	if(formVente.checkValidity()) {
