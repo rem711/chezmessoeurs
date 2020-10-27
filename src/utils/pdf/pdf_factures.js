@@ -687,10 +687,13 @@ const drawTablesRecap = () => {
     doc.fillColor('black', 1)
     divAPayer()
     drawReglement(yTableauAPayer)
+    const bottomReglement = doc.y
 
     contoursAPayer()
 
-    doc.y = yPos
+    doc.y = yPos > bottomReglement ? yPos : bottomReglement
+    // doc.y = yPos
+    // doc.y = bottomReglement
     drawRIB()
 
     // **** contours du tableau
@@ -782,7 +785,6 @@ const drawRIB = () => {
         doc.y = yPos
     }
 
-    // FIXME:Image rib
     const maxRibWidth = pageWidth - paddingTitles.left + paddingTitles.right
     if(ribWidth > maxRibWidth) ribWidth = maxRibWidth
     const ribLeft = (pageWidth - (paddingTitles.left + paddingTitles.right) - ribWidth) / 2
