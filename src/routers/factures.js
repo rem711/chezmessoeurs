@@ -449,7 +449,8 @@ router
         }
 
         toPDF.Reste_A_Payer = Number(facture.Vente.Reste_A_Payer).toFixed(2)
-        toPDF.Prix_HT = Number(facture.Prix_TTC - (facture.Prix_TTC * (TVA / 100))).toFixed(2)
+        // https://www.service-public.fr/professionnels-entreprises/vosdroits/F24271
+        toPDF.Prix_HT = Number(facture.Prix_TTC / (1 + (TVA / 100))).toFixed(2)
         toPDF.Prix_TTC = Number(facture.Prix_TTC).toFixed(2)
         toPDF.acompteVerse = Number(acompteVerse).toFixed(2)
         toPDF.Date_Paiement_Du = moment(facture.Date_Paiement_Du).format('DD/MM/YYYY')
