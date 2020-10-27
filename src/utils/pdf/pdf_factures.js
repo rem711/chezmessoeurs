@@ -221,7 +221,7 @@ const drawIdentification = () => {
         doc.text(facture.Client.Adresse_Facturation_Adresse_Complement_2, xIdentificationClient, doc.y, options)
     }
     doc.text(`${facture.Client.Adresse_Facturation_CP} ${facture.Client.Adresse_Facturation_Ville.toUpperCase()}`, xIdentificationClient, doc.y, options)
-    if(isProfessionnel) {
+    if(isProfessionnel && facture.Client.Numero_TVA !== null) {
         doc.text(`Numéro TVA : ${facture.Client.Numero_TVA}`, xIdentificationClient, doc.y, options)
     }
 
@@ -619,39 +619,42 @@ const drawTablesRecap = () => {
             yPos += maxHeightRow
         }
 
-        // TOTAL
-        maxHeightRow = 0
-        tabPositions.push({x : aPayerLeft, y : yPos})
-        tabPositions.push({x : aPayerRight, y : yPos})
-        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
-        content = 'TOTAL'
-        yPos += paddingContent.top
-        doc.text(content, xPos, yPos, options)
-        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
-        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
-        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
-        content = `${Number(facture.Vente.Prix_TTC).toFixed(2)}€`
-        doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
-        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
-        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
-        yPos += maxHeightRow
+        // à afficher que dans le cadre d'un acompte
+        if(Number(facture.acompteVerse) > 0 || Number(facture.Reste_A_Payer) > 0) {
+            // TOTAL
+            maxHeightRow = 0
+            tabPositions.push({x : aPayerLeft, y : yPos})
+            tabPositions.push({x : aPayerRight, y : yPos})
+            options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
+            content = 'TOTAL'
+            yPos += paddingContent.top
+            doc.text(content, xPos, yPos, options)
+            currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+            maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+            options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
+            content = `${Number(facture.Vente.Prix_TTC).toFixed(2)}€`
+            doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
+            currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+            maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+            yPos += maxHeightRow
 
-        // Net à payer
-        maxHeightRow = 0
-        tabPositions.push({x : aPayerLeft, y : yPos})
-        tabPositions.push({x : aPayerRight, y : yPos})
-        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
-        content = 'NET A PAYER'
-        yPos += paddingContent.top
-        doc.text(content, xPos, yPos, options)
-        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
-        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
-        options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
-        content = `${facture.Prix_TTC}€`
-        doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
-        currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
-        maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
-        yPos += maxHeightRow
+            // Net à payer
+            maxHeightRow = 0
+            tabPositions.push({x : aPayerLeft, y : yPos})
+            tabPositions.push({x : aPayerRight, y : yPos})
+            options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'left'}
+            content = 'NET A PAYER'
+            yPos += paddingContent.top
+            doc.text(content, xPos, yPos, options)
+            currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+            maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+            options = {width : (aPayerWidth * 0.5) - paddingContent.left - paddingContent.right, align : 'right'}
+            content = `${facture.Prix_TTC}€`
+            doc.text(content, xPos + (aPayerWidth * 0.5), yPos, options)
+            currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+            maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+            yPos += maxHeightRow
+        }
 
         
 
