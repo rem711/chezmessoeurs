@@ -28,7 +28,7 @@
                 <% for(const vente of ventes) { %>
                     <tr id="<%= `vente_${vente.Id_Vente}` %>">
                         <td><%= moment(vente.Date_Evenement).format('DD/MM/YYYY HH:mm') %></td>
-                        <% let client = `${vente.Client.Prenom} ${vente.Client.nom}` %>
+                        <% let client = `${vente.Client.Prenom} ${vente.Client.Nom}` %>
                         <td><%= vente.Client.Societe ? `${client} (${vente.Client.Societe})` : client %></td>
                         <td><%= vente.Description %></td>
                         <td><%= vente.Nb_Personnes %></td>
