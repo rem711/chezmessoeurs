@@ -365,6 +365,16 @@ const tabRecapWriteThirdCol = (content, maxHeightRow, sizeCol3, gap, align = 'le
     return maxHeightRow
 }
 
+const tabRecapWriteFourthCol = (content, maxHeightRow, sizeCol4, gap, align = 'left') => {
+    const options = {width : sizeCol4 - paddingContent.left - paddingContent.right, align : 'center'}
+    xPos += gap
+    doc.text(content, xPos, yPos, options)
+    const currentHeight = doc.heightOfString(content, options) + paddingContent.bottom
+    maxHeightRow = currentHeight > maxHeightRow ? currentHeight : maxHeightRow
+
+    return maxHeightRow
+}
+
 const drawTablesRecap = () => {
     let content = ''
     let options = {}
@@ -376,9 +386,13 @@ const drawTablesRecap = () => {
     const pageLeft = doc.page.margins.left + paddingPageContent.left
     const pageRight = doc.page.width - (doc.page.margins.right + paddingPageContent.right)
     const pageWidth = pageRight - pageLeft
-    const sizeCol1 = pageWidth * (2/3) 
-    const sizeCol2 = (pageWidth * (1/3)) * 0.5 
-    const sizeCol3 = (pageWidth * (1/3)) * 0.5 
+    // const sizeCol1 = pageWidth * (2/3) 
+    // const sizeCol2 = (pageWidth * (1/3)) * 0.5 
+    // const sizeCol3 = (pageWidth * (1/3)) * 0.5 
+    const sizeCol1 = pageWidth * (1/2) 
+    const sizeCol2 = (pageWidth * (1/2)) * (1/3) 
+    const sizeCol3 = (pageWidth * (1/2)) * (1/3) 
+    const sizeCol4 = (pageWidth * (1/2)) * (1/3) 
     let tableTop = 0
     let tableBottom = 0
     const aPayerLeft = pageWidth * 0.6
@@ -406,6 +420,8 @@ const drawTablesRecap = () => {
         .lineTo(pageLeft + sizeCol1, tableBottom)
         .moveTo(pageLeft + sizeCol1 + sizeCol2, tableTop)
         .lineTo(pageLeft + sizeCol1 + sizeCol2, tableBottom)
+        .moveTo(pageLeft + sizeCol1 + sizeCol2 + sizeCol3, tableTop)
+        .lineTo(pageLeft + sizeCol1 + sizeCol2 + sizeCol3, tableBottom)
         .moveTo(pageRight, tableTop)
         .lineTo(pageRight, tableBottom)
         .strokeColor('black', 0.5)
@@ -458,7 +474,10 @@ const drawTablesRecap = () => {
         maxHeightRow = tabRecapWriteSecondCol('Prix / Personne HT', maxHeightRow, sizeCol2, sizeCol1, 'center')
 
         // col3
-        maxHeightRow = tabRecapWriteThirdCol('Total HT', maxHeightRow, sizeCol3, sizeCol2, 'center')
+        maxHeightRow = tabRecapWriteThirdCol('Convives', maxHeightRow, sizeCol3, sizeCol2, 'center')
+
+        // col4
+        maxHeightRow = tabRecapWriteFourthCol('Total HT', maxHeightRow, sizeCol4, sizeCol3, 'center')
 
         yPos += maxHeightRow
         // bottom ligne entête gauche
@@ -489,7 +508,8 @@ const drawTablesRecap = () => {
     content = facture.Description
     maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
     maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(facture.Prix_HT / facture.Vente.Nb_Personnes).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
-    maxHeightRow = tabRecapWriteThirdCol(`${facture.Prix_HT}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
+    maxHeightRow = tabRecapWriteThirdCol(facture.Vente.Nb_Personnes, maxHeightRow, sizeCol3, sizeCol2, 'center')
+    maxHeightRow = tabRecapWriteFourthCol(`${facture.Prix_HT}€`, maxHeightRow, sizeCol4, sizeCol3, 'center')
 
     // pas assez d'espace
     if((yPos + maxHeightRow + paddingContent.top + paddingPageContent.bottom) > pageDrawingSpace.bottom) {
@@ -507,7 +527,8 @@ const drawTablesRecap = () => {
     content = facture.Description
     maxHeightRow = tabRecapWriteFirstCol(content, maxHeightRow, sizeCol1, pageLeft, 'left')
     maxHeightRow = tabRecapWriteSecondCol(`${Number.parseFloat(facture.Prix_HT / facture.Vente.Nb_Personnes).toFixed(2)}€`, maxHeightRow, sizeCol2, sizeCol1, 'center')
-    maxHeightRow = tabRecapWriteThirdCol(`${facture.Prix_HT}€`, maxHeightRow, sizeCol3, sizeCol2, 'center')
+    maxHeightRow = tabRecapWriteThirdCol(facture.Vente.Nb_Personnes, maxHeightRow, sizeCol3, sizeCol2, 'center')
+    maxHeightRow = tabRecapWriteFourthCol(`${facture.Prix_HT}€`, maxHeightRow, sizeCol4, sizeCol3, 'center')
 
     // on ajoute le padding bottom
     yPos += maxHeightRow
