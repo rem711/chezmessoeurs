@@ -416,8 +416,15 @@ router
         const previousFactures = await Factures.findAll({
             where : {
                 Id_Vente : facture.Id_Vente,
+                Type_Facture : {
+                    [Op.not] : 'avoir'
+                },
+                IsCanceled : false,
+                Id_Facture : {
+                    [Op.not] : facture.Id_Facture
+                },
                 Created_At : {
-                    [Op.lt] : facture.Created_At
+                    [Op.lte] : facture.Created_At
                 }
             }
         })
@@ -505,7 +512,7 @@ router
             toPDF.Pourcentage_Acompte = Number(facture.FactureAnnulee.Pourcentage_Acompte).toFixed(2)
         }
         
-        toPDF.Prix_HT = Number(facture.Prix_TTC - (facture.Prix_TTC * (TVA / 100))).toFixed(2)
+        toPDF.Prix_HT = Number(facture.Prix_TTC / (1 + (TVA / 100))).toFixed(2)
         toPDF.Prix_TTC = Number(facture.Prix_TTC).toFixed(2)
 
         createPDFAvoir(res, toPDF)

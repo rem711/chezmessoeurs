@@ -67,6 +67,14 @@ module.exports = (sequelize, DataTypes) => {
 			field : 'Date_Paiement_Du',
 			type : DataTypes.DATE,
 			allowNull : false
+		},
+		Created_At: {
+			field : 'Created_At',
+			type : DataTypes.DATE
+		},
+		Updated_At: {
+			field : 'Updated_At',
+			type : DataTypes.DATE
 		}
     }, {
 		tableName : 'factures'
