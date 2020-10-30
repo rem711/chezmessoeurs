@@ -399,10 +399,10 @@ const drawTablesRecap = () => {
         maxHeightRow = tabRecapWriteFirstCol('Désignation', maxHeightRow, sizeCol1, pageLeft, 'center')
 
         // col2
-        maxHeightRow = tabRecapWriteSecondCol('Prix / Personne HT', maxHeightRow, sizeCol2, sizeCol1, 'center')
+        maxHeightRow = tabRecapWriteSecondCol('Prix unitaire HT', maxHeightRow, sizeCol2, sizeCol1, 'center')
 
         // col3
-        maxHeightRow = tabRecapWriteThirdCol('Convives', maxHeightRow, sizeCol3, sizeCol2, 'center')
+        maxHeightRow = tabRecapWriteThirdCol('Quantité', maxHeightRow, sizeCol3, sizeCol2, 'center')
 
         // col4
         maxHeightRow = tabRecapWriteFourthCol('Total HT', maxHeightRow, sizeCol4, sizeCol3, 'center')

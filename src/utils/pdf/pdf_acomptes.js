@@ -328,7 +328,6 @@ const drawRIB = () => {
         doc.y = yPos
     }
 
-    // FIXME:Image rib
     const maxRibWidth = pageWidth - paddingTitles.left + paddingTitles.right
     if(ribWidth > maxRibWidth) ribWidth = maxRibWidth
     const ribLeft = (pageWidth - (paddingTitles.left + paddingTitles.right) - ribWidth) / 2
