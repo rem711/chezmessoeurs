@@ -15,7 +15,6 @@
                 <th>Ref</th>
                 <th>Date d'édition</th>
                 <th>Client</th>
-                <th>Société</th>
                 <th>Tel</th>
                 <th>Mail</th>
                 <th>Vente</th>
@@ -27,7 +26,7 @@
             <tbody>
                 <% if (locals.infos && infos.message) { %>
                     <tr>
-                        <td colspan="11">
+                        <td colspan="10">
                             <%= infos.message %>
                         </td>
                     </tr>
@@ -36,8 +35,9 @@
                         <tr id="facture_<%= facture.Id_Facture %>">
                             <td><%= facture.Ref_Facture %></td>
                             <td><%= moment(facture.Created_At).format(frontFormatDate) %></td>
-                            <td><%= `${facture.Vente.Client.Prenom} ${facture.Vente.Client.Nom}` %></td>
-                            <td><%= facture.Vente.Client.Societe ? facture.Vente.Client.Societe : '-' %></td>
+                            <% let client = '' %>
+                            <% if(facture.Vente.Client.Societe) client = `${facture.Vente.Client.Societe} (${facture.Vente.Client.Prenom} ${facture.Vente.Client.Nom})`; else client = `${facture.Vente.Client.Prenom} ${facture.Vente.Client.Nom}` %>
+                            <td><%= client %></td>
                             <td><%= facture.Vente.Client.Telephone %></td>
                             <td><%= facture.Vente.Client.Email %></td>
                             <td><%- `Description : ${facture.Vente.Description} <br>Date de l'événement : ${moment(facture.Vente.Date_Evenement).format(frontFormatDate)} <br>Restant / total : ${Number(facture.Vente.Reste_A_Payer).toFixed(2)}€ / ${Number(facture.Vente.Prix_TTC).toFixed(2)}€` %></td>

@@ -12,7 +12,7 @@
         <% } else { %>
             <table>
                 <thead>
-                    <th>Prénom Nom</th>
+                    <th>Client</th>
                     <th>Adresse</th>
                     <th>Téléphone</th>
                     <th>Email</th>
@@ -29,7 +29,9 @@
                             <% const { Id_Client, Nom, Prenom, Adresse_Facturation_Adresse, Adresse_Facturation_CP, Adresse_Facturation_Ville, Telephone, Email, Type } = client %>
                             <% const id = 'client_' + Id_Client %>
                             <tr id="<%= id %>">
-                                <td><%= Prenom + ' ' + Nom %></td>
+                                <% let afficheClient = '' %>
+                                <% if(client.Societe) afficheClient = `${client.Societe} (${client.Prenom} ${client.Nom})`; else afficheClient = `${client.Prenom} ${client.Nom}` %>
+                                <td><%= afficheClient %></td>
                                 <% const Adresse_Facturation = (Adresse_Facturation_Adresse === '' && Adresse_Facturation_CP === '00000' && Adresse_Facturation_Ville === '') ? '-' : Adresse_Facturation_Adresse + ', ' + Adresse_Facturation_CP + ' ' + Adresse_Facturation_Ville %> 
                                 <td><%= Adresse_Facturation %></td>
                                 <td><%= Telephone %></td>

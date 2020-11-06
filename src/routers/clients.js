@@ -224,7 +224,7 @@ router
 
     try {
         clients = await Clients.findAll({
-            order : [['Nom', 'ASC'], ['Prenom', 'ASC']]
+            order : [['Societe', 'ASC'], ['Nom', 'ASC'], ['Prenom', 'ASC']]
         })
         if(clients === null) {
             throw 'Une erreur s\'est produite, impossible de charger les clients.'
@@ -251,7 +251,7 @@ router
 
     try {
         clients = await Clients.findAll({
-            order : [['Nom', 'ASC'], ['Prenom', 'ASC']]
+            order : [['Societe', 'ASC'], ['Nom', 'ASC'], ['Prenom', 'ASC']]
         })
         if(clients === null) {
             throw 'Une erreur s\'est produite, impossible de charger les clients.'
