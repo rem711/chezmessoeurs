@@ -179,6 +179,7 @@ module.exports = (sequelize, DataTypes) => {
   });
   Clients.associate = function(models) {
 	// associations can be defined here
+	Clients.hasMany(models.Ventes, { foreignKey : 'Id_Client' })
   };
   return Clients;
 };

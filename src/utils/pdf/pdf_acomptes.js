@@ -255,8 +255,8 @@ const drawRefFactureDate = () => {
     doc.font(fontContent).fontSize(fontSizeContent)
 
     const xFactureDate = doc.page.margins.left + paddingPageContent.left + paddingContent.left
+    if(acompte.Vente.Ref_Devis) doc.text(`Référence devis : ${acompte.Vente.Ref_Devis}`, xFactureDate, doc.y)
     doc
-    .text(`Référence devis : ${acompte.Vente.Ref_Devis}`, xFactureDate, doc.y)
     // .text(`Référence facture : ${acompte.Numero_Facture}`, xFactureDate, doc.y)
     .text(`Référence acompte : ${acompte.Ref_Facture}`, xFactureDate, doc.y)
     .text(`Date d'émission : ${moment().format('DD/MM/YYYY')}`)

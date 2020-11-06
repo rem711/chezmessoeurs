@@ -2,6 +2,8 @@
 let isUpdated = false
 let venteChanged = false
 
+// récupère l'input de recherche
+const recherche = document.getElementById('recherche')
 // récupère le modal
 const modalFacture = document.getElementById('modalFacture')
 // bouton d'ouverture du modal pour ajouter une facture
@@ -495,6 +497,41 @@ function calculePrix() {
     }
 }
 
+function search() {
+    const val = recherche.value.toLowerCase()
+
+    // retrait des class de recherche
+    document.querySelectorAll('tr[id]').forEach(tr => {
+        tr.classList.remove('searched')
+        tr.classList.remove('notSearched')
+    })
+
+    if(val.length > 0) {
+        console.log(val)
+        const listeTr = Array.from(document.querySelectorAll('tr[id]'))
+        // cherche les clients
+        const searchClients = listeTr.filter(tr => tr.querySelector('td:nth-of-type(3)').innerText.toLowerCase().includes(val))
+        // cherche les numéros de téléphone
+        const searchNumeros = listeTr.filter(tr => tr.querySelector('td:nth-of-type(4)').innerText.toLowerCase().includes(val))
+        // cherche les emails
+        const searchMails = listeTr.filter(tr => tr.querySelector('td:nth-of-type(5)').innerText.toLowerCase().includes(val))
+
+        // filtre
+        // ajout de la classe searched pour les éléments retourés par la recherche
+        for(const tr of [...searchClients, ...searchNumeros, ...searchMails]) {
+            if(!tr.classList.contains('searched')) {
+                tr.classList.add('searched')
+            }
+        }
+
+        document.querySelectorAll('tr[id]:not(.searched)')
+            .forEach(tr => tr.classList.add('notSearched'))
+
+    }
+}
+
+// action lors d'une recherche
+recherche.onkeyup = search
 // action lors du clic pour ouvrir le modal nouvelle facture
 btnAjouteFacture.onclick = openModal
 // action lors du clic pour ouvrir le modal modifier facture
