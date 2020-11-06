@@ -1,6 +1,6 @@
 const express = require('express')
 const router = new express.Router()
-const { Clients } = global.db
+const { Clients, Ventes } = global.db
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 
 const createOrLoadClient = async (postClient) => {
@@ -346,6 +346,37 @@ router
         client
     })
     
+})
+// supprime client
+.delete('/clients/:Id_Client', async (req, res) => {
+    // récupération de l'Id_Client
+    const getId_Client = req.params.Id_Client
+
+    // init valeurs retour
+    let infos = undefined
+
+    try {
+        const client = await Clients.findOne({
+            include : { model : Ventes },
+            where : {
+                Id_Client : getId_Client
+            }
+        })
+        if(client === null) throw "Le client n'existe pas."
+        if(client.Ventes && client.Ventes.length > 0) throw "Le client ne peut pas être supprimé car il possède un historique de ventes."
+
+        await client.destroy()
+
+        infos = clientInformationObject(undefined, "Le client a bien été supprimé.")
+    }
+    catch(error) {
+        client = undefined
+        infos = clientInformationObject(getErrorMessage(error), undefined)
+    }
+
+    res.send({
+        infos
+    })
 })
 
 module.exports = {

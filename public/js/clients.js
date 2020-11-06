@@ -10,6 +10,9 @@ const btnAjouteClient = document.getElementById('btnAjouteClient')
 // bouton ouvrant la modal pour l'update
 const btnOpenModalUpdate = document.getElementById('btnOpenModalUpdate')
 
+// bouton de suppression d'un client
+const btnSupprimeClient = document.getElementById('btnSupprimeClient')
+
 // récupère les éléments qui ferment la modal
 const modalListCloseElmts = document.getElementsByClassName("close")
 
@@ -197,6 +200,44 @@ const createOrUpdate = async (event) => {
 	}
 }
 
+async function removeClient() {
+	const trSelected = document.getElementsByClassName('selected')[0]
+
+	// on vérifie qu'un client est sélectionné
+    if(trSelected && trSelected.getAttribute('id') !== null) {
+        if(confirm("Êtes-vous bien sûr de vouloir supprimer ce client?")) {
+            const Id_client = trSelected.getAttribute('id').split('_')[1]
+
+            try {
+                const url = `/clients/${Id_client}`
+                const options = {
+                    method : 'DELETE'
+                }
+
+                const response = await fetch(url, options)
+                if(response.ok) {
+                    const { infos } = await response.json()
+
+                    if(infos.error) throw infos.error
+                    if(infos.message) alert(infos.message)
+
+                    location.reload()
+                }
+                else if (response.status === 401) {
+                    alert("Vous avez été déconnecté, une authentification est requise. Vous allez être redirigé.")
+                    location.reload()
+                }
+                else {
+                    throw "Une erreur est survenue, veuillez réesayer plus tard."
+                }
+            }
+            catch(e) {
+                alert(e)
+            }
+        }
+    }
+}
+
 const closeModal = () => {
 	// on masque la modal
 	modalUpdate.style.display = "none"
@@ -244,6 +285,8 @@ const showEltProfessionnel = (elt) => {
 
 // action lors du click pour ouvrir la modal 
 btnOpenModalUpdate.onclick = openModal
+// action lors du clic sur le bouton de suppression
+btnSupprimeClient.onclick = removeClient
 // action lors du clic ur le + pour créer un nouveau client
 btnAjouteClient.onclick = openModal
 // action lors du click sur le bouton de modification d'un client
