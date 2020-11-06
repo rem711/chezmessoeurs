@@ -327,8 +327,8 @@ const drawRefFactureDate = () => {
     // yPos = doc.y
 
     const xFactureDate = doc.page.margins.left + paddingPageContent.left + paddingContent.left
+    if(facture.Vente.Ref_Devis) doc.text(`Référence devis : ${facture.Vente.Ref_Devis}`, xFactureDate, doc.y)
     doc
-    .text(`Référence devis : ${facture.Vente.Ref_Devis}`, xFactureDate, doc.y)
     .text(`Référence facture : ${facture.Ref_Facture}`, xFactureDate, doc.y)
     .text(`Date d'émission : ${moment().format('DD/MM/YYYY')}`)
 
