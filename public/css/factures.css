@@ -1,3 +1,12 @@
+#recherche {
+    margin: 0 25px 25px 25px;
+    height: 25px;
+}
+
+.notSearched {
+    display: none;
+}
+
 .btnSelected {
     background: #e06128 !important;
     color: white !important;
