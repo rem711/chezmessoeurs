@@ -60,6 +60,8 @@ const checkFacture = async (factureSent) => {
     if(factureSent.Type_Facture === SOLDE && factureSent.Prix_TTC > vente.Reste_A_Payer) throw "Le montant de la facture ne peut pas exéder le montant restant à payer sur cette vente."
     if(!isSet(factureSent.Date_Paiement_Du)) throw "La date de paiement doit être indiquée."
     if(!factureSent.Date_Paiement_Du.match(/^(?:(?:0[1-9])|(?:1[0-9])|(?:2[0-9])|(?:3[0-1]))\/(?:(?:0[1-9])|(?:1[0-2]))\/20\d{2}$/)) throw "Le format de la date est incorrect."
+    if(!isSet(factureSent.Mode_Paiement)) throw "Le mode de paiement doit être indiqué."
+    if(!['CB', 'chèque', 'virement bancaire'].includes(factureSent.Mode_Paiement)) throw "Le mode de paiement est incorrect."
 
     return vente
 }
@@ -461,6 +463,7 @@ router
         toPDF.Prix_TTC = Number(facture.Prix_TTC).toFixed(2)
         toPDF.acompteVerse = Number(acompteVerse).toFixed(2)
         toPDF.Date_Paiement_Du = moment(facture.Date_Paiement_Du).format('DD/MM/YYYY')
+        toPDF.Mode_Paiement = facture.Mode_Paiement
 
         // on regarde si c'est une facture d'acompte ou la facture du solde de la vente
         // facture

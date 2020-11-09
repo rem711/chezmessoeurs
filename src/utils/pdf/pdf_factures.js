@@ -715,7 +715,9 @@ const drawTablesRecap = () => {
     doc.y = yPos > bottomReglement ? yPos : bottomReglement
     // doc.y = yPos
     // doc.y = bottomReglement
-    drawRIB()
+    if(facture.Mode_Paiement === 'virement bancaire') {
+        drawRIB()
+    }
 
     // **** contours du tableau
     // lignes
@@ -753,7 +755,7 @@ const drawReglement = (yTop) => {
     doc.y = yTop + paddingContent.top
 
     doc.font(fontContent).fontSize(fontSizeContent)
-    doc.text('Mode de règlement : virement bancaire*', pageLeft, doc.y, options)
+    doc.text(`Mode de règlement : ${facture.Mode_Paiement}${facture.Mode_Paiement === 'virement bancaire' ? '*' : ''}`, pageLeft, doc.y, options)
 
     if(facture.Client.Societe) {
         doc.y += paddingContent.top

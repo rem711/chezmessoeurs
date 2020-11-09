@@ -68,6 +68,21 @@ module.exports = (sequelize, DataTypes) => {
 			type : DataTypes.DATE,
 			allowNull : false
 		},
+		Mode_Paiement: {
+			field : 'Mode_Paiement',
+			type : DataTypes.ENUM('CB', 'chèque', 'virement bancaire'),
+			allowNull: false,
+			defaultValue: 'chèque',
+			validate : {
+				notNull : {
+					msg : 'Le mode de paiement doit être renseigné.'
+				},
+				isIn : {
+					args : [['CB', 'chèque', 'virement bancaire']],
+					msg : 'Le mode de paiement doit être soit CB, soit chèque soit par virement bancaire.'
+				}
+			}
+		},
 		Created_At: {
 			field : 'Created_At',
 			type : DataTypes.DATE
