@@ -13,6 +13,9 @@ const btnOpenModalUpdate = document.getElementById('btnOpenModalUpdate')
 // bouton de suppression d'un client
 const btnSupprimeClient = document.getElementById('btnSupprimeClient')
 
+// bouton d'export de la liste clients
+const btnExport = document.getElementById('btnExport')
+
 // récupère les éléments qui ferment la modal
 const modalListCloseElmts = document.getElementsByClassName("close")
 
@@ -287,6 +290,8 @@ const showEltProfessionnel = (elt) => {
 btnOpenModalUpdate.onclick = openModal
 // action lors du clic sur le bouton de suppression
 btnSupprimeClient.onclick = removeClient
+// action lors du click sur le bouton d'export
+btnExport.onclick = () => window.open(`/clients/export_clients_${moment().format('DD-MM-YYYY')}.csv`, '_blank')
 // action lors du clic ur le + pour créer un nouveau client
 btnAjouteClient.onclick = openModal
 // action lors du click sur le bouton de modification d'un client

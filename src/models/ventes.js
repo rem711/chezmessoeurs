@@ -52,7 +52,8 @@ module.exports = (sequelize, DataTypes) => {
 		tableName : 'ventes'
 	})
     Ventes.associate = models => {
-		Ventes.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
+        Ventes.belongsTo(models.Clients, { foreignKey : 'Id_Client' })
+        Ventes.hasMany(models.Factures, { foreignKey : 'Id_Vente' })
     }
 
     return Ventes

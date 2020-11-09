@@ -1,6 +1,7 @@
 const express = require('express')
+const { Op } = require('sequelize')
 const router = new express.Router()
-const { Clients, Ventes } = global.db
+const { Clients, Ventes, Factures } = global.db
 const { clientInformationObject, getErrorMessage } = require('../utils/errorHandler')
 
 const createOrLoadClient = async (postClient) => {
@@ -269,6 +270,64 @@ router
         infos, 
         clients
     })
+})
+// exporte la liste des clients au format csv
+.get('/clients/export_clients_*.csv', async (req, res) => {
+    try {
+        const clients = await Clients.findAll({
+            include : { 
+                model : Ventes,
+                include : {
+                    model : Factures,
+                    where : {
+                        Type_Facture : {
+                            [Op.not] : 'avoir'
+                        },
+                        IsCanceled : 0
+                    }
+                }
+            },
+            order : [['Societe', 'ASC'], ['Nom', 'ASC'], ['Prenom', 'ASC']]
+        })
+        if(clients === null) throw "Une erreur s'est produite lors de la récupération des clients."
+
+        // définition format pour que les accents passent
+        let csv = '\uFEFF'
+        // définition colonnes
+        csv += 'Société;Type;Nom;Prenom;Adresse;Complement 1;Complement 2;CP;Ville;Email;Tél;Numero TVA; Nombre prestations\r\n'
+
+        for(const client of clients) {
+            // compte du nombre de ventes du clients qui sont facturées (et dont la facture n'a pas été annulée)
+            const nbPrestations = client.Ventes.reduce((accumulator, vente) => vente.Factures.length ? (accumulator + 1) : accumulator, 0)            
+
+            csv += `${client.Societe ? client.Societe : ''};`
+            csv += `${client.Type};`
+            csv += `${client.Nom};`
+            csv += `${client.Prenom};`
+            csv += `${client.Adresse_Facturation_Adresse ? client.Adresse_Facturation_Adresse : ''};`
+            csv += `${client.Adresse_Facturation_Adresse_Complement_1 ? client.Adresse_Facturation_Adresse_Complement_1 : ''};`
+            csv += `${client.Adresse_Facturation_Adresse_Complement_2 ? client.Adresse_Facturation_Adresse_Complement_2 : ''};`
+            csv += `${client.Adresse_Facturation_CP ? client.Adresse_Facturation_CP : ''};`
+            csv += `${client.Adresse_Facturation_Ville ? client.Adresse_Facturation_Ville : ''};`
+            csv += `${client.Email ? client.Email : ''};`
+            csv += `${client.Telephone ? client.Telephone : ''};`
+            csv += `${client.Numero_TVA ? client.Numero_TVA : ''};`
+            csv += nbPrestations
+
+            csv += '\r\n'
+        }
+
+        const path = req.path.split('/')
+        
+        res.header('Content-Type', 'text/csv')
+        res.attachment(path[path.length - 1])
+        
+        res.send(csv)
+    }
+    catch(error) {
+        const infos = clientInformationObject(error)
+        res.send(infos.error)
+    }
 })
 // client spécifique
 .get('/clients/:Id_Client', async (req, res) => {
