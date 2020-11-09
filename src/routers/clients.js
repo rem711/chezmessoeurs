@@ -1,4 +1,5 @@
 const express = require('express')
+const moment = require('moment')
 const { Op } = require('sequelize')
 const router = new express.Router()
 const { Clients, Ventes, Factures } = global.db
@@ -272,7 +273,7 @@ router
     })
 })
 // exporte la liste des clients au format csv
-.get('/clients/export_clients_*.csv', async (req, res) => {
+.get('/clients/export', async (req, res) => {
     try {
         const clients = await Clients.findAll({
             include : { 
@@ -294,7 +295,7 @@ router
         // définition format pour que les accents passent
         let csv = '\uFEFF'
         // définition colonnes
-        csv += 'Société;Type;Nom;Prenom;Adresse;Complement 1;Complement 2;CP;Ville;Email;Tél;Numero TVA; Nombre prestations\r\n'
+        csv += 'Société;Type;Nom;Prenom;Adresse;Complement 1;Complement 2;CP;Ville;Email;Tél;Numero TVA; Nombre prestations facturées\r\n'
 
         for(const client of clients) {
             // compte du nombre de ventes du clients qui sont facturées (et dont la facture n'a pas été annulée)
@@ -316,13 +317,12 @@ router
 
             csv += '\r\n'
         }
-
-        const path = req.path.split('/')
         
-        res.header('Content-Type', 'text/csv')
-        res.attachment(path[path.length - 1])
-        
-        res.send(csv)
+        console.log(csv)
+        res
+            .header('Content-Type', 'text/csv')
+            .attachment(`export_clients_${moment().format('DD-MM-YYYY')}.csv`)        
+            .send(csv)
     }
     catch(error) {
         const infos = clientInformationObject(error)

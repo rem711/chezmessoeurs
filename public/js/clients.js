@@ -291,7 +291,7 @@ btnOpenModalUpdate.onclick = openModal
 // action lors du clic sur le bouton de suppression
 btnSupprimeClient.onclick = removeClient
 // action lors du click sur le bouton d'export
-btnExport.onclick = () => window.open(`/clients/export_clients_${moment().format('DD-MM-YYYY')}.csv`, '_blank')
+btnExport.onclick = () => window.open(`/clients/export`, '_blank')
 // action lors du clic ur le + pour créer un nouveau client
 btnAjouteClient.onclick = openModal
 // action lors du click sur le bouton de modification d'un client
