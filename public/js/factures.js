@@ -507,7 +507,6 @@ function search() {
     })
 
     if(val.length > 0) {
-        console.log(val)
         const listeTr = Array.from(document.querySelectorAll('tr[id]'))
         // cherche les clients
         const searchClients = listeTr.filter(tr => tr.querySelector('td:nth-of-type(3)').innerText.toLowerCase().includes(val))
