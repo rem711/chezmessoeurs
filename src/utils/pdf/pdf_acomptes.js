@@ -218,7 +218,7 @@ const drawIdentification = () => {
         doc.text(acompte.Client.Adresse_Facturation_Adresse_Complement_2, xIdentificationClient, doc.y, options)
     }
     doc.text(`${acompte.Client.Adresse_Facturation_CP} ${acompte.Client.Adresse_Facturation_Ville.toUpperCase()}`, xIdentificationClient, doc.y, options)
-    if(isProfessionnel) {
+    if(isProfessionnel && acompte.Client.Numero_TVA !== null) {
         doc.text(`Numéro TVA : ${acompte.Client.Numero_TVA}`, xIdentificationClient, doc.y, options)
     }
 
@@ -276,7 +276,7 @@ const drawReglement = (yTop) => {
     doc.y = yTop + paddingContent.top
 
     doc.font(fontContent).fontSize(fontSizeContent)
-    doc.text('Mode de règlement : virement bancaire*', pageLeft, doc.y, options)
+    doc.text(`Mode de règlement : ${acompte.Mode_Paiement}${acompte.Mode_Paiement === 'virement bancaire' ? '*' : ''}`, pageLeft, doc.y, options)
 
     if(acompte.Client.Type === 'Professionnel') {
         doc.y += paddingContent.top
@@ -371,7 +371,9 @@ const drawLastPage = () => {
     .moveDown(4)
     
     drawReglement(doc.y)
-    drawRIB()
+    if(acompte.Mode_Paiement === 'virement bancaire') {
+        drawRIB()
+    }
 
     yPos = doc.y
     xPos = doc.page.margins.left + paddingPageContent.left + paddingContent.left

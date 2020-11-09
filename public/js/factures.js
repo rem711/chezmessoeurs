@@ -142,6 +142,15 @@ function fillModal(infos = undefined, ventes = undefined, facture = undefined) {
         document.getElementById('solde').disabled = true
 
         document.getElementById('Date_Paiement_Du').value = moment(facture.Date_Paiement_Du).format('DD/MM/YYYY')
+
+        if(facture.Mode_Paiement === 'virement bancaire') {
+            document.getElementById('virement').checked = true
+        }
+        else {
+            document.getElementById(`${facture.Mode_Paiement}`).checked = true
+        }
+        document.querySelectorAll('input[name=Mode_Paiement]').forEach(input => input.disabled = true)
+
         document.getElementById('Prix_TTC').value = facture.Prix_TTC
 
         document.getElementById('div_refFacture').style.display = 'flex'
@@ -235,6 +244,7 @@ async function createOrUpdate(event) {
             Type_Facture : document.querySelector(`input[name=Type_Facture]:checked`).value,
             Pourcentage_Acompte : document.getElementById('Pourcentage_Acompte').value !== '' ? document.getElementById('Pourcentage_Acompte').value : null,
             Date_Paiement_Du : document.getElementById('Date_Paiement_Du').value,
+            Mode_Paiement : document.querySelector('input[name=Mode_Paiement]:checked').value,
             Prix_TTC : document.getElementById('Prix_TTC').value
         }
         
@@ -436,7 +446,13 @@ function closeModal() {
         // remise de l'édition possible pour les boutons radio s'ils ont été désactivés
         document.getElementById('radioAcompte').disabled = false
         document.getElementById('radioSolde').disabled = false
-        document.getElementById('Pourcentage_Acompte').disabled = false
+        document.getElementById('radioSolde').checked = true
+        document.getElementById('Pourcentage_Acompte').disabled = true
+        document.getElementById('solde').disabled = false
+
+        // désélectionne le mode de paiement et remise de l'édition possible s'ils ont été désactivés
+        if(document.querySelector('input[name=Mode_Paiement]:checked')) document.querySelector('input[name=Mode_Paiement]:checked').checked = false
+        document.querySelectorAll('input[name=Mode_Paiement]').forEach(input => input.disabled = false)
     }
 
     venteChanged = false
@@ -507,7 +523,6 @@ function search() {
     })
 
     if(val.length > 0) {
-        console.log(val)
         const listeTr = Array.from(document.querySelectorAll('tr[id]'))
         // cherche les clients
         const searchClients = listeTr.filter(tr => tr.querySelector('td:nth-of-type(3)').innerText.toLowerCase().includes(val))

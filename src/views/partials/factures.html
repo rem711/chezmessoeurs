@@ -110,9 +110,15 @@
             <div class="rowinput">
                 <label for="Date_Paiement_Du">Date limite de paiement : </label><input id="Date_Paiement_Du" name="DatePaiementDu" type="text" class="datepicker" required><br>
             </div>
+            <div class="rowinput">
+                <label>Mode de Paiement : </label>
+                <input type="radio" id="CB" name="Mode_Paiement" value="CB" required><label for="CB">CB</label>
+                <input type="radio" id="chèque" name="Mode_Paiement" value="chèque" required><label for="chèque">chèque</label>
+                <input type="radio" id="virement" name="Mode_Paiement" value="virement bancaire" required><label for="virement">virement bancaire</label>
+            </div>
             <div class="rowinput montantfacture">
                 <label for="Prix_TTC">Prix TTC : </label><input id="Prix_TTC" name="PrixTTC" type="text" disabled required><label for="Prix_TTC"> €</label><br>
-            </div>
+            </div>            
             <div class="row" id="div_btnActionsUpdate" style="display: none;">
                 <button id="btnExport" type="button">Exporter Facture</button>
                 <button id="btnIsPayed" type="button">Noter Payée</button>
