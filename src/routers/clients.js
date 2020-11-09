@@ -318,7 +318,6 @@ router
             csv += '\r\n'
         }
         
-        console.log(csv)
         res
             .header('Content-Type', 'text/csv')
             .attachment(`export_clients_${moment().format('DD-MM-YYYY')}.csv`)        
